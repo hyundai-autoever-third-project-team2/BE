@@ -1,3 +1,7 @@
 aws:
   access-key: test
   secret-key: test
+
+db:
+  name: root
+  password: 1234
