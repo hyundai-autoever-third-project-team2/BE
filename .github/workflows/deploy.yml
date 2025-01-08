@@ -43,8 +43,8 @@ jobs:
               region:
                 static: ap-northeast-2
               credentials:
-                accessKey: ${AWS_ACCESS_KEY}
-                secretKey: ${AWS_SECRET_KEY}
+                accessKey: AKIA2LIP2AV3LPZTPRFI
+                secretKey: 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
           EOF
 
       - name: 권한 부여
