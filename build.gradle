@@ -30,6 +30,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'mysql:mysql-connector-java'
 
 	// AWS SDK (v2 사용)
 	implementation platform('software.amazon.awssdk:bom:2.17.89')
