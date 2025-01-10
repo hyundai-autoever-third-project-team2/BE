@@ -22,8 +22,8 @@ configurations {
 
 repositories {
 	mavenCentral()
-
 }
+
 dependencies {
 	// Spring Boot Starters
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -50,21 +50,19 @@ dependencies {
 
 	// Test Dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.junit.jupiter:junit-jupiter-api'
-	testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 	testImplementation 'org.mockito:mockito-core'
 	testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	implementation 'org.hibernate.orm:hibernate-core:6.5.2.Final'
 }
-
 
 tasks.named('test') {
 	useJUnitPlatform()
 	jvmArgs '-Xshare:off'
 }
+
 test {
 	// finalizedBy : 이(test) 작업에 대해 주어진 종료자 작업을 추가
 	finalizedBy jacocoTestReport // test 작업이 끝나고 jacocoTestReport를 실행
@@ -78,10 +76,7 @@ jacocoTestReport {
 	}
 
 	// 결과 리포트에서 제외할 클래스들
-	def Qdomains = []
-	for (qPattern in '**/QA'..'**/QZ') {
-		Qdomains.add(qPattern + '*')
-	}
+	def Qdomains = ['**/QA*', '**/QZ*'] // Qdomains 범위 수정
 	afterEvaluate {
 		classDirectories.setFrom(
 				files(classDirectories.files.collect {
@@ -102,12 +97,8 @@ jacocoTestReport {
 	finalizedBy 'jacocoTestCoverageVerification'
 }
 
-
 jacocoTestCoverageVerification {
-	def Qdomains = []
-	for (qPattern in '*.QA'..'*.QZ') {
-		Qdomains.add(qPattern + '*')
-	}
+	def Qdomains = ['**/*QA*', '**/*QZ*'] // Qdomains 범위 수정
 
 	violationRules {
 		rule {
