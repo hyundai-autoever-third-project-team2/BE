@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Entity
+@Table(name="feed")
 public class FeedEntity extends BaseTimeEntity {
 
     @Id

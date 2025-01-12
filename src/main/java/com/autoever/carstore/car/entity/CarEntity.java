@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="car")
 public class CarEntity extends BaseTimeEntity {
 
     @Id

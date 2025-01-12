@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name="fixed_image")
 public class FixedImageEntity extends BaseTimeEntity {
 
     @Id

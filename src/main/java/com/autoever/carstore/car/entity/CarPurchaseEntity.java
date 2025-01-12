@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="car_purchase")
 public class CarPurchaseEntity extends BaseTimeEntity {
 
     @Id

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="survey")
 public class SurveyEntity extends BaseTimeEntity {
 
     @Id
