@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="notification")
 public class NotificationEntity extends BaseTimeEntity {
 
     @Id

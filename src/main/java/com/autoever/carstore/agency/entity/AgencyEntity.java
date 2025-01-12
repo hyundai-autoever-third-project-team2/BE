@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="agency")
 public class AgencyEntity extends BaseTimeEntity {
 
     @Id

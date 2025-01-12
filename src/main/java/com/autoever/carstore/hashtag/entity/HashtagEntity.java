@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name="hashtag")
 public class HashtagEntity extends BaseTimeEntity {
 
     @Id

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="car_sales_like")
 public class CarSalesLikeEntity extends BaseTimeEntity {
 
     @Id

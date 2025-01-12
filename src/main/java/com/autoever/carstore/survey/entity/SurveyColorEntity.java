@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name="survey_color")
 public class SurveyColorEntity extends BaseTimeEntity {
 
     @Id

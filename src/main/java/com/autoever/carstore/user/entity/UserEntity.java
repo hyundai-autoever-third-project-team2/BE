@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 @Entity
+@Table(name="user")
 public class UserEntity extends BaseTimeEntity {
 
     @Id

@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-public class CarSalesHashtag extends BaseTimeEntity {
+@Table(name="car_sales_hashtag")
+public class CarSalesHashtagEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

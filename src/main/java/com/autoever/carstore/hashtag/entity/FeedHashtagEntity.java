@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name="feed_hashtag")
 public class FeedHashtagEntity extends BaseTimeEntity {
 
     @Id

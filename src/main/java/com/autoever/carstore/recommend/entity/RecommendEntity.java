@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name="recommend")
 public class RecommendEntity extends BaseTimeEntity {
 
     @Id
