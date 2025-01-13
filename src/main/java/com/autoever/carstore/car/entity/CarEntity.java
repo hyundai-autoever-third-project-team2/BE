@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -59,6 +61,9 @@ public class CarEntity extends BaseTimeEntity {
 
     @Column(name = "line_out_warning", nullable = false)
     private boolean lineOutWarning;
+
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarImageEntity> images;
 
     public void updatePrice(int price) {
         this.price = price;
