@@ -14,4 +14,6 @@ public interface CarService{
     public List<LikelyCarResponseDto> getLikelyCarList();
     public List<SearchCarResponseDto> searchCars(String brand, String modelName);
     public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto);
+    public DetailCarResponseDto findByCarId(Long carId);
+    public List<DetailCarResponseDto> compareCars(List<Long> carIds);
 }

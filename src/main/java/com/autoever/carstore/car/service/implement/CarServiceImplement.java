@@ -4,15 +4,19 @@ import com.autoever.carstore.car.dao.CarModelRepository;
 import com.autoever.carstore.car.dao.CarRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
 import com.autoever.carstore.car.dao.CarSalesViewRepository;
+import com.autoever.carstore.car.dto.request.CompareRequestDto;
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
+import com.autoever.carstore.car.entity.CarImageEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
+import com.autoever.carstore.car.entity.FixedImageEntity;
 import com.autoever.carstore.car.service.CarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -411,5 +415,171 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
 
     }
+
+    @Override
+    public DetailCarResponseDto findByCarId(Long carId) {
+        CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
+        LocalDateTime create_date = carSales.getCreatedAt();
+        int price = carSales.getPrice();
+        int discount_price = 0;
+        int month_price = price / 6;
+        String progress = carSales.getProgress();
+        int agency_id = carSales.getAgency().getAgencyId();
+        long response_carId = carSales.getCar().getCarId();
+        int view_count = carSales.getCount();
+        int like_count = carSales.getTotalLikes();
+        String car_number = carSales.getCar().getCarNumber();
+        String color = carSales.getCar().getColor();
+        boolean cruise_control = carSales.getCar().isCruiseControl();
+        int distance = carSales.getCar().getDistance();
+        boolean heated_seat = carSales.getCar().isHeatedSeat();
+        boolean hud = carSales.getCar().isHud();
+        boolean line_out_warning = carSales.getCar().isLineOutWarning();
+        boolean navigation = carSales.getCar().isNavigation();
+        boolean parking_distance_warning = carSales.getCar().isParkingDistanceWarning();
+        boolean sunroof = carSales.getCar().isSunroof();
+        boolean ventilated_seat = carSales.getCar().isVentilatedSeat();
+        String brand = carSales.getCar().getCarModel().getBrand();
+        String car_type = carSales.getCar().getCarModel().getCarType();
+        int displacement = carSales.getCar().getCarModel().getDisplacement();
+        String fuel = carSales.getCar().getCarModel().getFuel();
+        double fuel_efficiency = carSales.getCar().getCarModel().getFuelEfficiency();
+        String gear = carSales.getCar().getCarModel().getGear();
+        String model_name = carSales.getCar().getCarModel().getModelName();
+        String model_year = carSales.getCar().getCarModel().getModelYear();
+        List<String> carImages = new ArrayList<>();
+        for(CarImageEntity carImageEntity : carSales.getCar().getImages()){
+            carImages.add(carImageEntity.getImageUrl());
+        }
+        List<String> fixedCarImages = new ArrayList<>();
+        for(FixedImageEntity fixedImageEntity : carSales.getCar().getFixedImages()){
+            fixedCarImages.add(fixedImageEntity.getFixedImageUrl());
+        }
+
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+        if (create_date.isBefore(oneWeekAgo)) {
+            discount_price = (int) (price * 0.97); // 3% 할인
+            month_price = discount_price / 6;
+        }
+
+        DetailCarResponseDto result = DetailCarResponseDto.builder()
+                .created_at(carSales.getCreatedAt())
+                .price(price)
+                .discount_price(discount_price)
+                .progress(progress)
+                .agency_id(agency_id)
+                .carId(response_carId)
+                .view_count(view_count)
+                .like_count(like_count)
+                .car_number(car_number)
+                .color(color)
+                .cruise_control(cruise_control)
+                .distance(distance)
+                .heated_seat(heated_seat)
+                .hud(hud)
+                .line_out_warning(line_out_warning)
+                .navigation(navigation)
+                .parking_distance_warning(parking_distance_warning)
+                .sunroof(sunroof)
+                .ventilated_seat(ventilated_seat)
+                .brand(brand)
+                .car_type(car_type)
+                .displacement(displacement)
+                .fuel(fuel)
+                .fuel_efficiency(fuel_efficiency)
+                .gear(gear)
+                .model_name(model_name)
+                .model_year(model_year)
+                .carImages(carImages)
+                .fixedImages(fixedCarImages)
+                .build();
+
+        return result;
+    }
+
+    @Override
+    public List<DetailCarResponseDto> compareCars(List<Long> carIds) {
+        List<DetailCarResponseDto> result = new ArrayList<>();
+        for(Long carId : carIds){
+            CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
+            LocalDateTime create_date = carSales.getCreatedAt();
+            int price = carSales.getPrice();
+            int discount_price = 0;
+            int month_price = price / 6;
+            String progress = carSales.getProgress();
+            int agency_id = carSales.getAgency().getAgencyId();
+            long response_carId = carSales.getCar().getCarId();
+            int view_count = carSales.getCount();
+            int like_count = carSales.getTotalLikes();
+            String car_number = carSales.getCar().getCarNumber();
+            String color = carSales.getCar().getColor();
+            boolean cruise_control = carSales.getCar().isCruiseControl();
+            int distance = carSales.getCar().getDistance();
+            boolean heated_seat = carSales.getCar().isHeatedSeat();
+            boolean hud = carSales.getCar().isHud();
+            boolean line_out_warning = carSales.getCar().isLineOutWarning();
+            boolean navigation = carSales.getCar().isNavigation();
+            boolean parking_distance_warning = carSales.getCar().isParkingDistanceWarning();
+            boolean sunroof = carSales.getCar().isSunroof();
+            boolean ventilated_seat = carSales.getCar().isVentilatedSeat();
+            String brand = carSales.getCar().getCarModel().getBrand();
+            String car_type = carSales.getCar().getCarModel().getCarType();
+            int displacement = carSales.getCar().getCarModel().getDisplacement();
+            String fuel = carSales.getCar().getCarModel().getFuel();
+            double fuel_efficiency = carSales.getCar().getCarModel().getFuelEfficiency();
+            String gear = carSales.getCar().getCarModel().getGear();
+            String model_name = carSales.getCar().getCarModel().getModelName();
+            String model_year = carSales.getCar().getCarModel().getModelYear();
+            List<String> carImages = new ArrayList<>();
+            for(CarImageEntity carImageEntity : carSales.getCar().getImages()){
+                carImages.add(carImageEntity.getImageUrl());
+            }
+            List<String> fixedCarImages = new ArrayList<>();
+            for(FixedImageEntity fixedImageEntity : carSales.getCar().getFixedImages()){
+                fixedCarImages.add(fixedImageEntity.getFixedImageUrl());
+            }
+
+            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+            if (create_date.isBefore(oneWeekAgo)) {
+                discount_price = (int) (price * 0.97); // 3% 할인
+                month_price = discount_price / 6;
+            }
+
+            DetailCarResponseDto dto = DetailCarResponseDto.builder()
+                    .created_at(carSales.getCreatedAt())
+                    .price(price)
+                    .discount_price(discount_price)
+                    .progress(progress)
+                    .agency_id(agency_id)
+                    .carId(response_carId)
+                    .view_count(view_count)
+                    .like_count(like_count)
+                    .car_number(car_number)
+                    .color(color)
+                    .cruise_control(cruise_control)
+                    .distance(distance)
+                    .heated_seat(heated_seat)
+                    .hud(hud)
+                    .line_out_warning(line_out_warning)
+                    .navigation(navigation)
+                    .parking_distance_warning(parking_distance_warning)
+                    .sunroof(sunroof)
+                    .ventilated_seat(ventilated_seat)
+                    .brand(brand)
+                    .car_type(car_type)
+                    .displacement(displacement)
+                    .fuel(fuel)
+                    .fuel_efficiency(fuel_efficiency)
+                    .gear(gear)
+                    .model_name(model_name)
+                    .model_year(model_year)
+                    .carImages(carImages)
+                    .fixedImages(fixedCarImages)
+                    .build();
+            result.add(dto);
+        }
+        return result;
+    }
+
 
 }
