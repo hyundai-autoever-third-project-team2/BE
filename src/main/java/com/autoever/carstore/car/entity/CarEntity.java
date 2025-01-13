@@ -65,6 +65,9 @@ public class CarEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CarImageEntity> images;
 
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FixedImageEntity> fixedImages;
+
     public void updatePrice(int price) {
         this.price = price;
     }

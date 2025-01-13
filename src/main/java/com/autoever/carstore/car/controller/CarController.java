@@ -1,5 +1,6 @@
 package com.autoever.carstore.car.controller;
 
+import com.autoever.carstore.car.dto.request.CompareRequestDto;
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
 import com.autoever.carstore.car.service.CarService;
@@ -117,6 +118,32 @@ public class CarController {
         List<FilterCarResponseDto> result = null;
         try {
             result = carService.filterCars(filterCarRequestDto);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<DetailCarResponseDto> detailCars(
+        @RequestParam(required = false) Long carId
+    ){
+        DetailCarResponseDto result = null;
+        try {
+            result = carService.findByCarId(carId);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/compares")
+    public ResponseEntity<List<DetailCarResponseDto>> compareCars(
+            @RequestBody CompareRequestDto compareRequestDto
+    ){
+        List<DetailCarResponseDto> result = null;
+        try {
+            result = carService.compareCars(compareRequestDto.getCarIds());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
