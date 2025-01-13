@@ -16,4 +16,5 @@ public interface CarService{
     public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto);
     public DetailCarResponseDto findByCarId(Long carId);
     public List<DetailCarResponseDto> compareCars(List<Long> carIds);
+    public void updateViewCount(Long carId);
 }

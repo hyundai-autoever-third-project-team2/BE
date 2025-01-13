@@ -4,15 +4,13 @@ import com.autoever.carstore.agency.entity.AgencyEntity;
 import com.autoever.carstore.common.entitiyBase.BaseTimeEntity;
 import com.autoever.carstore.user.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

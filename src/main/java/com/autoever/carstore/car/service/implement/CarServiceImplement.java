@@ -7,10 +7,12 @@ import com.autoever.carstore.car.dao.CarSalesViewRepository;
 import com.autoever.carstore.car.dto.request.CompareRequestDto;
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
+import com.autoever.carstore.car.entity.CarEntity;
 import com.autoever.carstore.car.entity.CarImageEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.FixedImageEntity;
 import com.autoever.carstore.car.service.CarService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -579,6 +582,21 @@ public class CarServiceImplement implements CarService {
             result.add(dto);
         }
         return result;
+    }
+
+    @Override
+    public void updateViewCount(Long carId) {
+        // 차 정보를 DB에서 조회
+        Optional<CarSalesEntity> carSalesEntity = Optional.ofNullable(carSalesRepository.findByCarId(carId));
+
+        if (carSalesEntity.isPresent()) {
+            int count = carSalesEntity.get().getCount()+ 1;
+            carSalesEntity.get().setCount(count);
+            carSalesRepository.save(carSalesEntity.get());
+        } else {
+            // 차가 존재하지 않으면 처리 (예: 예외 처리)
+            throw new EntityNotFoundException("Car with ID " + carId + " not found.");
+        }
     }
 
 
