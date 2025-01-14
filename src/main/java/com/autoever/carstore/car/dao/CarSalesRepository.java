@@ -83,4 +83,8 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "WHERE cm.carType = :carType " +
             "AND cm.brand = :brand")
     List<CarSalesEntity> findSimilarCar(String carType, String brand);
+
+    @Query("SELECT c FROM CarSalesEntity c WHERE c.user.userId = :userId AND c.progress = :progress")
+    List<CarSalesEntity> findByUserIdAndProgress(@Param("userId") long userId, @Param("progress") String progress);
+
 }
