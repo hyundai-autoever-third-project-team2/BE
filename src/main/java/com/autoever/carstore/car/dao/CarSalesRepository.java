@@ -59,22 +59,6 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "AND (:modelName IS NULL OR cm.modelName LIKE %:modelName%)")
     List<CarSalesEntity> findByBrandAndCarName(@Param("brand") String brand, @Param("modelName") String modelName);
 
-    @Query("SELECT cs FROM CarSalesEntity cs " +
-            "JOIN cs.car c " +
-            "JOIN c.carModel cm " +
-            "WHERE (:carTypes IS NULL OR cm.carType IN :carTypes) " +
-            "AND (cm.displacement >= :startDisplacement) " +
-            "AND (cm.displacement <= :endDisplacement) " +
-            "AND (c.distance >= :startPrice) " +
-            "AND (c.distance <= :endPrice) " +
-            "AND (:colors IS NULL OR c.color IN :colors)")
-    List<CarSalesEntity> filterCars(@Param("carTypes") List<String> carTypes,
-                                    @Param("startDisplacement") int startDisplacement,
-                                    @Param("endDisplacement") int endDisplacement,
-                                    @Param("startPrice") int startPrice,
-                                    @Param("endPrice") int endPrice,
-                                    @Param("colors") List<String> colors);
-
     @Query("SELECT cs FROM CarSalesEntity cs WHERE cs.car.carId = :carId")
     CarSalesEntity findByCarId(Long carId);
 
@@ -87,5 +71,32 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
 
     @Query("SELECT c FROM CarSalesEntity c WHERE c.user.userId = :userId AND c.progress = :progress")
     List<CarSalesEntity> findByUserIdAndProgress(@Param("userId") long userId, @Param("progress") String progress);
+
+    @Query("SELECT cs FROM CarSalesEntity cs " +
+            "JOIN cs.car c " +
+            "JOIN c.carModel cm " +
+            "WHERE (:carTypes IS NULL OR cm.carType IN :carTypes) " +
+            "AND (cm.displacement >= :startDisplacement) " +
+            "AND (cm.displacement <= :endDisplacement) " +
+            "AND (c.distance >= :startDistance) " +
+            "AND (c.distance <= :endDistance) " +
+            "AND (cs.price >= :startPrice) " +
+            "AND (cs.price <= :endPrice) " +
+            "AND (:colors IS NULL OR c.color IN :colors)")
+    List<CarSalesEntity> filterCars(List<String> carTypes, int startDisplacement, int endDisplacement, int startDistance, int endDistance, int startPrice, int endPrice, List<String> colors);
+
+    @Query("SELECT cs FROM CarSalesEntity cs " +
+            "JOIN cs.car c " +
+            "JOIN c.carModel cm " +
+            "WHERE (c.distance >= :startDistance) " +
+            "AND (c.distance <= :endDistance) " +
+            "AND (cs.price >= :startPrice) " +
+            "AND (cs.price <= :endPrice) " +
+            "AND (cm.modelYear >= :minModelYear) " +
+            "AND (cm.modelYear <= :maxModelYear) " +
+            "AND (:carModelIds IS NULL OR cm.carModelId IN :carModelIds) " +
+            "AND (:surveyColor IS NULL OR c.color IN :surveyColor)")
+    List<CarSalesEntity> getAllRecommend(int startPrice, int endPrice, int startDistance, int endDistance, int minModelYear,
+                                         int maxModelYear, List<Long> carModelIds, List<String> surveyColor);
 
 }

@@ -373,7 +373,7 @@ public class CarServiceImplement implements CarService {
 
         List<String> colors = requestDto.getColors();
 
-        List<CarSalesEntity> car_sales_filter_list = carSalesRepository.filterCars(carTypes, startDisplacement, endDisplacement, startPrice, endPrice, colors);
+        List<CarSalesEntity> car_sales_filter_list = carSalesRepository.filterCars(carTypes, startDisplacement, endDisplacement, startDistance, endDistance, startPrice, endPrice, colors);
 
         for(CarSalesEntity car_sales : car_sales_filter_list) {
             FilterCarResponseDto filter_car;

@@ -26,31 +26,31 @@ public class RecommendEntity extends BaseTimeEntity {
     private UserEntity user;
 
     @Column(name = "recommend_car1_id", nullable = false)
-    private int recommendCar1Id;
+    private long recommendCar1Id;
 
     @Column(name = "recommend_car2_id", nullable = false)
-    private int recommendCar2Id;
+    private long recommendCar2Id;
 
     @Column(name = "recommend_car3_id", nullable = false)
-    private int recommendCar3Id;
+    private long recommendCar3Id;
 
     @Column(name = "recommend_car4_id", nullable = false)
-    private int recommendCar4Id;
+    private long recommendCar4Id;
 
     @Column(name = "recommend_car5_id", nullable = false)
-    private int recommendCar5Id;
+    private long recommendCar5Id;
 
     @Column(name = "recommend_car6_id", nullable = false)
-    private int recommendCar6Id;
+    private long recommendCar6Id;
 
     @Column(name = "recommend_car7_id", nullable = false)
-    private int recommendCar7Id;
+    private long recommendCar7Id;
 
     @Column(name = "recommend_car8_id", nullable = false)
-    private int recommendCar8Id;
+    private long recommendCar8Id;
 
     @Column(name = "recommend_car9_id", nullable = false)
-    private int recommendCar9Id;
+    private long recommendCar9Id;
 
     public void updateRecommendCar1Id(int recommendCar1Id) {
         this.recommendCar1Id = recommendCar1Id;

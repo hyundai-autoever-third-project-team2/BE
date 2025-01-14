@@ -54,4 +54,5 @@ public class UserController {
         userService.submitSurvey(userId, surveyRequestDto);
         return ResponseEntity.ok("Successfully submitted survey");
     }
+
 }
