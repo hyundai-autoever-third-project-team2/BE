@@ -4,10 +4,8 @@ import com.autoever.carstore.car.dao.CarModelRepository;
 import com.autoever.carstore.car.dao.CarRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
 import com.autoever.carstore.car.dao.CarSalesViewRepository;
-import com.autoever.carstore.car.dto.request.CompareRequestDto;
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
-import com.autoever.carstore.car.entity.CarEntity;
 import com.autoever.carstore.car.entity.CarImageEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.FixedImageEntity;
@@ -18,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
