@@ -2,9 +2,8 @@ package com.autoever.carstore.car.controller;
 
 import com.autoever.carstore.car.dto.request.CompareRequestDto;
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
+import com.autoever.carstore.car.dto.request.RegisterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
-import com.autoever.carstore.car.entity.CarEntity;
-import com.autoever.carstore.car.entity.CarPurchaseEntity;
 import com.autoever.carstore.car.service.CarPurchaseService;
 import com.autoever.carstore.car.service.CarService;
 import com.autoever.carstore.s3.ImageUploadService;
@@ -167,26 +166,10 @@ public class CarController {
 
     @PostMapping("/registration")
     public ResponseEntity<String> registerCar(
-            @RequestParam String car_number,
-            @RequestParam String comments,
-            @RequestParam("images") List<MultipartFile> images
-    ) {
-        if (images == null || images.isEmpty()) {
-            return ResponseEntity.badRequest().body("Images cannot be empty.");
-        }
-
-        try {
-            List<String> imageUrls = new ArrayList<>();
-            for (MultipartFile file : images) {
-                String imageUrl = imageUploadService.upload(file);
-                imageUrls.add(imageUrl);
-            }
-
-            carPurchaseService.registerCar(1, car_number, comments, imageUrls); // 1을 동적으로 수정 필요
-            return ResponseEntity.ok("Successfully registered!");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload images.");
-        }
+            @RequestBody RegisterCarRequestDto registerCarRequestDto
+            ) {
+        carPurchaseService.registerCar(5, registerCarRequestDto.getCar_number(), registerCarRequestDto.getComments(), registerCarRequestDto.getImages()); // 1을 동적으로 수정 필요
+        return ResponseEntity.ok("Successfully registered!");
     }
 
 }

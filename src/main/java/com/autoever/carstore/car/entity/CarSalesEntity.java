@@ -44,6 +44,9 @@ public class CarSalesEntity extends BaseTimeEntity {
     @Column(name = "sales_date")
     private LocalDateTime salesDate;
 
+    @Column(name = "order_number")
+    private String orderNumber;
+
     @Column(name = "is_visible", nullable = false)
     private boolean isVisible;
 
