@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CarModelRepository extends JpaRepository<CarModelEntity, Long> {
     @Query("SELECT c FROM CarModelEntity c WHERE c.carModelId = :carModelId")
-    CarModelEntity findByCarModelId(Integer carModelId);
+    CarModelEntity findByCarModelId(Long carModelId);
 }

@@ -17,6 +17,6 @@ public class SurveyRequestDto {
     int max_distance;
     int min_model_year;
     int max_model_year;
-    List<Integer> car_model_ids;
+    List<Long> car_model_ids;
     List<Integer> colors;
 }
