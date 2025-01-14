@@ -1,6 +1,7 @@
 package com.autoever.carstore.car.dao;
 
 import com.autoever.carstore.car.entity.CarSalesEntity;
+import com.autoever.carstore.car.entity.CarSalesLikeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

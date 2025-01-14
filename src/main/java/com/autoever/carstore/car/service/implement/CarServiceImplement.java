@@ -1,16 +1,13 @@
 package com.autoever.carstore.car.service.implement;
 
-import com.autoever.carstore.car.dao.CarModelRepository;
-import com.autoever.carstore.car.dao.CarRepository;
-import com.autoever.carstore.car.dao.CarSalesRepository;
-import com.autoever.carstore.car.dao.CarSalesViewRepository;
+import com.autoever.carstore.car.dao.*;
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
-import com.autoever.carstore.car.entity.CarImageEntity;
-import com.autoever.carstore.car.entity.CarSalesEntity;
-import com.autoever.carstore.car.entity.FixedImageEntity;
+import com.autoever.carstore.car.entity.*;
 import com.autoever.carstore.car.service.CarService;
+import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
+import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +28,8 @@ public class CarServiceImplement implements CarService {
     private final CarModelRepository carModelRepository;
     private final CarRepository carRepository;
     private final CarSalesViewRepository carSalesViewRepository;
+    private final CarPurchaseRepository carPurchaseRepository;
+    private final CarSalesLikeRepository carSalesLikeRepository;
 
     @Override
     public List<LatelyCarResponseDto> getLatelyCarList() {
@@ -646,6 +645,68 @@ public class CarServiceImplement implements CarService {
             results.add(transactionStatusResponseDto);
         }
         return results;
+    }
+
+    @Override
+    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress) {
+        List<CarPurchaseEntity> carPurchaseEntities = carPurchaseRepository.findByUserIdAndProgress(userId, progress);
+        List<UserCarTransactionStatusResponseDto> results = new ArrayList<>();
+        for(CarPurchaseEntity carPurchaseEntity : carPurchaseEntities){
+            UserCarTransactionStatusResponseDto userCarTransactionStatusResponseDto = UserCarTransactionStatusResponseDto.builder()
+                    .car_purchase_id(carPurchaseEntity.getCarPurchaseId())
+                    .purchase_date(carPurchaseEntity.getPurchaseDate())
+                    .progress(carPurchaseEntity.getProgress())
+                    .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
+                    .model_name(carPurchaseEntity.getCar().getCarModel().getModelName())
+                    .price(carPurchaseEntity.getPrice())
+                    .build();
+            results.add(userCarTransactionStatusResponseDto);
+        }
+        return results;
+    }
+
+    @Override
+    public List<IsHeartCarResponseDto> viewIsHeartCar(long userId) {
+        List<CarSalesLikeEntity> carSalesLikeEntities = carSalesLikeRepository.findByUserId(userId);
+        List<IsHeartCarResponseDto> result = new ArrayList<>();
+        for (CarSalesLikeEntity car_sales_like : carSalesLikeEntities) {
+            IsHeartCarResponseDto isHeart_car;
+            long carId = car_sales_like.getCarSales().getCar().getCarId();
+            String imageUrl = car_sales_like.getCarSales().getCar().getImages().get(0).getImageUrl();
+            String brand = car_sales_like.getCarSales().getCar().getCarModel().getBrand();
+            String model_name = car_sales_like.getCarSales().getCar().getCarModel().getModelName();
+            String model_year = car_sales_like.getCarSales().getCar().getCarModel().getModelYear();
+            int distance = car_sales_like.getCarSales().getCar().getDistance();
+            int price = car_sales_like.getCarSales().getPrice();
+            int discount_price = 0;
+            int month_price = price / 6;
+
+            LocalDateTime create_date = car_sales_like.getCarSales().getCreatedAt();
+            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+            if (create_date.isBefore(oneWeekAgo)) {
+                discount_price = (int) (price * 0.97); // 3% 할인
+                month_price = discount_price / 6;
+            }
+
+            int view_count = car_sales_like.getCarSales().getCount();
+
+            isHeart_car = IsHeartCarResponseDto.builder()
+                    .carId(carId)
+                    .imageUrl(imageUrl)
+                    .brand(brand)
+                    .model_name(model_name)
+                    .model_year(model_year)
+                    .distance(distance)
+                    .price(price)
+                    .discount_price(discount_price)
+                    .month_price(month_price)
+                    .create_date(create_date)
+                    .view_count(view_count)
+                    .build();
+
+            result.add(isHeart_car);
+        }
+        return result.isEmpty() ? null : result;
     }
 
 
