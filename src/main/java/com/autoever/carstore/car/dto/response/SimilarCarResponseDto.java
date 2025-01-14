@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class RecommendCarResponseDto {
+public class SimilarCarResponseDto {
     long carId;
     String imageUrl;
     String brand;

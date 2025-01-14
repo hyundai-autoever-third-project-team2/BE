@@ -99,4 +99,6 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     List<CarSalesEntity> getAllRecommend(int startPrice, int endPrice, int startDistance, int endDistance, int minModelYear,
                                          int maxModelYear, List<Long> carModelIds, List<String> surveyColor);
 
+    @Query("SELECT cs FROM CarSalesEntity cs WHERE cs.carSalesId = :carSalesId")
+    CarSalesEntity findByCarSalesId(@Param("carSalesId") long carSalesId);
 }

@@ -38,5 +38,5 @@ public class DetailCarResponseDto {
       String model_year;
       List<String> carImages;
       List<String> fixedImages;
-      List<RecommendCarResponseDto> recommendRCars;
+      List<SimilarCarResponseDto> recommendCars;
 }
