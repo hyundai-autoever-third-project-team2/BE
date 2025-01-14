@@ -4,6 +4,7 @@ import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.service.CarService;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
 import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
+import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
 import com.autoever.carstore.user.service.UserService;
@@ -53,6 +54,13 @@ public class UserController {
         long userId = 5;
         userService.submitSurvey(userId, surveyRequestDto);
         return ResponseEntity.ok("Successfully submitted survey");
+    }
+
+    @GetMapping("/userRecommend")
+    public ResponseEntity<List<RecommendCarResponseDto>> userRecommend(){
+        long userId = 5;
+        List<RecommendCarResponseDto> result = carService.viewUserCarRecommend(userId);
+        return ResponseEntity.ok(result);
     }
 
 }
