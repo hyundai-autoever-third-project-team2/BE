@@ -182,7 +182,7 @@ public class CarController {
                 imageUrls.add(imageUrl);
             }
 
-            carPurchaseService.registerCar(1, car_number, comments, imageUrls); // 1을 동적으로 수정 필요
+            carPurchaseService.registerCar(5, car_number, comments, imageUrls); // 1을 동적으로 수정 필요
             return ResponseEntity.ok("Successfully registered!");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload images.");
