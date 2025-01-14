@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class FeedResponseDto {
-    private long feedId;
-    private FeedUserResponseDto user;
-    private String contents;
+    private Long id;    // feedId
+    private String content;
     private String imageUrl;
+    private Boolean isLiked;
     private LocalDateTime createdAt;
-    private List<HashtagResponseDto> hashtagList;
+    private List<String> tags;
 }

@@ -2,6 +2,7 @@ package com.autoever.carstore.feed.controller;
 
 import com.autoever.carstore.feed.dto.FeedRequestDto;
 import com.autoever.carstore.feed.dto.FeedResponseDto;
+import com.autoever.carstore.feed.dto.StoryResponseDto;
 import com.autoever.carstore.feed.service.FeedService;
 import com.autoever.carstore.s3.ImageUploadService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,8 @@ public class FeedController {
     @PostMapping("/write")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> writeFeed(@ModelAttribute FeedRequestDto feedRequestDto) throws IOException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(feedService.saveFeed(feedRequestDto));
+        feedService.saveFeed(feedRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("success");
     }
 
     @PutMapping("/delete")
@@ -32,7 +34,7 @@ public class FeedController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<FeedResponseDto>> getFeedList() {
-        return ResponseEntity.ok(feedService.findFeedList());
+    public ResponseEntity<List<StoryResponseDto>> getFeedList(@RequestParam Long userId) {
+        return ResponseEntity.ok(feedService.findFeedList(userId));
     }
 }

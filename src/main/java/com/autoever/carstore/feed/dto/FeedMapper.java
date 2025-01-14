@@ -15,26 +15,9 @@ public class FeedMapper {
     public FeedEntity dtoToEntity(FeedRequestDto dto) {
 
         return FeedEntity.builder()
-                .user(userRepository.findById(dto.getUserId()).get())
+                .user(userRepository.findById(dto.getUserId()).orElse(null))
                 .contents(dto.getContents())
                 .isDeleted(false)
-                .build();
-    }
-
-    public FeedResponseDto entityToDto(FeedEntity entity) {
-        UserEntity user = entity.getUser();
-
-        return FeedResponseDto.builder()
-                        .user(FeedUserResponseDto.builder()
-                                .userId(user.getUserId())
-                                .nickname(user.getNickname())
-                                .profileImage(entity.getImageUrl())
-                                .build()
-                        )
-                .feedId(entity.getFeedId())
-                .contents(entity.getContents())
-                .imageUrl(entity.getImageUrl())
-                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }
