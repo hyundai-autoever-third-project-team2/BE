@@ -2,6 +2,8 @@ package com.autoever.carstore.car.service;
 
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
+import com.autoever.carstore.car.entity.CarSalesEntity;
+import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 
 import java.util.List;
 
@@ -17,4 +19,5 @@ public interface CarService{
     public DetailCarResponseDto findByCarId(Long carId);
     public List<DetailCarResponseDto> compareCars(List<Long> carIds);
     public void updateViewCount(Long carId);
+    public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress);
 }

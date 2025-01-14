@@ -10,6 +10,7 @@ import com.autoever.carstore.car.entity.CarImageEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.FixedImageEntity;
 import com.autoever.carstore.car.service.CarService;
+import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -626,6 +627,24 @@ public class CarServiceImplement implements CarService {
             // 차가 존재하지 않으면 처리 (예: 예외 처리)
             throw new EntityNotFoundException("Car with ID " + carId + " not found.");
         }
+    }
+
+    @Override
+    public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress) {
+        System.out.println("서비스입니다" + progress);
+        List<CarSalesEntity> carSalesEntities = carSalesRepository.findByUserIdAndProgress(userId, progress);
+        List<TransactionStatusResponseDto> results = new ArrayList<>();
+        for(CarSalesEntity carSalesEntity : carSalesEntities){
+            TransactionStatusResponseDto transactionStatusResponseDto = TransactionStatusResponseDto.builder()
+                    .sales_date(carSalesEntity.getUpdatedAt())
+                    .progress(carSalesEntity.getProgress())
+                    .model_name(carSalesEntity.getCar().getCarModel().getModelName())
+                    .order_number(carSalesEntity.getOrderNumber())
+                    .price(carSalesEntity.getPrice())
+                    .build();
+            results.add(transactionStatusResponseDto);
+        }
+        return results;
     }
 
 
