@@ -1,4 +1,4 @@
-package com.autoever.carstore.hashtag.repository;
+package com.autoever.carstore.hashtag.dao;
 
 import com.autoever.carstore.feed.entity.FeedEntity;
 import com.autoever.carstore.hashtag.entity.FeedHashtagEntity;
@@ -12,4 +12,5 @@ import java.util.List;
 public interface FeedHashtagRepository extends JpaRepository<FeedHashtagEntity, Long> {
     List<FeedHashtagEntity> findByFeed(FeedEntity feed);
     Boolean existsByFeedAndHashtag(FeedEntity feed, HashtagEntity hashtag);
+    Integer deleteByFeed(FeedEntity feed);
 }

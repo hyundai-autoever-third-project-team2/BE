@@ -1,4 +1,4 @@
-package com.autoever.carstore.user.repository;
+package com.autoever.carstore.user.dao;
 
 import com.autoever.carstore.user.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

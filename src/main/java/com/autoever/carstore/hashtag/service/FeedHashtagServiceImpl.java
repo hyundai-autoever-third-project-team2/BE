@@ -1,15 +1,13 @@
 package com.autoever.carstore.hashtag.service;
 
 import com.autoever.carstore.feed.entity.FeedEntity;
-import com.autoever.carstore.feed.repository.FeedRepository;
+import com.autoever.carstore.feed.dao.FeedRepository;
 import com.autoever.carstore.hashtag.dto.FeedHashTagResponseDto;
 import com.autoever.carstore.hashtag.dto.HashtagResponseDto;
 import com.autoever.carstore.hashtag.entity.FeedHashtagEntity;
 import com.autoever.carstore.hashtag.entity.HashtagEntity;
-import com.autoever.carstore.hashtag.repository.FeedHashtagRepository;
-import com.autoever.carstore.hashtag.repository.HashtagRepository;
+import com.autoever.carstore.hashtag.dao.FeedHashtagRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,22 +19,15 @@ public class FeedHashtagServiceImpl implements FeedHashtagService {
 
     private final FeedHashtagRepository feedHashtagRepository;
     private final FeedRepository feedRepository;
-    private final HashtagRepository hashtagRepository;
 
     @Override
-    public FeedHashTagResponseDto saveFeedHashtag(Long feedId, Long hashtagId) {
-        if(feedId == null) {
-            throw new IllegalArgumentException("feedId cannot be null");
+    public FeedHashTagResponseDto saveFeedHashtag(FeedEntity feed, HashtagEntity hashtag) {
+        if(feed == null) {
+            throw new IllegalArgumentException("feed cannot be null");
         }
-        if(hashtagId == null) {
-            throw new IllegalArgumentException("hashtagId cannot be null");
+        if(hashtag == null) {
+            throw new IllegalArgumentException("hashtag cannot be null");
         }
-
-        FeedEntity feed = feedRepository.findById(feedId)
-                .orElseThrow(() -> new IllegalArgumentException("There's no such feedId"));
-
-        HashtagEntity hashtag = hashtagRepository.findById(hashtagId)
-                .orElseThrow(() -> new IllegalArgumentException("There's no such hashtagId"));
 
         FeedHashtagEntity feedHashtag = feedHashtagRepository.save(
                 FeedHashtagEntity.builder()
@@ -47,7 +38,10 @@ public class FeedHashtagServiceImpl implements FeedHashtagService {
 
         return FeedHashTagResponseDto.builder()
                 .feedId(feedHashtag.getFeed().getFeedId())
-                .hashTag(feedHashtag.getHashtag().getHashtag())
+                .hashTag(HashtagResponseDto.builder()
+                        .hashtagId(hashtag.getHashtagId())
+                        .hashtag(hashtag.getHashtag())
+                        .build())
                 .build();
     }
 
@@ -62,5 +56,10 @@ public class FeedHashtagServiceImpl implements FeedHashtagService {
                         .hashtag(feedHashtag.getHashtag().getHashtag())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteFeedHashtag(FeedEntity feed) {
+        feedHashtagRepository.deleteByFeed(feed);
     }
 }

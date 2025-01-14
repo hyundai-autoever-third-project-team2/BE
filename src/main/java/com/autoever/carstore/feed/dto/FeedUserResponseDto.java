@@ -2,8 +2,6 @@ package com.autoever.carstore.feed.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor

@@ -1,4 +1,4 @@
-package com.autoever.carstore.hashtag.repository;
+package com.autoever.carstore.hashtag.dao;
 
 import com.autoever.carstore.hashtag.entity.HashtagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

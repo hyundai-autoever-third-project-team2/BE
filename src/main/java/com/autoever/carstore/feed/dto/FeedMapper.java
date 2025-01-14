@@ -2,7 +2,7 @@ package com.autoever.carstore.feed.dto;
 
 import com.autoever.carstore.feed.entity.FeedEntity;
 import com.autoever.carstore.user.entity.UserEntity;
-import com.autoever.carstore.user.repository.UserRepository;
+import com.autoever.carstore.user.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,6 @@ public class FeedMapper {
                 .user(userRepository.findById(dto.getUserId()).get())
                 .contents(dto.getContents())
                 .isDeleted(false)
-                .imageUrl(dto.getImageUrl())
                 .build();
     }
 

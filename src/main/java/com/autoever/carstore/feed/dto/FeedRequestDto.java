@@ -1,6 +1,9 @@
 package com.autoever.carstore.feed.dto;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -10,5 +13,6 @@ import lombok.*;
 public class FeedRequestDto {
     private Long userId;
     private String contents;
-    private String imageUrl;
+    private MultipartFile image;
+    private List<String> hashtagList;
 }

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,39 +21,14 @@ public class FeedController {
 
     @PostMapping("/write")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> writeFeed(@RequestParam("userId") Long userId,
-                                       @RequestParam(value = "contents", required = false) String contents,
-                                       @RequestParam(value = "image") MultipartFile image) {
-        try {
-            String imageUrl = imageUploadService.upload(image);
-            FeedRequestDto requestDto = FeedRequestDto.builder()
-                    .userId(userId)
-                    .contents(contents)
-                    .imageUrl(imageUrl)
-                    .build();
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(feedService.saveFeed(requestDto));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Image upload failed");
-        }
+    public ResponseEntity<?> writeFeed(@ModelAttribute FeedRequestDto feedRequestDto) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(feedService.saveFeed(feedRequestDto));
     }
 
     @PutMapping("/delete")
     public ResponseEntity<?> deleteFeed(@RequestParam("userId") Long userId,
                                         @RequestParam("feedId") Long feedId) {
-        try {
-            return ResponseEntity.ok(feedService.deleteFeed(userId, feedId));
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage().equals("There's no such feedId")) {
-                return ResponseEntity.notFound().build();
-            }
-            if (e.getMessage().equals("It's not this user's feed")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-            }
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(feedService.deleteFeed(userId, feedId));
     }
 
     @GetMapping("/list")

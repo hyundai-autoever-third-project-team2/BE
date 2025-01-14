@@ -3,7 +3,6 @@ package com.autoever.carstore.feed.entity;
 import com.autoever.carstore.common.entitiyBase.BaseTimeEntity;
 import com.autoever.carstore.user.entity.UserEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

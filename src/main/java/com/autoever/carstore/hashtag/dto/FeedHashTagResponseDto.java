@@ -13,5 +13,5 @@ import org.springframework.stereotype.Service;
 @Builder
 public class FeedHashTagResponseDto {
     private Long feedId;
-    private String hashTag;
+    private HashtagResponseDto hashTag;
 }
