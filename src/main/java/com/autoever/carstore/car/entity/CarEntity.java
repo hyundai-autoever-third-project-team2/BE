@@ -2,10 +2,9 @@ package com.autoever.carstore.car.entity;
 
 import com.autoever.carstore.common.entitiyBase.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -59,6 +58,12 @@ public class CarEntity extends BaseTimeEntity {
 
     @Column(name = "line_out_warning", nullable = false)
     private boolean lineOutWarning;
+
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarImageEntity> images;
+
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FixedImageEntity> fixedImages;
 
     public void updatePrice(int price) {
         this.price = price;

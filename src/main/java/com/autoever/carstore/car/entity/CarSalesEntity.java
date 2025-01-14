@@ -4,14 +4,13 @@ import com.autoever.carstore.agency.entity.AgencyEntity;
 import com.autoever.carstore.common.entitiyBase.BaseTimeEntity;
 import com.autoever.carstore.user.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -36,7 +35,7 @@ public class CarSalesEntity extends BaseTimeEntity {
     @JoinColumn(name = "agency_id", nullable = false)
     private AgencyEntity agency;
 
-    @Column(nullable = false)
+    @Column(name = "price", nullable = false)
     private int price;
 
     @Column(nullable = false)
@@ -45,8 +44,17 @@ public class CarSalesEntity extends BaseTimeEntity {
     @Column(name = "sales_date")
     private LocalDateTime salesDate;
 
+    @Column(name = "order_number")
+    private String orderNumber;
+
     @Column(name = "is_visible", nullable = false)
     private boolean isVisible;
+
+    @Column(name = "view_count", columnDefinition = "int default 0")
+    private int count;
+
+    @OneToMany(mappedBy = "carSales", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarSalesLikeEntity> likes;
 
     public void updateUser(UserEntity user) {
         this.user = user;
@@ -70,5 +78,10 @@ public class CarSalesEntity extends BaseTimeEntity {
 
     public void updateIsVisible(boolean isVisible) {
         this.isVisible = !this.isVisible;
+    }
+
+    // 좋아요 총 개수 계산 메서드
+    public int getTotalLikes() {
+        return likes != null ? likes.size() : 0;
     }
 }
