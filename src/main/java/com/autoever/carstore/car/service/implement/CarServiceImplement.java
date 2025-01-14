@@ -450,6 +450,8 @@ public class CarServiceImplement implements CarService {
         String gear = carSales.getCar().getCarModel().getGear();
         String model_name = carSales.getCar().getCarModel().getModelName();
         String model_year = carSales.getCar().getCarModel().getModelYear();
+
+
         List<String> carImages = new ArrayList<>();
         for(CarImageEntity carImageEntity : carSales.getCar().getImages()){
             carImages.add(carImageEntity.getImageUrl());
@@ -464,6 +466,35 @@ public class CarServiceImplement implements CarService {
             discount_price = (int) (price * 0.97); // 3% 할인
             month_price = discount_price / 6;
         }
+
+        //유사 차량 3개 만들기
+        List<RecommendRCarResponseDto> recommendRCarResponseDtos = new ArrayList<>();
+        List <CarSalesEntity> recommendsEntity = carSalesRepository.findSimilarCar(car_type, brand);
+
+        int count = 0;
+        for (CarSalesEntity carSalesEntity : recommendsEntity) {
+            if (count >= 3) break;
+            int recommend_discount_price = 0;
+            LocalDateTime recommend_create_date = carSalesEntity.getCreatedAt();
+
+            LocalDateTime recommend_oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+            if (recommend_create_date.isBefore(recommend_oneWeekAgo)) {
+                recommend_discount_price = (int) (carSalesEntity.getPrice() * 0.97); // 3% 할인
+            }
+
+            RecommendRCarResponseDto recommendDto = RecommendRCarResponseDto.builder()
+                    .carId(carSalesEntity.getCar().getCarId())
+                    .imageUrl(carSalesEntity.getCar().getImages().get(0).getImageUrl())
+                    .brand(carSalesEntity.getCar().getCarModel().getBrand())
+                    .model_name(carSalesEntity.getCar().getCarModel().getModelName())
+                    .price(carSalesEntity.getPrice())
+                    .discount_price(recommend_discount_price)
+                    .build();
+            recommendRCarResponseDtos.add(recommendDto); // 리스트에 추가
+            count++;
+        }
+
+
 
         DetailCarResponseDto result = DetailCarResponseDto.builder()
                 .created_at(carSales.getCreatedAt())
@@ -495,6 +526,7 @@ public class CarServiceImplement implements CarService {
                 .model_year(model_year)
                 .carImages(carImages)
                 .fixedImages(fixedCarImages)
+                .recommendRCars(recommendRCarResponseDtos)
                 .build();
 
         return result;

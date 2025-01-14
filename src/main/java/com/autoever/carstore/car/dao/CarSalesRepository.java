@@ -77,4 +77,10 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     @Query("SELECT cs FROM CarSalesEntity cs WHERE cs.car.carId = :carId")
     CarSalesEntity findByCarId(Long carId);
 
+    @Query("SELECT cs FROM CarSalesEntity cs " +
+            "JOIN cs.car c " +
+            "JOIN c.carModel cm " +
+            "WHERE cm.carType = :carType " +
+            "AND cm.brand = :brand")
+    List<CarSalesEntity> findSimilarCar(String carType, String brand);
 }
