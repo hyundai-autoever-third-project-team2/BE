@@ -1,7 +1,5 @@
 package com.autoever.carstore.car.dto.response;
 
-import com.autoever.carstore.car.entity.CarImageEntity;
-import com.autoever.carstore.car.entity.FixedImageEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -40,5 +38,5 @@ public class DetailCarResponseDto {
       String model_year;
       List<String> carImages;
       List<String> fixedImages;
-      List<RecommendRCarResponseDto> recommendRCars;
+      List<SimilarCarResponseDto> recommendCars;
 }

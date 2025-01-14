@@ -2,8 +2,10 @@ package com.autoever.carstore.car.service;
 
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
-import com.autoever.carstore.car.entity.CarSalesEntity;
+import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
+import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
+import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
 
 import java.util.List;
 
@@ -20,4 +22,7 @@ public interface CarService{
     public List<DetailCarResponseDto> compareCars(List<Long> carIds);
     public void updateViewCount(Long carId);
     public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress);
+    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress);
+    public List<IsHeartCarResponseDto> viewIsHeartCar(long userId);
+    public List<RecommendCarResponseDto> viewUserCarRecommend(long userId);
 }
