@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class TransactionStatusResponseDto {
+    long car_sales_id;
     LocalDateTime sales_date;
     String progress;
     String brand;
