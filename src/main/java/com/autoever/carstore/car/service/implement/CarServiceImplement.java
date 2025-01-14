@@ -466,7 +466,7 @@ public class CarServiceImplement implements CarService {
         }
 
         //유사 차량 3개 만들기
-        List<RecommendRCarResponseDto> recommendRCarResponseDtos = new ArrayList<>();
+        List<RecommendCarResponseDto> recommendRCarResponseDtos = new ArrayList<>();
         List <CarSalesEntity> recommendsEntity = carSalesRepository.findSimilarCar(car_type, brand);
 
         int count = 0;
@@ -480,7 +480,7 @@ public class CarServiceImplement implements CarService {
                 recommend_discount_price = (int) (carSalesEntity.getPrice() * 0.97); // 3% 할인
             }
 
-            RecommendRCarResponseDto recommendDto = RecommendRCarResponseDto.builder()
+            RecommendCarResponseDto recommendDto = RecommendCarResponseDto.builder()
                     .carId(carSalesEntity.getCar().getCarId())
                     .imageUrl(carSalesEntity.getCar().getImages().get(0).getImageUrl())
                     .brand(carSalesEntity.getCar().getCarModel().getBrand())
@@ -631,13 +631,14 @@ public class CarServiceImplement implements CarService {
 
     @Override
     public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress) {
-        System.out.println("서비스입니다" + progress);
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findByUserIdAndProgress(userId, progress);
         List<TransactionStatusResponseDto> results = new ArrayList<>();
         for(CarSalesEntity carSalesEntity : carSalesEntities){
             TransactionStatusResponseDto transactionStatusResponseDto = TransactionStatusResponseDto.builder()
+                    .car_sales_id(carSalesEntity.getCarSalesId())
                     .sales_date(carSalesEntity.getUpdatedAt())
                     .progress(carSalesEntity.getProgress())
+                    .brand(carSalesEntity.getCar().getCarModel().getBrand())
                     .model_name(carSalesEntity.getCar().getCarModel().getModelName())
                     .order_number(carSalesEntity.getOrderNumber())
                     .price(carSalesEntity.getPrice())
