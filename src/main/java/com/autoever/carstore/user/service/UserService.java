@@ -1,61 +1,29 @@
 package com.autoever.carstore.user.service;
 
-import com.autoever.carstore.oauthjwt.util.SecurityUtil;
+import com.autoever.carstore.user.dto.request.SurveyRequestDto;
 import com.autoever.carstore.user.dto.request.UpdateNicknameRequestDto;
 import com.autoever.carstore.user.dto.request.UpdateProfileRequestDto;
+import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.entity.UserEntity;
-import com.autoever.carstore.user.dao.UserRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
-    private final UserRepository userRepository;
-    private final SecurityUtil securityUtil;
+public interface UserService {
+    UserCountingResponseDto getUserCounting(long userId);
 
-    public UserEntity getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-    }
+    void submitSurvey(long userId, SurveyRequestDto surveyRequestDto);
 
-    public String getUserName() {
-        UserEntity user = securityUtil.getLoginUser();
+    UserEntity getUserById(Long id);
 
-        return user.getNickname();
-    }
+    String getUserName();
 
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
-    }
+    List<UserEntity> getAllUsers();
 
-    public void toggleUserActive(Long id) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        user.updateIsActive();
-    }
+    void toggleUserActive(Long id);
 
-    public void logoutUser() {
-        // Refresh Token 삭제 (DB나 메모리에서 제거)
-        UserEntity user = securityUtil.getLoginUser();
+    void logoutUser();
 
-        user.deleteToken();
-    }
+    void updateUserNickname(UpdateNicknameRequestDto request);
 
-    @Transactional
-    public void updateUserNickname(UpdateNicknameRequestDto request) {
-        UserEntity user = securityUtil.getLoginUser();
-
-        user.updateNickname(request.getNickname());
-
-    }
-
-    @Transactional
-    public void updateUserProfile(UpdateProfileRequestDto request) {
-        UserEntity user = securityUtil.getLoginUser();
-
-        user.updateProfileImage(request.getProfileImage());
-
-    }
+    void updateUserProfile(UpdateProfileRequestDto request);
 }
