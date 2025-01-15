@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReservationService {
-    ReservationResponseDto makeReservation(Long userId, Long agencyId, LocalDateTime time);
+    ReservationResponseDto makeReservation(Long agencyId, LocalDateTime time);
 
-    List<ReservationResponseDto> getReservationList(Long userId);
+    List<ReservationResponseDto> getReservationList();
 
-    void deleteReservation(Integer reservationId, Long id);
+    void deleteReservation(Integer reservationId);
 }

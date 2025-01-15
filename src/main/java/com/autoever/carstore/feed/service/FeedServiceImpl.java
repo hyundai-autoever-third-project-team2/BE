@@ -12,6 +12,7 @@ import com.autoever.carstore.hashtag.dto.HashtagResponseDto;
 import com.autoever.carstore.hashtag.entity.HashtagEntity;
 import com.autoever.carstore.hashtag.service.FeedHashtagService;
 import com.autoever.carstore.hashtag.service.HashtagService;
+import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.s3.ImageUploadService;
 import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.entity.UserEntity;
@@ -43,15 +44,15 @@ public class FeedServiceImpl implements FeedService {
 
     private final FeedLikeRepository feedLikeRepository;
 
+    private final SecurityUtil securityUtil;
+
     @Override
     @Transactional
     public void saveFeed(FeedRequestDto feedRequestDto) throws IOException {
-        if(feedRequestDto.getUserId() == null){
-            throw new IllegalArgumentException("user can't be null");
-        }
+        UserEntity user = securityUtil.getLoginUser();
 
-        if(userRepository.findById(feedRequestDto.getUserId()).isEmpty()){
-            throw new IllegalArgumentException("존재하지 않는 사용자 입니다");
+        if(user == null){
+            throw new IllegalArgumentException("로그인된 사용자가 없습니다.");
         }
 
         String imageUrl = imageUploadService.upload(feedRequestDto.getImage());
@@ -59,6 +60,8 @@ public class FeedServiceImpl implements FeedService {
         if(imageUrl == null){
             throw new IllegalArgumentException("imageUrl can't be null");
         }
+
+        feedRequestDto.setUserId(user.getUserId());
 
         FeedEntity feed = feedMapper.dtoToEntity(feedRequestDto);
         feed.updateImageUrl(imageUrl);
@@ -79,21 +82,25 @@ public class FeedServiceImpl implements FeedService {
 
     @Override
     @Transactional
-    public Boolean deleteFeed(Long userId, Long feedId) {
+    public Boolean deleteFeed(Long feedId) {
         if(feedId == null){
             throw new IllegalArgumentException("feedId can't be null");
-        }
-        if(userId == null){
-            throw new IllegalArgumentException("userId can't be null");
         }
 
         FeedEntity feed = feedRepository.findById(feedId).orElse(null);
 
+        UserEntity user = securityUtil.getLoginUser();
+
+        if(user == null){
+            throw new IllegalArgumentException("로그인된 사용자가 없습니다.");
+        }
+
         if(feed == null){
             throw new IllegalArgumentException("There's no such feedId");
         }
-        if(feed.getUser().getUserId() != userId){
-            throw new IllegalArgumentException("It's not this user's feed");
+
+        if(feed.getUser().getUserId() != user.getUserId()){
+            throw new IllegalArgumentException("다른 유저가 작성한 피드를 삭제할 수 없습니다.");
         }
 
         feedHashtagService.deleteFeedHashtag(feed);
@@ -106,9 +113,14 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public List<StoryResponseDto> findFeedList(Long userId) {
+    public List<StoryResponseDto> findFeedList() {
+        UserEntity currentUser = securityUtil.getLoginUser();
+
+        if(currentUser == null){
+            throw new IllegalArgumentException("로그인된 사용자가 없습니다.");
+        }
+
         List<FeedEntity> feeds = feedRepository.findAllActiveFeeds();
-        UserEntity currentUser = userRepository.findById(userId).orElse(null);
 
         Map<Long, List<FeedEntity>> groupedFeeds = feeds.stream()
                 .collect(Collectors.groupingBy(feed -> feed.getUser().getUserId()));

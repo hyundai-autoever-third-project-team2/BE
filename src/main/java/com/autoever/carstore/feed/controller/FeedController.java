@@ -1,10 +1,8 @@
 package com.autoever.carstore.feed.controller;
 
 import com.autoever.carstore.feed.dto.FeedRequestDto;
-import com.autoever.carstore.feed.dto.FeedResponseDto;
 import com.autoever.carstore.feed.dto.StoryResponseDto;
 import com.autoever.carstore.feed.service.FeedService;
-import com.autoever.carstore.s3.ImageUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FeedController {
     private final FeedService feedService;
-    private final ImageUploadService imageUploadService;
 
     @PostMapping("/write")
     @ResponseStatus(HttpStatus.CREATED)
@@ -28,13 +25,12 @@ public class FeedController {
     }
 
     @PutMapping("/delete")
-    public ResponseEntity<?> deleteFeed(@RequestParam("userId") Long userId,
-                                        @RequestParam("feedId") Long feedId) {
-        return ResponseEntity.ok(feedService.deleteFeed(userId, feedId));
+    public ResponseEntity<?> deleteFeed(@RequestParam("feedId") Long feedId) {
+        return ResponseEntity.ok(feedService.deleteFeed(feedId));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<StoryResponseDto>> getFeedList(@RequestParam Long userId) {
-        return ResponseEntity.ok(feedService.findFeedList(userId));
+    public ResponseEntity<List<StoryResponseDto>> getFeedList() {
+        return ResponseEntity.ok(feedService.findFeedList());
     }
 }
