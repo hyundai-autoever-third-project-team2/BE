@@ -74,7 +74,7 @@ public class UserController {
     //찜한 상품 조회
     @GetMapping("/isHeartCar")
     public ResponseEntity<List<IsHeartCarResponseDto>> isHeartCar(){
-        UserEntity user = securityUtil.getLoginUser();;
+        UserEntity user = securityUtil.getLoginUser();
         List<IsHeartCarResponseDto> result = carService.viewIsHeartCar(user.getUserId());
         return ResponseEntity.ok(result);
     }
