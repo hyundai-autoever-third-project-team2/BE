@@ -32,13 +32,13 @@ jobs:
               username: ${DATABASE_USERNAME}
               password: ${DATABASE_PASSWORD}
               hikari:
-                minimum-idle: 5
-                maximum-pool-size: 10
-                idle-timeout: 600000
-                connection-timeout: 30000
-                max-lifetime: 1800000
-                auto-commit: true
-                validation-timeout: 5000
+                minimum-idle: 5                                     # 최소 유휴 커넥션 수
+                maximum-pool-size: 10                               # 최대 커넥션 풀 크기 (RDS 설정에 따라 조정)
+                idle-timeout: 600000                                # 유휴 연결 타임아웃 (밀리초)
+                connection-timeout: 30000                           # 연결 타임아웃 (밀리초)
+                max-lifetime: 1800000                               # 연결 최대 생명 주기 (밀리초)
+                auto-commit: true                                   # Auto-commit 설정
+                validation-timeout: 5000                            # 검증 타임아웃 (밀리초)
                 connection-test-query: SELECT 1
 
             jpa:
@@ -47,6 +47,39 @@ jobs:
               properties:
                 hibernate.dialect: org.hibernate.dialect.MySQL8Dialect
               show-sql: true
+
+            servlet:
+              multipart:
+                max-file-size: 50MB
+                max-request-size: 50MB
+            thymeleaf:
+              prefix: classpath:/templates/
+              suffix: .html
+              check-template-location: true
+
+            jwt:
+              secret: ${JWT_SECRET}
+              access-expired-in: 86400000   # AccessToken 유효 기간: 24시간 (밀리초)
+              refresh-expired-in: 604800000  # RefreshToken 유효 기간: 7일 (밀리초)
+
+            security:
+              oauth2:
+                client:
+                  provider:
+                    kakao:
+                      authorization-uri: https://kauth.kakao.com/oauth/authorize
+                      token-uri: https://kauth.kakao.com/oauth/token
+                      user-info-uri: https://kapi.kakao.com/v2/user/me
+                      user-name-attribute: id
+                  registration:
+                    kakao:
+                      client-name: kakao
+                      client-id: ${KAKAO_CLIENT_ID}
+                      client-secret: ${KAKAO_CLIENT_SECRET}
+                      redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+                      client-authentication-method: client_secret_post
+                      authorization-grant-type: authorization_code
+                      scope: account_email,profile_nickname,profile_image
 
           s3:
             credentials:
@@ -67,6 +100,9 @@ jobs:
           S3_REGION: ${{ secrets.S3_REGION }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           KAKAO_PAY_ADMIN_KEY: ${{ secrets.KAKAO_PAY_ADMIN_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
 
       - name: 권한 부여
         run: chmod +x ./gradlew  # 실행 권한 부여
