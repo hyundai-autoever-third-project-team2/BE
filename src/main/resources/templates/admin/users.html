@@ -24,7 +24,7 @@
         <td th:text="${user.userId}">User ID</td>
         <td th:text="${user.nickname}">User Nickname</td>
         <td>
-            <button th:onclick="'showUserDetails(' + ${user.userId} + ')'">회원 조회</button>
+            <button th:onclick="'showUserDetails(' + ${user.getUserId()} + ')'">회원 조회</button>
         </td>
     </tr>
     </tbody>

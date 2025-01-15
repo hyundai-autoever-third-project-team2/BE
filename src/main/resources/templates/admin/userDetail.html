@@ -3,36 +3,33 @@
 <head>
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/styles.css">
-    <script>
-        async function toggleAccountStatus(userId, currentStatus) {
-            const newStatus = !currentStatus; // 현재 상태 반대로 변경
-            try {
-                const response = await fetch(`/admin/users/${userId}/toggle-status`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ isActive: newStatus }) // 변경될 상태 전송
-                });
-
-                if (!response.ok) {
-                    throw new Error('계정 상태 업데이트 실패');
-                }
-
-                // UI 업데이트
-                const statusText = newStatus ? '활성화' : '비활성화';
-                document.getElementById('account-status').textContent = statusText;
-                document.getElementById('account-action-btn').textContent = newStatus ? '계정 정지' : '계정 활성화';
-                document.getElementById('account-action-btn').setAttribute('onclick', `toggleAccountStatus(${userId}, ${newStatus})`);
-                alert('계정 상태가 업데이트되었습니다.');
-            } catch (error) {
-                console.error(error);
-                alert('계정 상태 업데이트 중 오류가 발생했습니다.');
-            }
-        }
-    </script>
 </head>
 <body>
-<div class="modal-content">
+<script>
+    function toggleAccountStatus() {
+        // 계정 상태를 표시하는 요소
+        const accountStatus = document.getElementById('account-status');
+        const actionButton = document.getElementById('account-action-btn');
 
+        // 디버깅: 현재 상태 출력
+        console.log('Before toggle:', accountStatus.textContent);
+
+        // 현재 상태 가져오기
+        const isActive = accountStatus.textContent.trim() === '활성화';
+
+        // 상태 반전
+        const newStatus = !isActive;
+
+        // UI 업데이트
+        accountStatus.textContent = newStatus ? '활성화' : '비활성화';
+        actionButton.textContent = newStatus ? '계정 정지' : '계정 활성화';
+
+        // 디버깅: 변경된 상태 출력
+        console.log('After toggle:', accountStatus.textContent);
+    }
+</script>
+
+<div class="modal-content">
     <div>
         <p><strong>이름:</strong> <span th:text="${user.nickname}"></span></p>
     </div>
@@ -43,7 +40,7 @@
 
     <div>
         <p><strong>계정 상태:</strong>
-            <span th:text="${user.isActive} ? '활성화' : '비활성화'"></span>
+            <span id="account-status" th:text="${user.isActive} ? '활성화' : '비활성화'"></span>
         </p>
     </div>
 
@@ -51,8 +48,9 @@
         <!-- 버튼은 초기 상태에 따라 다르게 표시 -->
         <button id="account-action-btn"
                 th:text="${user.isActive} ? '계정 정지' : '계정 활성화'"
-                onclick="toggleAccountStatus([[${user.userId}]], [[${user.isActive}]])">
+                onclick="toggleAccountStatus()">
         </button>
     </div>
-
 </div>
+</body>
+</html>
