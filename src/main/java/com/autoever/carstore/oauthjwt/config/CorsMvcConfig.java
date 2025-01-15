@@ -14,7 +14,8 @@ public class CorsMvcConfig implements WebMvcConfigurer {
                 .exposedHeaders("Set-Cookie")
                 .allowedOrigins(
                         "https://twomuchcar.shop", // 운영 도메인
-                        "http://localhost:8080"   // 로컬 테스트용
+                        "http://localhost:8080",  // 로컬 테스트용
+                        "https://autoever.site"
                 );
     }
 }
