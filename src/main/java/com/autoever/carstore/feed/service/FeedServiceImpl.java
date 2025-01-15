@@ -32,8 +32,6 @@ public class FeedServiceImpl implements FeedService {
 
     private final FeedRepository feedRepository;
 
-    private final UserRepository userRepository;
-
     private final FeedMapper feedMapper;
 
     private final ImageUploadService imageUploadService;

@@ -104,4 +104,13 @@ public class UserController {
         List<RecommendCarResponseDto> result = carService.viewUserCarRecommend(user.getUserId());
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("/fcmToken")
+    public ResponseEntity<?> updateFcmToken(@RequestParam String fcmToken) {
+
+        System.out.println("fcmToken : " + fcmToken);
+        userService.updateFcmToken(fcmToken);
+
+        return ResponseEntity.ok("success");
+    }
 }

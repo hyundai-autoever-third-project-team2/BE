@@ -1,5 +1,6 @@
 package com.autoever.carstore.chat;
 
+import com.autoever.carstore.user.dto.response.UserResponseDto;
 import lombok.*;
 
 @Builder
@@ -13,10 +14,13 @@ public class ChatMessageDto {
         JOIN, TALK, LEAVE
     }
 
-    private MessageType messageType;
-    private Long chatRoomId;
+//    private MessageType messageType;
+//    private Long chatRoomId;
+//    private String message;
+//    private String senderId;
+
+    private MessageType type;
+//    private Long senderId;
+    private Long receiverId;
     private String message;
-    private String senderId;
-//    private UserResponseDto sender;
-//    private String receiverId;
 }

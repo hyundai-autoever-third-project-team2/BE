@@ -29,4 +29,6 @@ public interface UserService {
     void updateUserProfile(UpdateProfileRequestDto request);
 
     UserResponseDto getUserInfo(String email);
+
+    void updateFcmToken(String token);
 }

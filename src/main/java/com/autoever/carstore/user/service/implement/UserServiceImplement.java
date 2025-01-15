@@ -183,6 +183,14 @@ public class UserServiceImplement implements UserService {
                 .build();
     }
 
+    @Override
+    public void updateFcmToken(String token) {
+        UserEntity user = securityUtil.getLoginUser();
+        user.updateFcmToken(token);
+
+        userRepository.save(user);
+    }
+
     private long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {
         if (index < selectedCars.size()) {
             return selectedCars.get(index).getCarSalesId();
