@@ -176,4 +176,13 @@ public class CarController {
         return ResponseEntity.ok("Successfully registered!");
     }
 
+    //차량 거래하기
+    @PutMapping("/contract")
+    public ResponseEntity<String> contractCar(
+            @RequestParam long carId
+    ){
+        long userId = 5;
+        carService.contractCar(userId, carId);
+        return ResponseEntity.ok("Successfully contract!");
+    }
 }
