@@ -6,6 +6,7 @@ import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
 import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
+import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 
 import java.util.List;
 

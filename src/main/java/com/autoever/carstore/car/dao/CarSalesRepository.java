@@ -13,12 +13,6 @@ import java.util.List;
 
 @Repository
 public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> {
-    @Query("SELECT cs FROM CarSalesEntity cs " +
-            "JOIN FETCH cs.car c " +
-            "JOIN FETCH c.carModel cm " +
-            "WHERE cm.brand = :brand")
-    List<CarSalesEntity> findAllWithCarAndCarModelByBrand(@Param("brand") String brand);
-
     //판매중인 해외 차량 조회
     @Query("SELECT cs FROM CarSalesEntity cs " +
             "JOIN FETCH cs.car c " +
@@ -75,10 +69,12 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     @Query("SELECT cs FROM CarSalesEntity cs WHERE cs.car.carId = :carId")
     CarSalesEntity findByCarId(Long carId);
 
+    //판매중인 유사 차량 반환
     @Query("SELECT cs FROM CarSalesEntity cs " +
             "JOIN cs.car c " +
             "JOIN c.carModel cm " +
-            "WHERE cm.carType = :carType " +
+            "WHERE cs.progress = '판매중' " +
+            "AND cm.carType = :carType " +
             "AND cm.brand = :brand")
     List<CarSalesEntity> findSimilarCar(String carType, String brand);
 
@@ -127,4 +123,7 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "AND cs.progress = '판매중'")
     List<CarSalesEntity> getAllRecommendByBrandsAndCarTypes(@Param("brands") List<String> brands,
                                                             @Param("carTypes") List<String> carTypes);
+
+    @Query("SELECT COUNT(c) FROM CarSalesEntity c WHERE c.user.userId = :userId")
+    int countByUserId(@Param("userId") long userId);
 }

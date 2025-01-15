@@ -1,7 +1,9 @@
 package com.autoever.carstore.user.service.implement;
 
-import com.autoever.carstore.car.dao.CarModelRepository;
+import com.autoever.carstore.car.dao.CarPurchaseRepository;
+import com.autoever.carstore.car.dao.CarSalesLikeRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
+import com.autoever.carstore.car.dao.CarModelRepository;
 import com.autoever.carstore.car.entity.CarModelEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.recommend.dao.RecommendRepository;
@@ -13,6 +15,7 @@ import com.autoever.carstore.survey.entity.SurveyCarModelEntity;
 import com.autoever.carstore.survey.entity.SurveyColorEntity;
 import com.autoever.carstore.survey.entity.SurveyEntity;
 import com.autoever.carstore.user.dao.UserRepository;
+import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
@@ -28,11 +31,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImplement implements UserService {
     private final UserRepository userRepository;
+    private final CarPurchaseRepository carPurchaseRepository;
+    private final CarSalesRepository carSalesRepository;
+    private final CarSalesLikeRepository carSalesLikeRepository;
     private final SurveyRepository surveyRepository;
     private final SurveyColorRepository surveyColorRepository;
     private final SurveyCarModelRepository surveyCarModelRepository;
     private final CarModelRepository carModelRepository;
-    private final CarSalesRepository carSalesRepository;
     private final RecommendRepository recommendRepository;
 
     @Override
@@ -104,6 +109,19 @@ public class UserServiceImplement implements UserService {
         recommendRepository.save(recommendEntity);
     }
 
+    @Override
+    public UserCountingResponseDto getUserCounting(long userId) {
+        int purchaseCount = carPurchaseRepository.countByUserId(userId);
+        int saleCount = carSalesRepository.countByUserId(userId);
+        int heartCount = carSalesLikeRepository.countByUserId(userId);
+
+        UserCountingResponseDto userCountingResponseDto = UserCountingResponseDto.builder()
+                .purchaseCount(purchaseCount)
+                .saleCount(saleCount)
+                .heartCount(heartCount)
+                .build();
+        return userCountingResponseDto;
+    }
     private long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {
         if (index < selectedCars.size()) {
             return selectedCars.get(index).getCarSalesId();
