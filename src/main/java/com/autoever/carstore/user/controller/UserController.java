@@ -7,20 +7,47 @@ import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
+import com.autoever.carstore.user.dto.request.UpdateNicknameRequestDto;
+import com.autoever.carstore.user.dto.request.UpdateProfileRequestDto;
 import com.autoever.carstore.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private CarService carService;
+    private final UserService userService;
+    private final CarService carService;
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+
+        userService.logoutUser();
+
+        return ResponseEntity.ok("");
+    }
+
+    @PutMapping("/update/profileImage")
+    public ResponseEntity<?> updateProfileImage(
+            @RequestBody UpdateProfileRequestDto requestDto
+            ) {
+
+        userService.updateUserProfile(requestDto);
+        return ResponseEntity.ok("");
+    }
+
+    @PutMapping("/update/nickname")
+    public ResponseEntity<?> updateProfileNickname(
+            @RequestBody UpdateNicknameRequestDto requestDto
+    ) {
+        userService.updateUserNickname(requestDto);
+
+        return ResponseEntity.ok("");
+    }
 
     @GetMapping("/transaction")
     public ResponseEntity<List<TransactionStatusResponseDto>> transaction(
@@ -74,5 +101,4 @@ public class UserController {
         List<RecommendCarResponseDto> result = carService.viewUserCarRecommend(userId);
         return ResponseEntity.ok(result);
     }
-
 }

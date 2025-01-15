@@ -6,6 +6,7 @@ import com.autoever.carstore.car.dao.CarSalesRepository;
 import com.autoever.carstore.car.dao.CarModelRepository;
 import com.autoever.carstore.car.entity.CarModelEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
+import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.recommend.dao.RecommendRepository;
 import com.autoever.carstore.recommend.entity.RecommendEntity;
 import com.autoever.carstore.survey.dao.SurveyCarModelRepository;
@@ -17,8 +18,11 @@ import com.autoever.carstore.survey.entity.SurveyEntity;
 import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
+import com.autoever.carstore.user.dto.request.UpdateNicknameRequestDto;
+import com.autoever.carstore.user.dto.request.UpdateProfileRequestDto;
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImplement implements UserService {
+
     private final UserRepository userRepository;
     private final CarPurchaseRepository carPurchaseRepository;
     private final CarSalesRepository carSalesRepository;
@@ -39,6 +44,7 @@ public class UserServiceImplement implements UserService {
     private final SurveyCarModelRepository surveyCarModelRepository;
     private final CarModelRepository carModelRepository;
     private final RecommendRepository recommendRepository;
+    private final SecurityUtil securityUtil;
 
     @Override
     public void submitSurvey(long userId, SurveyRequestDto surveyRequestDto) {
@@ -51,7 +57,7 @@ public class UserServiceImplement implements UserService {
         List<Long> carModelIds = surveyRequestDto.getCar_model_ids();
         List<Integer> colors = surveyRequestDto.getColors();
 
-        UserEntity userEntity = userRepository.findById(userId).orElse(null);
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
         SurveyEntity surveyEntity = SurveyEntity.builder()
                 .minPrice(min_price)
@@ -64,7 +70,7 @@ public class UserServiceImplement implements UserService {
                 .build();
         SurveyEntity survey = surveyRepository.save(surveyEntity);
 
-        for(Long carModelId : carModelIds) {
+        for (Long carModelId : carModelIds) {
             CarModelEntity carModel = carModelRepository.findByCarModelId(carModelId);
             SurveyCarModelEntity surveyCarModelEntity = SurveyCarModelEntity.builder()
                     .carModel(carModel)
@@ -76,7 +82,7 @@ public class UserServiceImplement implements UserService {
         // 색상 목록
         List<String> stringColor = List.of("갈색", "검정", "기타", "남색", "녹색", "은색", "진주", "파랑", "하늘", "회색", "흰색");
         List<String> survey_color = new ArrayList<>();
-        for(Integer colorId : colors) {
+        for (Integer colorId : colors) {
             survey_color.add(stringColor.get(colorId));
             SurveyColorEntity surveyColor = SurveyColorEntity.builder()
                     .color(colorId)
@@ -85,7 +91,7 @@ public class UserServiceImplement implements UserService {
             surveyColorRepository.save(surveyColor);
         }
 
-       List<CarSalesEntity> allCars = carSalesRepository.getAllRecommend(min_price, max_price, min_distance, max_distance, min_model_year, max_model_year, carModelIds, survey_color);
+        List<CarSalesEntity> allCars = carSalesRepository.getAllRecommend(min_price, max_price, min_distance, max_distance, min_model_year, max_model_year, carModelIds, survey_color);
         Collections.shuffle(allCars);
         // 9개까지 선택
         List<CarSalesEntity> selectedCars = allCars.stream()
@@ -105,7 +111,7 @@ public class UserServiceImplement implements UserService {
                 .recommendCar9Id(getCarSalesId(selectedCars, 8))
                 .user(userEntity)
                 .build();
-            // 추천 저장소에 저장
+        // 추천 저장소에 저장
         recommendRepository.save(recommendEntity);
     }
 
@@ -115,19 +121,59 @@ public class UserServiceImplement implements UserService {
         int saleCount = carSalesRepository.countByUserId(userId);
         int heartCount = carSalesLikeRepository.countByUserId(userId);
 
-        UserCountingResponseDto userCountingResponseDto = UserCountingResponseDto.builder()
+        return UserCountingResponseDto.builder()
                 .purchaseCount(purchaseCount)
                 .saleCount(saleCount)
                 .heartCount(heartCount)
                 .build();
-        return userCountingResponseDto;
     }
+
+    @Override
+    public UserEntity getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Override
+    public String getUserName() {
+        UserEntity user = securityUtil.getLoginUser();
+        return user.getNickname();
+    }
+
+    @Override
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void toggleUserActive(Long id) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.updateIsActive();
+    }
+
+    @Override
+    public void logoutUser() {
+        UserEntity user = securityUtil.getLoginUser();
+        user.deleteToken();
+    }
+
+    @Override
+    @Transactional
+    public void updateUserNickname(UpdateNicknameRequestDto request) {
+        UserEntity user = securityUtil.getLoginUser();
+        user.updateNickname(request.getNickname());
+    }
+
+    @Override
+    @Transactional
+    public void updateUserProfile(UpdateProfileRequestDto request) {
+        UserEntity user = securityUtil.getLoginUser();
+        user.updateProfileImage(request.getProfileImage());
+    }
+
     private long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {
         if (index < selectedCars.size()) {
             return selectedCars.get(index).getCarSalesId();
         }
         return -1;
     }
-
 }
-
