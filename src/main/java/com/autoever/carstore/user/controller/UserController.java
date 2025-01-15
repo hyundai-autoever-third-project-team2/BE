@@ -1,6 +1,7 @@
 package com.autoever.carstore.user.controller;
 
 import com.autoever.carstore.car.service.CarService;
+import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
 import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
 import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
@@ -9,6 +10,7 @@ import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseD
 import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.dto.request.UpdateNicknameRequestDto;
 import com.autoever.carstore.user.dto.request.UpdateProfileRequestDto;
+import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final CarService carService;
+    private final SecurityUtil securityUtil;
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
@@ -53,8 +56,8 @@ public class UserController {
     public ResponseEntity<List<TransactionStatusResponseDto>> transaction(
             @RequestParam String progress
     ) {
-        long userId = 5;
-        List<TransactionStatusResponseDto> result = carService.viewTransaction(userId, progress);
+        UserEntity user = securityUtil.getLoginUser();
+        List<TransactionStatusResponseDto> result = carService.viewTransaction(user.getUserId(), progress);
         return ResponseEntity.ok(result);
     }
 
@@ -63,24 +66,24 @@ public class UserController {
     public ResponseEntity<List<UserCarTransactionStatusResponseDto>> userCarTransaction(
             @RequestParam String progress
     ){
-        long userId = 5;
-        List<UserCarTransactionStatusResponseDto> result = carService.viewUserCarTransaction(userId, progress);
+        UserEntity user = securityUtil.getLoginUser();
+        List<UserCarTransactionStatusResponseDto> result = carService.viewUserCarTransaction(user.getUserId(), progress);
         return ResponseEntity.ok(result);
     }
 
     //찜한 상품 조회
     @GetMapping("/isHeartCar")
     public ResponseEntity<List<IsHeartCarResponseDto>> isHeartCar(){
-        long userId = 5;
-        List<IsHeartCarResponseDto> result = carService.viewIsHeartCar(userId);
+        UserEntity user = securityUtil.getLoginUser();
+        List<IsHeartCarResponseDto> result = carService.viewIsHeartCar(user.getUserId());
         return ResponseEntity.ok(result);
     }
 
     //마이페이지 -> 구매, 판매, 찜 갯수 조회
     @GetMapping("/userCounting")
     public ResponseEntity<UserCountingResponseDto> userCounting(){
-        long userId = 5;
-        UserCountingResponseDto result = userService.getUserCounting(userId);
+        UserEntity user = securityUtil.getLoginUser();
+        UserCountingResponseDto result = userService.getUserCounting(user.getUserId());
         return ResponseEntity.ok(result);
     }
 
@@ -89,16 +92,16 @@ public class UserController {
     public ResponseEntity<String> survey(
             @RequestBody SurveyRequestDto surveyRequestDto
     ){
-        long userId = 5;
-        userService.submitSurvey(userId, surveyRequestDto);
+        UserEntity user = securityUtil.getLoginUser();
+        userService.submitSurvey(user.getUserId(), surveyRequestDto);
         return ResponseEntity.ok("Successfully submitted survey");
     }
 
     //사용자 기반 추천 목록 조회
     @GetMapping("/userRecommend")
     public ResponseEntity<List<RecommendCarResponseDto>> userRecommend(){
-        long userId = 5;
-        List<RecommendCarResponseDto> result = carService.viewUserCarRecommend(userId);
+        UserEntity user = securityUtil.getLoginUser();
+        List<RecommendCarResponseDto> result = carService.viewUserCarRecommend(user.getUserId());
         return ResponseEntity.ok(result);
     }
 }

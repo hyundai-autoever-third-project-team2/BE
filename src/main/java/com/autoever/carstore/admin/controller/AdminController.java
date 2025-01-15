@@ -47,19 +47,6 @@ public class AdminController {
         return "admin/userDetail";
     }
 
-    // 계정 차단 or 활성화
-    @PostMapping("/admin/users/{id}/toggle-status")
-    @ResponseBody
-    public ResponseEntity<String> toggleUserStatus(@PathVariable Long id, @RequestBody Map<String, Boolean> payload) {
-        boolean isActive = payload.get("isActive");
-        try {
-            adminService.toggleUserStatus(id, isActive); // Service로 로직 위임
-            return ResponseEntity.ok("User status updated successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating user status");
-        }
-    }
+
 
 }
