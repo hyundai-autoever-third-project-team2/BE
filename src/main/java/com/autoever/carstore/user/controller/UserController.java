@@ -49,6 +49,7 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    //마이페이지 -> 구매, 판매, 찜 갯수 조회
     @GetMapping("/userCounting")
     public ResponseEntity<UserCountingResponseDto> userCounting(){
         long userId = 5;
