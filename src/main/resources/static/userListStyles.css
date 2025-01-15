@@ -1,0 +1,46 @@
+.user-table {
+    width: 40%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: 1px solid #ddd;
+}
+
+.user-table td:nth-child(1),
+.user-table th:nth-child(1) {
+    width: 30%; /* Profile Image */
+}
+
+.user-table td:nth-child(2),
+.user-table th:nth-child(2) {
+    width: 20%; /* User ID */
+}
+
+.user-table td:nth-child(3),
+.user-table th:nth-child(3) {
+    width: 30%; /* Name */
+}
+
+.user-table td:nth-child(4),
+.user-table th:nth-child(4) {
+    width: 20%; /* Actions */
+}
+
+.user-table th, .user-table td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 12px;
+    height: 60px;
+    word-wrap: break-word;
+}
+
+.user-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.user-table img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}

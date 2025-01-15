@@ -6,6 +6,7 @@ import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
 import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
+import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 
 import java.util.List;
 
@@ -25,4 +26,5 @@ public interface CarService{
     public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress);
     public List<IsHeartCarResponseDto> viewIsHeartCar(long userId);
     public List<RecommendCarResponseDto> viewUserCarRecommend(long userId);
+    public void contractCar(long userId, long carId);
 }

@@ -12,4 +12,7 @@ import java.util.List;
 public interface CarSalesLikeRepository extends JpaRepository<CarSalesLikeEntity, Long> {
     @Query("SELECT c FROM CarSalesLikeEntity c WHERE c.user.userId = :userId")
     List<CarSalesLikeEntity> findByUserId(@Param("userId") long userId);
+
+    @Query("SELECT COUNT(c) FROM CarSalesLikeEntity c WHERE c.user.userId = :userId")
+    int countByUserId(@Param("userId") long userId);
 }

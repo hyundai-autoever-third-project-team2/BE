@@ -20,6 +20,9 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "user_id", unique = true, nullable = false)
     private Long userId;
 
+    @Column(name = "user_name", unique = true, nullable = false)
+    private String username;
+
     @Column(nullable = false)
     private boolean survey;
 
@@ -56,6 +59,14 @@ public class UserEntity extends BaseTimeEntity {
         this.profileImage = profileImage;
     }
 
+    public void updateUsername(String username){
+        this.username = username;
+    }
+
+    public void updateEmail(String email){
+        this.email = email;
+    }
+
     public void updateRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
     }
@@ -70,5 +81,9 @@ public class UserEntity extends BaseTimeEntity {
 
     public void updateUserRole(String userRole){
         this.userRole = userRole;
+    }
+
+    public void deleteToken() {
+        this.refreshToken = null;
     }
 }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Table</title>
+    <link rel="stylesheet" href="/userListStyles.css"> <!-- CSS 파일 포함 -->
+</head>
+<body>
+<table class="user-table">
+    <thead>
+    <tr>
+        <th>Profile Image</th>
+        <th>User ID</th>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${users}">
+        <td>
+            <img th:src="${user.profileImage}" alt="Profile Image">
+        </td>
+        <td th:text="${user.userId}">User ID</td>
+        <td th:text="${user.nickname}">User Nickname</td>
+        <td>
+            <button th:onclick="'showUserDetails(' + ${user.userId} + ')'">회원 조회</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

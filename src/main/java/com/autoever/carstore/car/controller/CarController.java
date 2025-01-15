@@ -24,6 +24,7 @@ public class CarController {
     @Autowired
     private CarPurchaseService carPurchaseService;
 
+    //국내 차량 조회
     @GetMapping("/domestic")
     public ResponseEntity<? super List<DomesticCarResponseDto>> viewDomesticCar() {
         List<DomesticCarResponseDto> result = null;
@@ -37,6 +38,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //해외 차량 조회
     @GetMapping("/abroad")
     public ResponseEntity<? super List<AbroadCarResponseDto>> viewAbroadCar() {
         List<AbroadCarResponseDto> result = null;
@@ -50,6 +52,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //인기 차량 조회 top50
     @GetMapping("/popularity")
     public ResponseEntity<? super List<PopularityCarResponseDto>> viewPopularityCar(){
         List<PopularityCarResponseDto> result = null;
@@ -63,6 +66,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //할인중인 차량 조회
     @GetMapping("/discount")
     public ResponseEntity<?super List<DiscountCarResponseDto>> viewDiscountCar(){
         List<DiscountCarResponseDto> result = null;
@@ -76,8 +80,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
-
-
+    //최신순 차량 조회
     @GetMapping("/lately")
     public ResponseEntity<? super List<LatelyCarResponseDto>> viewLatelyCar(){
         List<LatelyCarResponseDto> result = null;
@@ -91,6 +94,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //인기순 차량 조회(전체보기에서의 필터링)
     @GetMapping("/likely")
     public ResponseEntity<? super List<LikelyCarResponseDto>> viewLikelyCar(){
         List<LikelyCarResponseDto> result = null;
@@ -104,6 +108,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //검색 차량 조회(브랜드, 모델)
     @GetMapping("/search")
     public ResponseEntity<List<SearchCarResponseDto>> searchCars(
             @RequestParam(required = false) String brand,
@@ -118,6 +123,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //카테고리 필터링
     @GetMapping("/filter")
     public ResponseEntity<List<FilterCarResponseDto>> filterCars(
             @RequestBody FilterCarRequestDto filterCarRequestDto
@@ -132,6 +138,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //차량 상세보기
     @GetMapping("/detail")
     public ResponseEntity<DetailCarResponseDto> detailCars(
         @RequestParam(required = false) Long carId
@@ -146,6 +153,7 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //차량 비교하기
     @GetMapping("/compares")
     public ResponseEntity<List<DetailCarResponseDto>> compareCars(
             @RequestBody CompareRequestDto compareRequestDto
@@ -159,12 +167,22 @@ public class CarController {
         return ResponseEntity.ok(result);
     }
 
+    //차량 등록하기
     @PostMapping("/registration")
     public ResponseEntity<String> registerCar(
             @RequestBody RegisterCarRequestDto registerCarRequestDto
             ) {
-        carPurchaseService.registerCar(5, registerCarRequestDto.getCar_number(), registerCarRequestDto.getComments(), registerCarRequestDto.getImages()); // 1을 동적으로 수정 필요
+        carPurchaseService.registerCar(5, registerCarRequestDto.getCar_number(), registerCarRequestDto.getComments(), registerCarRequestDto.getImages());
         return ResponseEntity.ok("Successfully registered!");
     }
 
+    //차량 거래하기
+    @PutMapping("/contract")
+    public ResponseEntity<String> contractCar(
+            @RequestParam long carId
+    ){
+        long userId = 5;
+        carService.contractCar(userId, carId);
+        return ResponseEntity.ok("Successfully contract!");
+    }
 }

@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.menu {
+    padding: 10px;
+}
+
+.logo {
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo span {
+    color: blue;
+}
+
+.menu nav {
+    background: black;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 50px;
+}
+
+.menu nav a:hover {
+    background: white;
+    color: black;
+    cursor: pointer;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+}
+
+#content-area {
+    margin-left : 15px;
+    margin-right: 15px;
+    padding: 20px;
+    background: #f9f9f9;
+    min-height: 400px;
+    border: 1px solid #ccc;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1000px;
+    height: 600px;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    border-radius: 8px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.modal-body {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.modal-body img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.modal-close {
+    cursor: pointer;
+    color: red;
+    font-size: 1.2rem;
+    font-weight: bold;
+}

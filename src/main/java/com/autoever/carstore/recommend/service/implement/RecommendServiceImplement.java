@@ -75,16 +75,25 @@ public class RecommendServiceImplement implements RecommendService {
     }
 
     private RecommendEntity updateRecommendEntity(RecommendEntity recommendEntity, List<CarSalesEntity> recommendedCars) {
+        // 추천된 차량 개수 확인
+        int size = recommendedCars.size();
+
+        // 부족한 부분을 -1로 채우기
+        while (size < 9) {
+            recommendedCars.add(null);  // null을 추가하여 부족한 공간을 채운다.
+            size++;
+        }
+
         recommendEntity = RecommendEntity.builder()
-                .recommendCar1Id(recommendedCars.get(0).getCarSalesId())
-                .recommendCar2Id(recommendedCars.get(1).getCarSalesId())
-                .recommendCar3Id(recommendedCars.get(2).getCarSalesId())
-                .recommendCar4Id(recommendedCars.get(3).getCarSalesId())
-                .recommendCar5Id(recommendedCars.get(4).getCarSalesId())
-                .recommendCar6Id(recommendedCars.get(5).getCarSalesId())
-                .recommendCar7Id(recommendedCars.get(6).getCarSalesId())
-                .recommendCar8Id(recommendedCars.get(7).getCarSalesId())
-                .recommendCar9Id(recommendedCars.get(8).getCarSalesId())
+                .recommendCar1Id(recommendedCars.get(0) != null ? recommendedCars.get(0).getCarSalesId() : -1)
+                .recommendCar2Id(recommendedCars.get(1) != null ? recommendedCars.get(1).getCarSalesId() : -1)
+                .recommendCar3Id(recommendedCars.get(2) != null ? recommendedCars.get(2).getCarSalesId() : -1)
+                .recommendCar4Id(recommendedCars.get(3) != null ? recommendedCars.get(3).getCarSalesId() : -1)
+                .recommendCar5Id(recommendedCars.get(4) != null ? recommendedCars.get(4).getCarSalesId() : -1)
+                .recommendCar6Id(recommendedCars.get(5) != null ? recommendedCars.get(5).getCarSalesId() : -1)
+                .recommendCar7Id(recommendedCars.get(6) != null ? recommendedCars.get(6).getCarSalesId() : -1)
+                .recommendCar8Id(recommendedCars.get(7) != null ? recommendedCars.get(7).getCarSalesId() : -1)
+                .recommendCar9Id(recommendedCars.get(8) != null ? recommendedCars.get(8).getCarSalesId() : -1)
                 .build();
         return recommendEntity;
     }

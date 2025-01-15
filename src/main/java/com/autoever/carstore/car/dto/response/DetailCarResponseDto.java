@@ -3,6 +3,7 @@ package com.autoever.carstore.car.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +15,9 @@ public class DetailCarResponseDto {
       int discount_price;
       String progress;
       int agency_id;
+      String agency_name;
+      BigDecimal latitude;
+      BigDecimal longitude;
       long carId;
       int view_count;
       int like_count;
