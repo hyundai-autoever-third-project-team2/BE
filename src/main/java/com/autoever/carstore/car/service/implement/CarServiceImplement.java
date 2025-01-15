@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -439,6 +440,9 @@ public class CarServiceImplement implements CarService {
         int month_price = price / 6;
         String progress = carSales.getProgress();
         int agency_id = carSales.getAgency().getAgencyId();
+        String agency_name = carSales.getAgency().getAgencyName();
+        BigDecimal latitude = carSales.getAgency().getLatitude();
+        BigDecimal longitude = carSales.getAgency().getLongitude();
         long response_carId = carSales.getCar().getCarId();
         int view_count = carSales.getCount();
         int like_count = carSales.getTotalLikes();
@@ -513,6 +517,9 @@ public class CarServiceImplement implements CarService {
                 .discount_price(discount_price)
                 .progress(progress)
                 .agency_id(agency_id)
+                .agency_name(agency_name)
+                .latitude(latitude)
+                .longitude(longitude)
                 .carId(response_carId)
                 .view_count(view_count)
                 .like_count(like_count)
