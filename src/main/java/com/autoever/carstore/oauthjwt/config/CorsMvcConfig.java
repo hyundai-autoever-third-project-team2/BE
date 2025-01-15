@@ -9,13 +9,12 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
-
         corsRegistry.addMapping("/**")
-                .exposedHeaders("Set-Cookie")
-                .allowedOrigins(
-                        "https://twomuchcar.shop", // 운영 도메인
-                        "http://localhost:8080",  // 로컬 테스트용
-                        "https://autoever.site"
-                );
+
+                .allowedOrigins("https://twomuchcar.shop") // https://twomuchcar.shop만 허용
+                .allowedMethods("*") // 모든 HTTP 메서드 허용
+                .allowedHeaders("*") // 모든 헤더 허용
+                .exposedHeaders("Set-Cookie", "Authorization") // 클라이언트가 접근 가능한 헤더
+                .allowCredentials(true); // 쿠키 포함 요청 허용
     }
 }
