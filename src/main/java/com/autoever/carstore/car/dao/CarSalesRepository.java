@@ -88,4 +88,6 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     @Query("SELECT c FROM CarSalesEntity c WHERE c.user.userId = :userId AND c.progress = :progress")
     List<CarSalesEntity> findByUserIdAndProgress(@Param("userId") long userId, @Param("progress") String progress);
 
+    @Query("SELECT COUNT(c) FROM CarSalesEntity c WHERE c.user.userId = :userId")
+    int countByUserId(@Param("userId") long userId);
 }

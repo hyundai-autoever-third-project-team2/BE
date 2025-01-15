@@ -5,6 +5,7 @@ import com.autoever.carstore.car.service.CarService;
 import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
+import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,13 @@ public class UserController {
     public ResponseEntity<List<IsHeartCarResponseDto>> isHeartCar(){
         long userId = 5;
         List<IsHeartCarResponseDto> result = carService.viewIsHeartCar(userId);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/userCounting")
+    public ResponseEntity<UserCountingResponseDto> userCounting(){
+        long userId = 5;
+        UserCountingResponseDto result = userService.getUserCounting(userId);
         return ResponseEntity.ok(result);
     }
 }
