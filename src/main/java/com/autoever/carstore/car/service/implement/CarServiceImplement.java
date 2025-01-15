@@ -36,6 +36,7 @@ public class CarServiceImplement implements CarService {
     private final CarSalesLikeRepository carSalesLikeRepository;
     private final RecommendRepository recommendRepository;
 
+    //최신순 차량 조회 서비스
     @Override
     public List<LatelyCarResponseDto> getLatelyCarList() {
         List<LatelyCarResponseDto> result = new ArrayList<>();
@@ -85,6 +86,7 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
     }
 
+    //국내차량 조회 서비스
     @Override
     public List<DomesticCarResponseDto> getDomesticCarList(){
         List<DomesticCarResponseDto> result = new ArrayList<>();
@@ -134,6 +136,7 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
     }
 
+    //해외 차량 조회 서비스
     @Override
     public List<AbroadCarResponseDto> getAbroadCarList() {
         List<AbroadCarResponseDto> result = new ArrayList<>();
@@ -183,6 +186,7 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
     }
 
+    //인기 차량 조회 서비스(top50)
     @Override
     public List<PopularityCarResponseDto> getPopularityCarList() {
         List<PopularityCarResponseDto> result = new ArrayList<>();
@@ -231,6 +235,7 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
     }
 
+    //할인 차량 조회 서비스
     @Override
     public List<DiscountCarResponseDto> getDiscountCarList() {
         List<DiscountCarResponseDto> result = new ArrayList<>();
@@ -274,6 +279,7 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
     }
 
+    //인기순 차량 조회(전체보기에서의 필터링) 서비스
     @Override
     public List<LikelyCarResponseDto> getLikelyCarList() {
         List<LikelyCarResponseDto> result = new ArrayList<>();
@@ -320,6 +326,7 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
     }
 
+    //검색 차량 조회(브랜드, 모델) 서비스
     @Override
     public List<SearchCarResponseDto> searchCars(String brand, String modelName) {
         List<SearchCarResponseDto> result = new ArrayList<>();
@@ -365,6 +372,7 @@ public class CarServiceImplement implements CarService {
             return result.isEmpty() ? null : result;
         }
 
+    //카테고리 필터링 서비스
     @Override
     public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto) {
         List<FilterCarResponseDto> result = new ArrayList<>();
@@ -421,6 +429,7 @@ public class CarServiceImplement implements CarService {
 
     }
 
+    //차량 상세보기 서비스
     @Override
     public DetailCarResponseDto findByCarId(Long carId) {
         CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
@@ -534,6 +543,7 @@ public class CarServiceImplement implements CarService {
         return result;
     }
 
+    //차량 비교하기 서비스
     @Override
     public List<DetailCarResponseDto> compareCars(List<Long> carIds) {
         List<DetailCarResponseDto> result = new ArrayList<>();
@@ -618,6 +628,7 @@ public class CarServiceImplement implements CarService {
         return result;
     }
 
+    //상세보기 페이지 이동 시 조회수 증가 서비스
     @Override
     public void updateViewCount(Long carId) {
         // 차 정보를 DB에서 조회
@@ -633,6 +644,7 @@ public class CarServiceImplement implements CarService {
         }
     }
 
+    //구매 내역 조회 서비스
     @Override
     public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress) {
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findByUserIdAndProgress(userId, progress);
@@ -652,6 +664,7 @@ public class CarServiceImplement implements CarService {
         return results;
     }
 
+    //판매 내역 조회 서비스
     @Override
     public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress) {
         List<CarPurchaseEntity> carPurchaseEntities = carPurchaseRepository.findByUserIdAndProgress(userId, progress);
@@ -670,6 +683,7 @@ public class CarServiceImplement implements CarService {
         return results;
     }
 
+    //찜한 상품 조회 서비스
     @Override
     public List<IsHeartCarResponseDto> viewIsHeartCar(long userId) {
         List<CarSalesLikeEntity> carSalesLikeEntities = carSalesLikeRepository.findByUserId(userId);
@@ -714,6 +728,7 @@ public class CarServiceImplement implements CarService {
         return result.isEmpty() ? null : result;
     }
 
+    //사용자 기반 추천 차량 조회(메인페이지) 서비스
     @Override
     public List<RecommendCarResponseDto> viewUserCarRecommend(long userId) {
         // 사용자에 대한 추천 정보를 조회
@@ -723,8 +738,13 @@ public class CarServiceImplement implements CarService {
 
         // 1번부터 9번까지 반복하여 추천 차량을 조회
         for (int i = 1; i <= 9; i++) {
+
             Long recommendCarId = getRecommendCarIdByIndex(recommend, i); // 인덱스에 맞는 차량 ID 가져오기
 
+            // 추천된 차량 ID가 -1이면 반복문 종료
+            if (recommendCarId == -1) {
+                return result;
+            }
             // 추천된 차량 정보 조회
             CarSalesEntity carSalesEntity = carSalesRepository.findByCarSalesId(recommendCarId);
 
@@ -763,7 +783,7 @@ public class CarServiceImplement implements CarService {
         return result;
     }
 
-    // 추천된 차량 ID를 인덱스에 맞게 가져오는 메서드 (예시)
+    // 추천된 차량 ID를 인덱스에 맞게 가져오는 메서드
     private Long getRecommendCarIdByIndex(RecommendEntity recommend, int index) {
         switch (index) {
             case 1: return recommend.getRecommendCar1Id();
