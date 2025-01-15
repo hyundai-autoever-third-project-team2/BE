@@ -1,9 +1,9 @@
 package com.autoever.carstore.user.service.implement;
 
+import com.autoever.carstore.car.dao.CarModelRepository;
 import com.autoever.carstore.car.dao.CarPurchaseRepository;
 import com.autoever.carstore.car.dao.CarSalesLikeRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
-import com.autoever.carstore.car.dao.CarModelRepository;
 import com.autoever.carstore.car.entity.CarModelEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.oauthjwt.util.SecurityUtil;
@@ -16,10 +16,10 @@ import com.autoever.carstore.survey.entity.SurveyCarModelEntity;
 import com.autoever.carstore.survey.entity.SurveyColorEntity;
 import com.autoever.carstore.survey.entity.SurveyEntity;
 import com.autoever.carstore.user.dao.UserRepository;
-import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
 import com.autoever.carstore.user.dto.request.UpdateNicknameRequestDto;
 import com.autoever.carstore.user.dto.request.UpdateProfileRequestDto;
+import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.dto.response.UserResponseDto;
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
@@ -35,13 +35,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImplement implements UserService {
+
     private final UserRepository userRepository;
+    private final CarPurchaseRepository carPurchaseRepository;
+    private final CarSalesRepository carSalesRepository;
+    private final CarSalesLikeRepository carSalesLikeRepository;
     private final SurveyRepository surveyRepository;
     private final SurveyColorRepository surveyColorRepository;
     private final SurveyCarModelRepository surveyCarModelRepository;
     private final CarModelRepository carModelRepository;
-    private final CarSalesRepository carSalesRepository;
     private final RecommendRepository recommendRepository;
+    private final SecurityUtil securityUtil;
 
     @Override
     public void submitSurvey(long userId, SurveyRequestDto surveyRequestDto) {
@@ -152,19 +156,6 @@ public class UserServiceImplement implements UserService {
         UserEntity user = securityUtil.getLoginUser();
         user.deleteToken();
     }
-    @Override
-    public UserResponseDto getUserInfo(String email) {
-        UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .nickname(user.getNickname())
-                .profileImage(user.getProfileImage())
-                .build();
-    }
-
-}
 
     @Override
     @Transactional
@@ -178,6 +169,18 @@ public class UserServiceImplement implements UserService {
     public void updateUserProfile(UpdateProfileRequestDto request) {
         UserEntity user = securityUtil.getLoginUser();
         user.updateProfileImage(request.getProfileImage());
+    }
+
+    @Override
+    public UserResponseDto getUserInfo(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .build();
     }
 
     private long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {

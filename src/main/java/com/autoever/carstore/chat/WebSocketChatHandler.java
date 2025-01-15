@@ -143,10 +143,10 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
                 chatRoomSessionMap.put(roomId, new HashSet<>());
             }
             chatRoomSessionMap.get(roomId).add(session);
-            chatMessageDto.setMessage(chatMessageDto.getSenderId() + "님이 입장하셨습니다.");
-
-            // 다른 사용자들에게 입장 알림
-            broadcastMessageToRoom(roomId, session, chatMessageDto);
+//            chatMessageDto.setMessage(chatMessageDto.getSenderId() + "님이 입장하셨습니다.");
+//
+//            // 다른 사용자들에게 입장 알림
+//            broadcastMessageToRoom(roomId, session, chatMessageDto);
 
         } else if (chatMessageDto.getMessageType().equals(ChatMessageDto.MessageType.TALK)) {
             if (chatRoomSessionMap.containsKey(roomId)) {
