@@ -82,4 +82,8 @@ public class UserEntity extends BaseTimeEntity {
     public void updateUserRole(String userRole){
         this.userRole = userRole;
     }
+
+    public void deleteToken() {
+        this.refreshToken = null;
+    }
 }
