@@ -155,10 +155,10 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
         } else if (chatMessageDto.getMessageType().equals(ChatMessageDto.MessageType.LEAVE)) {
             if (chatRoomSessionMap.containsKey(roomId)) {
                 chatRoomSessionMap.get(roomId).remove(session);
-                chatMessageDto.setMessage(chatMessageDto.getSenderId() + "님이 퇴장하셨습니다.");
-
-                // 다른 사용자들에게 퇴장 알림
-                broadcastMessageToRoom(roomId, session, chatMessageDto);
+//                chatMessageDto.setMessage(chatMessageDto.getSenderId() + "님이 퇴장하셨습니다.");
+//
+//                // 다른 사용자들에게 퇴장 알림
+//                broadcastMessageToRoom(roomId, session, chatMessageDto);
 
                 // 방이 비어 있으면 삭제
                 if (chatRoomSessionMap.get(roomId).isEmpty()) {
