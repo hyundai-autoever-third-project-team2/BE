@@ -1,5 +1,6 @@
 package com.autoever.carstore.car.service.implement;
 
+import com.autoever.carstore.agency.entity.AgencyEntity;
 import com.autoever.carstore.car.dao.*;
 import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
@@ -7,11 +8,14 @@ import com.autoever.carstore.car.entity.*;
 import com.autoever.carstore.car.service.CarService;
 import com.autoever.carstore.recommend.dao.RecommendRepository;
 import com.autoever.carstore.recommend.entity.RecommendEntity;
+import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 
+import com.autoever.carstore.user.entity.UserEntity;
+import com.autoever.carstore.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,10 +25,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,8 @@ public class CarServiceImplement implements CarService {
     private final CarPurchaseRepository carPurchaseRepository;
     private final CarSalesLikeRepository carSalesLikeRepository;
     private final RecommendRepository recommendRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
     //최신순 차량 조회 서비스
     @Override
@@ -788,6 +791,37 @@ public class CarServiceImplement implements CarService {
             }
         }
         return result;
+    }
+
+    //차량 계약 서비스
+    @Override
+    public void contractCar(long userId, long carId) {
+        CarSalesEntity carSalesEntity = carSalesRepository.findByCarId(carId);
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        long carSalesId = carSalesEntity.getCarSalesId();
+        Boolean isVisible = carSalesEntity.isVisible();
+        int price = carSalesEntity.getPrice();
+        LocalDateTime sales_date = LocalDateTime.now();
+        AgencyEntity agencyEntity = carSalesEntity.getAgency();
+        CarEntity carEntity = carSalesEntity.getCar();
+        int view_count = carSalesEntity.getCount();
+        List<CarSalesLikeEntity> likes = carSalesEntity.getLikes();
+        String orderNumber = UUID.randomUUID().toString().replace("-", "");
+
+        carSalesEntity = CarSalesEntity.builder()
+                .carSalesId(carSalesId)
+                .isVisible(isVisible)
+                .price(price)
+                .salesDate(sales_date)
+                .agency(agencyEntity)
+                .user(userEntity)
+                .progress("거래중")
+                .car(carEntity)
+                .count(view_count)
+                .likes(likes)
+                .orderNumber(orderNumber)
+                .build();
+        carSalesRepository.save(carSalesEntity);
     }
 
     // 추천된 차량 ID를 인덱스에 맞게 가져오는 메서드
