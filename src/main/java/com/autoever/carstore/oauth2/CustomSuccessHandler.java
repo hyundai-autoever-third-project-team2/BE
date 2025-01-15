@@ -144,7 +144,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if ("ROLE_ADMIN".equals(role)) {
             response.sendRedirect("http://localhost:8080/admin/home"); // Admin 사용자 리디렉션
         } else {
-            response.sendRedirect("https://autoever.site"); // 일반 사용자 리디렉션
+            response.sendRedirect("https://autoever.site/"); // 일반 사용자 리디렉션
         }
     }
 
