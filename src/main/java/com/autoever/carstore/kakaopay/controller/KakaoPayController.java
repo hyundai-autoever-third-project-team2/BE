@@ -35,7 +35,7 @@ public class KakaoPayController {
         // 카카오 결제 요청하기
         KakaoPayAproveResponseDto approveResponse = kakaoPayService.payApprove(tid, pgToken);
 
-        return "redirect:/kakaopay/completed";
+        return "success";
     }
 
 }
