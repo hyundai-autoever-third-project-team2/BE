@@ -5,16 +5,16 @@ import com.autoever.carstore.oauthjwt.dto.KakaoResponse;
 import com.autoever.carstore.oauthjwt.dto.OAuth2Response;
 import com.autoever.carstore.oauthjwt.dto.UserDTO;
 import com.autoever.carstore.user.entity.UserEntity;
-import com.autoever.carstore.user.repository.UserRepository;
+import com.autoever.carstore.user.dao.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
+@Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;

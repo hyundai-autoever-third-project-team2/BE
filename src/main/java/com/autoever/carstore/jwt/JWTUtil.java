@@ -1,5 +1,6 @@
 package com.autoever.carstore.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +19,10 @@ public class JWTUtil {
     private long refreshTokenExpiredIn;
 
     public JWTUtil(
-            @Value("${spring.jwt.secret}")String secret,
+            @Value("${spring.jwt.secret}") String secret,
             @Value("${spring.jwt.access-expired-in}") long accessTokenExpiredIn,
             @Value("${spring.jwt.refresh-expired-in}") long refreshTokenExpiredIn
-            ) {
+    ) {
         this.accessTokenExpiredIn = accessTokenExpiredIn;
         this.refreshTokenExpiredIn = refreshTokenExpiredIn;
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -56,7 +57,7 @@ public class JWTUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("username", String.class);
+                .get("email", String.class);
     }
 
     // Access Token에서 역할(Role) 추출
@@ -100,35 +101,4 @@ public class JWTUtil {
                 .getExpiration()
                 .before(new Date());
     }
-
-//    public String getUsername(String token) {
-//
-//        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
-//    }
-//
-//    public String getRole(String token) {
-//
-//        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
-//    }
-//
-//    public String getEmail(String token) {
-//        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
-//    }
-//
-//    public Boolean isExpired(String token) {
-//
-//        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
-//    }
-//
-//    public String createJwt(String username, String role, String email, Long expiredMs) {
-//
-//        return Jwts.builder()
-//                .claim("username", username)
-//                .claim("role", role)
-//                .claim("email", email)
-//                .issuedAt(new Date(System.currentTimeMillis()))
-//                .expiration(new Date(System.currentTimeMillis() + expiredMs))
-//                .signWith(secretKey)
-//                .compact();
-//    }
 }

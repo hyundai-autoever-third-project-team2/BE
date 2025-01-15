@@ -3,7 +3,7 @@ package com.autoever.carstore.jwt;
 import com.autoever.carstore.oauthjwt.dto.CustomOAuth2User;
 import com.autoever.carstore.oauthjwt.dto.UserDTO;
 import com.autoever.carstore.user.entity.UserEntity;
-import com.autoever.carstore.user.repository.UserRepository;
+import com.autoever.carstore.user.dao.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -31,6 +31,9 @@ public class JWTFilter extends OncePerRequestFilter {
         // 쿠키에서 Access Token과 Refresh Token을 불러옴
         String accessToken = null;
         String refreshToken = null;
+
+        System.out.println(accessToken);
+        System.out.println(refreshToken);
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
