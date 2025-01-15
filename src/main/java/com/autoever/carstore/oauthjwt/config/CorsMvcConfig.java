@@ -10,6 +10,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**")
+
                 .allowedOrigins("https://twomuchcar.shop") // https://twomuchcar.shop만 허용
                 .allowedMethods("*") // 모든 HTTP 메서드 허용
                 .allowedHeaders("*") // 모든 헤더 허용

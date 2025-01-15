@@ -152,13 +152,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private String createSecureCookie(String name, String value, int maxAge) {
         return ResponseCookie.from(name, value)
-                .httpOnly(true)
-                // HTTPS 환경에서만 동작
-                .secure(true)
-                .sameSite("None") // SameSite 설정
+                .domain(".twomuchcar.shop") // 메인 도메인과 서브도메인 간 공유
                 .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
                 .maxAge(maxAge)
-                .domain("autoever.site") // 쿠키의 도메인 설정
                 .build()
                 .toString();
     }
