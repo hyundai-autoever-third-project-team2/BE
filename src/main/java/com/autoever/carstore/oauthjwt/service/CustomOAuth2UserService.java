@@ -38,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         else {
 
-            return null;
+            throw new OAuth2AuthenticationException("Unsupported provider: " + registrationId);
         }
 
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
