@@ -18,5 +18,5 @@ public class ChatMessageDto {
     private String message;
     private String senderId;
 //    private UserResponseDto sender;
-    private String receiverId;
+//    private String receiverId;
 }
