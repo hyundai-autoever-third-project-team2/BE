@@ -2,6 +2,7 @@ package com.autoever.carstore.reservation.service;
 
 import com.autoever.carstore.agency.dao.AgencyRepository;
 import com.autoever.carstore.agency.entity.AgencyEntity;
+import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.reservation.dao.ReservationRepository;
 import com.autoever.carstore.reservation.dto.ReservationResponseDto;
 import com.autoever.carstore.reservation.entity.ReservationEntity;
@@ -21,11 +22,14 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final AgencyRepository agencyRepository;
+    private final SecurityUtil securityUtil;
 
     @Override
-    public ReservationResponseDto makeReservation(Long userId, Long agencyId, LocalDateTime time) {
-
-        UserEntity user = userRepository.findById(userId).orElseThrow();
+    public ReservationResponseDto makeReservation(Long agencyId, LocalDateTime time) {
+        UserEntity user = securityUtil.getLoginUser();
+        if(user == null) {
+            throw new IllegalArgumentException("로그인된 유저가 없습니다.");
+        }
         AgencyEntity agency = agencyRepository.findById(agencyId).orElseThrow();
 
         ReservationEntity reservation = reservationRepository.save(ReservationEntity.builder()
@@ -47,9 +51,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationResponseDto> getReservationList(Long userId) {
-
-        UserEntity user = userRepository.findById(userId).orElseThrow();
+    public List<ReservationResponseDto> getReservationList() {
+        UserEntity user = securityUtil.getLoginUser();
+        if(user == null) {
+            throw new IllegalArgumentException("로그인된 유저가 없습니다.");
+        }
 
         List<ReservationEntity> li = reservationRepository.findByUser(user);
 
@@ -66,7 +72,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void deleteReservation(Integer reservationId, Long userId) {
+    public void deleteReservation(Integer reservationId) {
+        UserEntity user = securityUtil.getLoginUser();
+        if(user == null) {
+            throw new IllegalArgumentException("로그인된 유저가 없습니다.");
+        }
 
         // Optional 처리
         ReservationEntity reservation = reservationRepository.findById(reservationId)
@@ -74,7 +84,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         System.out.println(reservation);
 
-        if(!reservation.getUser().getUserId().equals(userId)) {
+        if(!reservation.getUser().getUserId().equals(user.getUserId())) {
             throw new IllegalArgumentException("해당 유저의 예약이 아닙니다.");
         }
 

@@ -7,6 +7,7 @@ import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
 import com.autoever.carstore.user.entity.UserEntity;
 
 import java.util.List;
+import com.autoever.carstore.user.dto.response.UserResponseDto;
 
 public interface UserService {
     UserCountingResponseDto getUserCounting(long userId);
@@ -26,4 +27,6 @@ public interface UserService {
     void updateUserNickname(UpdateNicknameRequestDto request);
 
     void updateUserProfile(UpdateProfileRequestDto request);
+
+    UserResponseDto getUserInfo(String email);
 }

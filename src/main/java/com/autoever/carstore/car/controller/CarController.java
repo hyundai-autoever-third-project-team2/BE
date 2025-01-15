@@ -6,7 +6,10 @@ import com.autoever.carstore.car.dto.request.RegisterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
 import com.autoever.carstore.car.service.CarPurchaseService;
 import com.autoever.carstore.car.service.CarService;
+import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.s3.ImageUploadService;
+import com.autoever.carstore.user.entity.UserEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +17,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/car")
+@RequiredArgsConstructor
 public class CarController {
+    private final SecurityUtil securityUtil;
     @Autowired
     private CarService carService;
 
@@ -172,8 +177,18 @@ public class CarController {
     public ResponseEntity<String> registerCar(
             @RequestBody RegisterCarRequestDto registerCarRequestDto
             ) {
-        carPurchaseService.registerCar(5, registerCarRequestDto.getCar_number(), registerCarRequestDto.getComments(), registerCarRequestDto.getImages());
+        UserEntity user = securityUtil.getLoginUser();
+        carPurchaseService.registerCar(user.getUserId(), registerCarRequestDto.getCar_number(), registerCarRequestDto.getComments(), registerCarRequestDto.getImages());
         return ResponseEntity.ok("Successfully registered!");
     }
 
+    //차량 거래하기
+    @PutMapping("/contract")
+    public ResponseEntity<String> contractCar(
+            @RequestParam long carId
+    ){
+        UserEntity user = securityUtil.getLoginUser();
+        carService.contractCar(user.getUserId(), carId);
+        return ResponseEntity.ok("Successfully contract!");
+    }
 }

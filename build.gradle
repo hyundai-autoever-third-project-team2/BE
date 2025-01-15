@@ -73,6 +73,15 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	//web socket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.webjars:webjars-locator-core'
+	implementation 'org.webjars:sockjs-client:1.5.1'
+	implementation 'org.webjars:stomp-websocket:2.3.4'
+
+	// FCM 설정
+	implementation 'com.google.firebase:firebase-admin:9.1.1'
 }
 
 tasks.named('test') {
