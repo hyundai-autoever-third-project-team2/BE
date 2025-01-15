@@ -14,6 +14,7 @@ import com.autoever.carstore.survey.entity.SurveyColorEntity;
 import com.autoever.carstore.survey.entity.SurveyEntity;
 import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
+import com.autoever.carstore.user.dto.response.UserResponseDto;
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +104,18 @@ public class UserServiceImplement implements UserService {
 
             // 추천 저장소에 저장
         recommendRepository.save(recommendEntity);
+    }
+
+    @Override
+    public UserResponseDto getUserInfo(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .build();
     }
 
 }
