@@ -22,6 +22,7 @@ public class UserController {
     @Autowired
     private CarService carService;
 
+    //구매 내역 조회
     @GetMapping("/transaction")
     public ResponseEntity<List<TransactionStatusResponseDto>> transaction(
             @RequestParam String progress
@@ -31,6 +32,7 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    //판매 내역 조회
     @GetMapping("/userCarTransaction")
     public ResponseEntity<List<UserCarTransactionStatusResponseDto>> userCarTransaction(
             @RequestParam String progress
@@ -40,6 +42,7 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    //찜한 상품 조회
     @GetMapping("/isHeartCar")
     public ResponseEntity<List<IsHeartCarResponseDto>> isHeartCar(){
         long userId = 5;
@@ -47,6 +50,7 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    //설문조사 제출 폼
     @PostMapping("/survey")
     public ResponseEntity<String> survey(
             @RequestBody SurveyRequestDto surveyRequestDto
@@ -56,6 +60,7 @@ public class UserController {
         return ResponseEntity.ok("Successfully submitted survey");
     }
 
+    //사용자 기반 추천 목록 조회
     @GetMapping("/userRecommend")
     public ResponseEntity<List<RecommendCarResponseDto>> userRecommend(){
         long userId = 5;

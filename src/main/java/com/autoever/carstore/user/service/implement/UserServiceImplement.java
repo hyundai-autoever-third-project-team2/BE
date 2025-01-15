@@ -89,20 +89,26 @@ public class UserServiceImplement implements UserService {
 
         // RecommendEntity에 저장
         RecommendEntity recommendEntity = RecommendEntity.builder()
-                .recommendCar1Id(selectedCars.get(0).getCarSalesId())
-                .recommendCar2Id(selectedCars.get(1).getCarSalesId())
-                .recommendCar3Id(selectedCars.get(2).getCarSalesId())
-                .recommendCar4Id(selectedCars.get(3).getCarSalesId())
-                .recommendCar5Id(selectedCars.get(4).getCarSalesId())
-                .recommendCar6Id(selectedCars.get(5).getCarSalesId())
-                .recommendCar7Id(selectedCars.get(6).getCarSalesId())
-                .recommendCar8Id(selectedCars.get(7).getCarSalesId())
-                .recommendCar9Id(selectedCars.get(8).getCarSalesId())
+                .recommendCar1Id(getCarSalesId(selectedCars, 0))
+                .recommendCar2Id(getCarSalesId(selectedCars, 1))
+                .recommendCar3Id(getCarSalesId(selectedCars, 2))
+                .recommendCar4Id(getCarSalesId(selectedCars, 3))
+                .recommendCar5Id(getCarSalesId(selectedCars, 4))
+                .recommendCar6Id(getCarSalesId(selectedCars, 5))
+                .recommendCar7Id(getCarSalesId(selectedCars, 6))
+                .recommendCar8Id(getCarSalesId(selectedCars, 7))
+                .recommendCar9Id(getCarSalesId(selectedCars, 8))
                 .user(userEntity)
                 .build();
-
             // 추천 저장소에 저장
         recommendRepository.save(recommendEntity);
+    }
+
+    private long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {
+        if (index < selectedCars.size()) {
+            return selectedCars.get(index).getCarSalesId();
+        }
+        return -1;
     }
 
 }
