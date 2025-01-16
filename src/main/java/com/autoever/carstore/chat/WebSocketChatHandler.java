@@ -130,7 +130,7 @@ public class WebSocketChatHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        ChatMessageDto chatMessage = mapper.readValue(message.getPayload(), ChatMessageDto.class);
+        ChatMessageDto chatMessage = mapper.readValue(message.getPayload (), ChatMessageDto.class);
         chatMessage.setSentAt(LocalDateTime.now());
 
         // DB에 메시지 저장
