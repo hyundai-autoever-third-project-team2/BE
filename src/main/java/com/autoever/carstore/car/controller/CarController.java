@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.StringTokenizer;
 
 @RestController
 @RequestMapping("/car")
@@ -116,11 +117,16 @@ public class CarController {
     //검색 차량 조회(브랜드, 모델)
     @GetMapping("/search")
     public ResponseEntity<List<SearchCarResponseDto>> searchCars(
-            @RequestParam String brand) {
+            @RequestParam String searchCar) {
 
         List<SearchCarResponseDto> result = null;
         try {
-            result = carService.searchCars(brand, brand);
+            String[] tokens = searchCar.split(" ", 2);
+            if (tokens.length == 1) {
+                result = carService.searchCars(searchCar, searchCar);
+            } else if (tokens.length == 2) {
+                result = carService.searchCarsBrandAndModelName(tokens[0], tokens[1]);
+            }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
