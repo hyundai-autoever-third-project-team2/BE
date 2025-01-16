@@ -1,4 +1,4 @@
-package com.autoever.carstore.chat;
+package com.autoever.carstore.chat.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

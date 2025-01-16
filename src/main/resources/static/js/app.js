@@ -5,19 +5,23 @@ var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
+var roomIdInput = document.querySelector('#roomId');  // 채팅방 ID 입력
 
 var stompClient = null;
 var username = null;
+var roomId = null;  // 방 ID
 
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
+// 방에 연결하는 함수
 function connect(event) {
     username = document.querySelector('#name').value.trim();
+    roomId = roomIdInput.value.trim();  // 방 ID 입력 받기
 
-    if(username) {
+    if(username && roomId) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
@@ -29,33 +33,31 @@ function connect(event) {
     event.preventDefault();
 }
 
-
 function onConnected() {
-    // Subscribe to the Public Topic
-    stompClient.subscribe('/sub/chat/room/1', onMessageReceived);
+    // 방 ID에 구독
+    stompClient.subscribe(`/sub/chat/room/${roomId}`, onMessageReceived);
 
-    // Tell your username to the server
+    // 서버에 사용자 정보 전송
     stompClient.send("/pub/chat/enter",
         {},
-        JSON.stringify({sender: username, content: 'JOIN'})
-    )
+        JSON.stringify({sender: username, content: 'JOIN', roomId: roomId})
+    );
 
     connectingElement.classList.add('hidden');
 }
-
 
 function onError(error) {
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
     connectingElement.style.color = 'red';
 }
 
-
 function sendMessage(event) {
     var messageContent = messageInput.value.trim();
     if(messageContent && stompClient) {
         var chatMessage = {
             sender: username,
-            content: messageInput.value
+            content: messageInput.value,
+            roomId: roomId  // 방 ID 포함
         };
         stompClient.send("/pub/chat/message", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
@@ -63,10 +65,9 @@ function sendMessage(event) {
     event.preventDefault();
 }
 
-
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
-    console.log("message",message);
+    console.log("message", message);
     var messageElement = document.createElement('li');
 
     if(message.content === 'JOIN') {
@@ -101,7 +102,6 @@ function onMessageReceived(payload) {
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
-
 function getAvatarColor(messageSender) {
     var hash = 0;
     for (var i = 0; i < messageSender.length; i++) {
@@ -111,5 +111,5 @@ function getAvatarColor(messageSender) {
     return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true)
-messageForm.addEventListener('submit', sendMessage, true)
+usernameForm.addEventListener('submit', connect, true);
+messageForm.addEventListener('submit', sendMessage, true);

@@ -1,4 +1,4 @@
-package com.autoever.carstore.chat;
+package com.autoever.carstore.chat.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class ChatRequestDto {
     private String sender;
     private String content;
+    private long roomId;
 }
