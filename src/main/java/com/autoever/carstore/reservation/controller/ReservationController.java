@@ -18,28 +18,26 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> makeReservation(@RequestParam Long userId,
-                                             @RequestParam Long agencyId,
+    public ResponseEntity<?> makeReservation(@RequestParam Long agencyId,
                                              @RequestParam LocalDateTime time){
 
-        ReservationResponseDto result = reservationService.makeReservation(userId, agencyId, time);
+        ReservationResponseDto result = reservationService.makeReservation(agencyId, time);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> makeReservation(@RequestParam Long userId){
+    public ResponseEntity<?> makeReservation(){
 
-        List<ReservationResponseDto> result = reservationService.getReservationList(userId);
+        List<ReservationResponseDto> result = reservationService.getReservationList();
 
         return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteReservation(@RequestParam Long userId,
-            @RequestParam Integer reservationId){
+    public ResponseEntity<?> deleteReservation(@RequestParam Integer reservationId){
 
-        reservationService.deleteReservation(reservationId, userId);
+        reservationService.deleteReservation(reservationId);
 
         return ResponseEntity.ok("success");
     }

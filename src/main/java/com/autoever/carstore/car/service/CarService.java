@@ -26,4 +26,5 @@ public interface CarService{
     public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress);
     public List<IsHeartCarResponseDto> viewIsHeartCar(long userId);
     public List<RecommendCarResponseDto> viewUserCarRecommend(long userId);
+    public void contractCar(long userId, long carId);
 }
