@@ -15,5 +15,9 @@ public interface CarPurchaseRepository  extends JpaRepository<CarPurchaseEntity,
 
     @Query("SELECT COUNT(c) FROM CarPurchaseEntity c WHERE c.user.userId = :userId")
     int countByUserId(@Param("userId") long userId);
+
+    @Query("SELECT c FROM CarPurchaseEntity c WHERE c.carPurchaseId = :carPurchaseId")
+    CarPurchaseEntity findByCarPurchaseId(@Param("carPurchaseId") long carPurchaseId);
+
 }
 
