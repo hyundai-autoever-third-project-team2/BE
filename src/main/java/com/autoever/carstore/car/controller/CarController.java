@@ -188,7 +188,7 @@ public class CarController {
             @RequestParam long car_purchase_id,
             @RequestParam String progress
     ){
-        carPurchaseService.cancleCar(car_purchase_id, progress);
+        carPurchaseService.updateCar(car_purchase_id, progress);
         return ResponseEntity.ok("Successfully updated!");
     }
 
