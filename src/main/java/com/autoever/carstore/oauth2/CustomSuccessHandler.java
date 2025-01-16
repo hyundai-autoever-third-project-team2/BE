@@ -144,7 +144,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.sendRedirect(redirectUrl);
         // 역할(Role)에 따른 리디렉션
         if ("ROLE_ADMIN".equals(role)) {
-            response.sendRedirect("https://twomuchcar.shop/admin/home"); // Admin 사용자 리디렉션
+            response.sendRedirect("http://localhost:8080/admin/home"); // Admin 사용자 리디렉션
         } else {
             response.sendRedirect("https://autoever.site/"); // 일반 사용자 리디렉션
         }
