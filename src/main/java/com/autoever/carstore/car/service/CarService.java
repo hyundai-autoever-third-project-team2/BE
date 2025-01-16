@@ -27,4 +27,5 @@ public interface CarService{
     public List<IsHeartCarResponseDto> viewIsHeartCar(long userId);
     public List<RecommendCarResponseDto> viewUserCarRecommend(long userId);
     public void contractCar(long userId, long carId);
+    public List<SearchCarResponseDto> searchCarsBrandAndModelName(String token, String token1);
 }
