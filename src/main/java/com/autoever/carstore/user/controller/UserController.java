@@ -3,13 +3,10 @@ package com.autoever.carstore.user.controller;
 import com.autoever.carstore.car.service.CarService;
 import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
-import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
-import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
-import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
-import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
-import com.autoever.carstore.user.dto.response.UserCountingResponseDto;
+import com.autoever.carstore.user.dto.request.TokenRequest;
 import com.autoever.carstore.user.dto.request.UpdateNicknameRequestDto;
 import com.autoever.carstore.user.dto.request.UpdateProfileRequestDto;
+import com.autoever.carstore.user.dto.response.*;
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -106,9 +103,11 @@ public class UserController {
     }
 
     @PutMapping("/fcmToken")
-    public ResponseEntity<?> updateFcmToken(@RequestParam String fcmToken) {
+    public ResponseEntity<?> updateFcmToken(@RequestBody TokenRequest tokenRequest) {
 
+        String fcmToken = tokenRequest.getFcmToken();
         System.out.println("fcmToken : " + fcmToken);
+
         userService.updateFcmToken(fcmToken);
 
         return ResponseEntity.ok("success");

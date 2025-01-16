@@ -45,8 +45,8 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        System.out.println(accessToken);
-        System.out.println(refreshToken);
+        System.out.println("accessToken : " + accessToken);
+        System.out.println("refreshToken : " + refreshToken);
 
         // Access Token이 없는 경우
         if (accessToken == null) {
