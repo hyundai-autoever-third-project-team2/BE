@@ -14,11 +14,11 @@ public class ChatService {
     private final ChatRepository chatMessageRepository;
 
     // 메시지를 DB에 저장
-    public void saveMessage(long roomId, String sender, String message) {
+    public void saveMessage(long roomId, String sender, String content) {
         ChatEntity chatMessage = ChatEntity.builder()
                 .room_id(roomId)
                 .sender(sender)
-                .message(message)
+                .content(content)
                 .build();
         chatMessageRepository.save(chatMessage);
     }

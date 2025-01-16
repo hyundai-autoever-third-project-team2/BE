@@ -27,8 +27,8 @@ public class ChatEntity extends BaseTimeEntity {
     long room_id;
     @Column(name = "sender", nullable = false)
     String sender;
-    @Column(name = "message", nullable = false)
-    String message;
+    @Column(name = "content", nullable = false)
+    String content;
 
     @CreationTimestamp
     private Timestamp timestamp;
