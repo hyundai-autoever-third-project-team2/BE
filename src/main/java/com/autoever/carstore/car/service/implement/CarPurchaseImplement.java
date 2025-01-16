@@ -47,4 +47,27 @@ public class CarPurchaseImplement implements CarPurchaseService {
         return;
     }
 
+    @Override
+    public void cancleCar(long carPurchaseId, String progress) {
+        CarPurchaseEntity carPurchaseEntity = carPurchaseRepository.findByCarPurchaseId(carPurchaseId);
+        CarEntity carEntity = carPurchaseEntity.getCar();
+        UserEntity userEntity = carPurchaseEntity.getUser();
+        String comments = carPurchaseEntity.getComments();
+        int price = carPurchaseEntity.getPrice();
+        LocalDateTime purchaseDate = carPurchaseEntity.getPurchaseDate();
+        boolean isDeleted = carPurchaseEntity.isDeleted();
+
+        carPurchaseEntity = CarPurchaseEntity.builder()
+                .carPurchaseId(carPurchaseId)
+                .car(carEntity)
+                .user(userEntity)
+                .comments(comments)
+                .progress(progress)
+                .price(price)
+                .purchaseDate(purchaseDate)
+                .isDeleted(isDeleted)
+                .build();
+        carPurchaseRepository.save(carPurchaseEntity);
+    }
+
 }

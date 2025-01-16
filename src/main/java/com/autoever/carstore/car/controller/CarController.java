@@ -182,6 +182,17 @@ public class CarController {
         return ResponseEntity.ok("Successfully registered!");
     }
 
+    //등록 차량 취소하기
+    @PutMapping("/updatePurchaseCar")
+    public ResponseEntity<String> updatePurchaseCar(
+            @RequestParam long car_purchase_id,
+            @RequestParam String progress
+    ){
+        carPurchaseService.cancleCar(car_purchase_id, progress);
+        return ResponseEntity.ok("Successfully updated!");
+    }
+
+
     //차량 거래하기
     @PutMapping("/contract")
     public ResponseEntity<String> contractCar(
@@ -191,4 +202,5 @@ public class CarController {
         carService.contractCar(user.getUserId(), carId);
         return ResponseEntity.ok("Successfully contract!");
     }
+
 }
