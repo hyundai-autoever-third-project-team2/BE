@@ -140,12 +140,14 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 쿠키에 Refresh Token 저장
         response.addHeader("Set-Cookie", createSecureCookie("RefreshToken", refreshToken, 60 * 60 * 24 * 7)); // 7일 유효
 
-        // 역할(Role)에 따른 리디렉션
-        if ("ROLE_ADMIN".equals(role)) {
-            response.sendRedirect("http://localhost:8080/admin/home"); // Admin 사용자 리디렉션
-        } else {
-            response.sendRedirect("https://autoever.site/"); // 일반 사용자 리디렉션
-        }
+        String redirectUrl = "/login/my-success?accessToken=" + accessToken + "&refreshToken=" + refreshToken + "&role=" + role;
+        response.sendRedirect(redirectUrl);
+//        // 역할(Role)에 따른 리디렉션
+//        if ("ROLE_ADMIN".equals(role)) {
+//            response.sendRedirect("http://localhost:8080/admin/home"); // Admin 사용자 리디렉션
+//        } else {
+//            response.sendRedirect("https://autoever.site/"); // 일반 사용자 리디렉션
+//        }
     }
 
     private String createSecureCookie(String name, String value, int maxAge) {
