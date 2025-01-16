@@ -668,6 +668,7 @@ public class CarServiceImplement implements CarService {
                     .model_name(carSalesEntity.getCar().getCarModel().getModelName())
                     .order_number(carSalesEntity.getOrderNumber())
                     .price(carSalesEntity.getPrice())
+                    .imageUrl(carSalesEntity.getCar().getImages().get(0).getImageUrl())
                     .build();
             results.add(transactionStatusResponseDto);
         }
@@ -687,6 +688,7 @@ public class CarServiceImplement implements CarService {
                     .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
                     .model_name(carPurchaseEntity.getCar().getCarModel().getModelName())
                     .price(carPurchaseEntity.getPrice())
+                    .imageUrl(carPurchaseEntity.getCar().getImages().get(0).getImageUrl())
                     .build();
             results.add(userCarTransactionStatusResponseDto);
         }

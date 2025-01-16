@@ -52,6 +52,7 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
+    //구매내역 조회
     @GetMapping("/transaction")
     public ResponseEntity<List<TransactionStatusResponseDto>> transaction(
             @RequestParam String progress
