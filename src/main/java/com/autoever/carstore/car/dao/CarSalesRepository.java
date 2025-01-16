@@ -63,7 +63,7 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "JOIN c.carModel cm " +
             "WHERE cs.progress = '판매중' " +
             "AND (:brand IS NULL OR cm.brand LIKE %:brand%) " +
-            "AND (:modelName IS NULL OR cm.modelName LIKE %:modelName%)")
+            "OR (:modelName IS NULL OR cm.modelName LIKE %:modelName%)")
     List<CarSalesEntity> findByBrandAndCarName(@Param("brand") String brand, @Param("modelName") String modelName);
 
     @Query("SELECT cs FROM CarSalesEntity cs WHERE cs.car.carId = :carId")

@@ -71,7 +71,7 @@ public class CarPurchaseImplement implements CarPurchaseService {
                 .purchaseDate(purchaseDate)
                 .isDeleted(isDeleted)
                 .build();
-        
+
         carPurchaseRepository.save(carPurchaseEntity);
     }
 
