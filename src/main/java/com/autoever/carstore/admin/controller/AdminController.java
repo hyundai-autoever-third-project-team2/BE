@@ -2,17 +2,15 @@ package com.autoever.carstore.admin.controller;
 
 
 import com.autoever.carstore.admin.service.AdminService;
+import com.autoever.carstore.user.dto.response.TransactionsResponseDto;
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,6 +45,15 @@ public class AdminController {
         return "admin/userDetail";
     }
 
+
+    // 거래 내역 조회
+    @GetMapping("/admin/transaction")
+    public String getRecentTransactions(Model model) {
+        List<TransactionsResponseDto> transactions = adminService.getAllRecentTransactions();
+
+        model.addAttribute("transactions", transactions);
+        return "admin/transaction";
+    }
 
 
 }
