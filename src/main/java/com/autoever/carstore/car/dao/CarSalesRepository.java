@@ -126,4 +126,6 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
 
     @Query("SELECT COUNT(c) FROM CarSalesEntity c WHERE c.user.userId = :userId")
     int countByUserId(@Param("userId") long userId);
+
+    List<CarSalesEntity> findAllByOrderByUpdatedAtDesc();
 }
