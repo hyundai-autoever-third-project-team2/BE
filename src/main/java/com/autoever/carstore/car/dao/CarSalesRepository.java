@@ -127,5 +127,11 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     @Query("SELECT COUNT(c) FROM CarSalesEntity c WHERE c.user.userId = :userId")
     int countByUserId(@Param("userId") long userId);
 
-    List<CarSalesEntity> findAllByOrderByUpdatedAtDesc();
+    @Query("SELECT cs FROM CarSalesEntity cs " +
+            "JOIN cs.car c " +
+            "JOIN c.carModel cm " +
+            "WHERE cs.progress = '판매중' " +
+            "AND (:brand IS NULL OR cm.brand LIKE %:brand%) " +
+            "OR (:modelName IS NULL OR cm.modelName LIKE %:modelName%)")
+    List<CarSalesEntity> findByBrandOrCarName(String brand, String modelName);
 }

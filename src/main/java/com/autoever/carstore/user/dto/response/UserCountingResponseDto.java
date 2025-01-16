@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UserCountingResponseDto {
-    int purchaseCount;
-    int saleCount;
-    int heartCount;
+    int purchaseCount = 0;
+    int saleCount = 0;
+    int heartCount = 0;
 }
