@@ -116,12 +116,11 @@ public class CarController {
     //검색 차량 조회(브랜드, 모델)
     @GetMapping("/search")
     public ResponseEntity<List<SearchCarResponseDto>> searchCars(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String modelName) {
+            @RequestParam String brand) {
 
         List<SearchCarResponseDto> result = null;
         try {
-            result = carService.searchCars(brand, modelName);
+            result = carService.searchCars(brand, brand);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
