@@ -63,7 +63,6 @@ public class UserController {
     //판매 내역 조회
     @GetMapping("/userCarTransaction")
     public ResponseEntity<List<UserCarTransactionStatusResponseDto>> userCarTransaction(
-            @RequestParam String progress
     ){
         UserEntity user = securityUtil.getLoginUser();
         List<UserCarTransactionStatusResponseDto> result = carService.viewUserCarTransaction(user.getUserId());

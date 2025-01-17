@@ -31,8 +31,10 @@ public class JWTFilter extends OncePerRequestFilter {
         // 쿠키에서 Access Token과 Refresh Token을 불러옴
         String accessToken = null;
         String refreshToken = null;
+        String role = null;
 
 
+        // ROLE_ADMIN 일 때 쿠키 검증
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -43,6 +45,18 @@ public class JWTFilter extends OncePerRequestFilter {
                 }
             }
         }
+
+        // ROLE_USER 일 때 헤더 검증
+        if (accessToken == null) {
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                accessToken = authorizationHeader.substring(7); // "Bearer " 제거
+            }
+        }
+        if (refreshToken == null) {
+            refreshToken = request.getHeader("Refresh-Token");
+        }
+
 
         // Access Token이 없는 경우
         if (accessToken == null) {
@@ -68,19 +82,27 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             // Refresh Token 검증 성공 시 Access Token 재발급
-            String role = jwtUtil.getRoleFromAccessToken(refreshToken);
+            role = jwtUtil.getRoleFromAccessToken(refreshToken);
             accessToken = jwtUtil.createAccessToken(username, role, null); // 이메일은 선택적으로 포함
 
-            // 재발급된 Access Token을 쿠키에 추가
-            Cookie newAccessTokenCookie = new Cookie("AccessToken", accessToken);
-            newAccessTokenCookie.setHttpOnly(true);
-            newAccessTokenCookie.setPath("/");
-            response.addCookie(newAccessTokenCookie);
+
+            // ROLE_ADMIN: 쿠키에 재발급된 Access Token 추가
+            if ("ROLE_ADMIN".equals(role)) {
+                Cookie newAccessTokenCookie = new Cookie("AccessToken", accessToken);
+                newAccessTokenCookie.setHttpOnly(true);
+                newAccessTokenCookie.setPath("/");
+                response.addCookie(newAccessTokenCookie);
+            } else {
+                // ROLE_USER: 헤더에 재발급된 Access Token 추가
+                response.setHeader("Authorization", "Bearer " + accessToken);
+            }
         }
 
-        // Access Token에서 사용자 정보 추출
+        // 4. Access Token에서 사용자 정보 추출
         String username = jwtUtil.getUsernameFromAccessToken(accessToken);
-        String role = jwtUtil.getRoleFromAccessToken(accessToken);
+        if (role == null) {
+            role = jwtUtil.getRoleFromAccessToken(accessToken);
+        }
 
         // UserDTO 생성 및 설정
         UserDTO userDTO = new UserDTO();
@@ -94,5 +116,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
+
     }
 }

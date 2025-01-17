@@ -38,6 +38,9 @@ public class CarSalesEntity extends BaseTimeEntity {
     @Column(name = "price", nullable = false)
     private int price;
 
+    @Column(name = "discount_price", columnDefinition = "int default 0")
+    private int discountPrice;
+
     @Column(nullable = false)
     private String progress;
 
