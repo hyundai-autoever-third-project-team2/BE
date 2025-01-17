@@ -1,5 +1,6 @@
 package com.autoever.carstore.car.dao;
 
+import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.CarSalesLikeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,6 @@ public interface CarSalesLikeRepository extends JpaRepository<CarSalesLikeEntity
 
     @Query("SELECT COUNT(c) FROM CarSalesLikeEntity c WHERE c.user.userId = :userId")
     int countByUserId(@Param("userId") long userId);
+
+    List<CarSalesLikeEntity> findByCarSales(CarSalesEntity carSales);
 }

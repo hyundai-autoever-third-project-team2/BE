@@ -14,19 +14,17 @@ public class FeedLikeController {
     private final FeedLikeService feedLikeService;
 
     @PostMapping("/click")
-    public ResponseEntity<?> clickFeedLike(@RequestParam Long userId,
-                                           @RequestParam Long feedId){
+    public ResponseEntity<?> clickFeedLike(@RequestParam Long feedId){
 
-        feedLikeService.clickFeedLike(userId, feedId);
+        feedLikeService.clickFeedLike(feedId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("success");
     }
 
     @DeleteMapping("/unclick")
-    public ResponseEntity<?> unclickFeedLike(@RequestParam Long userId,
-                                             @RequestParam Long feedId){
+    public ResponseEntity<?> unclickFeedLike(@RequestParam Long feedId){
 
-        feedLikeService.unclickFeedLike(userId, feedId);
+        feedLikeService.unclickFeedLike(feedId);
 
         return ResponseEntity.ok("success");
     }

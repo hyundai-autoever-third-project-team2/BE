@@ -6,18 +6,22 @@ import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
 import com.autoever.carstore.car.entity.*;
 import com.autoever.carstore.car.service.CarService;
+import com.autoever.carstore.fcm.service.FCMService;
+import com.autoever.carstore.notification.dto.NotificationRequestDto;
+import com.autoever.carstore.notification.service.NotificationService;
 import com.autoever.carstore.recommend.dao.RecommendRepository;
 import com.autoever.carstore.recommend.entity.RecommendEntity;
 import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
+import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
-import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
-
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,9 +29,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class CarServiceImplement implements CarService {
@@ -40,6 +44,8 @@ public class CarServiceImplement implements CarService {
     private final RecommendRepository recommendRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final FCMService fcmService;
+    private final NotificationService notificationService;
 
     //최신순 차량 조회 서비스
     @Override
@@ -820,16 +826,47 @@ public class CarServiceImplement implements CarService {
     //차량 discount 업데이트 메소드
     @Override
     @Scheduled(cron = "0 0 0 * * MON")
+    @Transactional
     public void updateDiscountPrice() {
+        log.info("시작1!");
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findSalesCar();
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
 
         for(CarSalesEntity carSalesEntity : carSalesEntities) {
             if(carSalesEntity.getCreatedAt().isBefore(oneWeekAgo)) {  // 생성일이 1주일 이상 지났는지 체크
                 int originalPrice = carSalesEntity.getPrice();
-                int discountPrice = (int)(originalPrice * 0.97);  // 3% 할인 (원가 * 0.97)
+                int currentPrice = carSalesEntity.getDiscountPrice() == 0 ? originalPrice : carSalesEntity.getDiscountPrice();
+                int discountPrice = currentPrice - (int)(originalPrice * 0.03);   // 1주일이 지날때마다 원가의 3퍼센트씩 할인되도록 설정
+
+                // 해당 차량을 관심 차량으로 등록한 유저들을 불러오기 위한 부분
+                List<CarSalesLikeEntity> salesLikeLIst = carSalesLikeRepository.findByCarSales(carSalesEntity);
+                log.info(salesLikeLIst);
+
+                String title = "관심 차량의 가격이 인하되었습니다";
+                String body = carSalesEntity.getCar().getCarModel().getModelName() + " " + carSalesEntity.getCar().getCarModel().getModelYear()
+                        + " " + carSalesEntity.getCar().getCarNumber() + "\n"
+                        + currentPrice + "원 -> " + discountPrice + "원";
+
                 carSalesEntity.setDiscountPrice(discountPrice);
                 carSalesRepository.save(carSalesEntity);  // 변경사항 저장
+
+                for(CarSalesLikeEntity salesLike : salesLikeLIst) {
+                    NotificationRequestDto notification = NotificationRequestDto.builder()
+                            .user(salesLike.getUser())
+                            .notificationType(1)
+                            .title(title)
+                            .content(body)
+                            .build();
+
+                    try{
+                        log.info("알림 전송");
+                        fcmService.sendMessageTo(salesLike.getUser().getFcmToken(), title, body);
+                        log.info("알림 저장");
+                        notificationService.addNotification(notification);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         }
 

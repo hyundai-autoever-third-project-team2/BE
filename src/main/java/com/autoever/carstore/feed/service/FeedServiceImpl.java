@@ -1,12 +1,12 @@
 package com.autoever.carstore.feed.service;
 
 import com.autoever.carstore.feed.dao.FeedLikeRepository;
+import com.autoever.carstore.feed.dao.FeedRepository;
 import com.autoever.carstore.feed.dto.FeedMapper;
 import com.autoever.carstore.feed.dto.FeedRequestDto;
 import com.autoever.carstore.feed.dto.FeedResponseDto;
 import com.autoever.carstore.feed.dto.StoryResponseDto;
 import com.autoever.carstore.feed.entity.FeedEntity;
-import com.autoever.carstore.feed.dao.FeedRepository;
 import com.autoever.carstore.hashtag.dto.FeedHashTagResponseDto;
 import com.autoever.carstore.hashtag.dto.HashtagResponseDto;
 import com.autoever.carstore.hashtag.entity.HashtagEntity;
@@ -14,7 +14,6 @@ import com.autoever.carstore.hashtag.service.FeedHashtagService;
 import com.autoever.carstore.hashtag.service.HashtagService;
 import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.s3.ImageUploadService;
-import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +30,6 @@ import java.util.stream.Collectors;
 public class FeedServiceImpl implements FeedService {
 
     private final FeedRepository feedRepository;
-
-    private final UserRepository userRepository;
 
     private final FeedMapper feedMapper;
 
