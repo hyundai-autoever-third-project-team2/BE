@@ -2,7 +2,6 @@ package com.autoever.carstore.feed.service;
 
 import com.autoever.carstore.feed.dao.FeedLikeRepository;
 import com.autoever.carstore.feed.dao.FeedRepository;
-import com.autoever.carstore.feed.dto.FeedMapper;
 import com.autoever.carstore.feed.dto.FeedRequestDto;
 import com.autoever.carstore.feed.dto.FeedResponseDto;
 import com.autoever.carstore.feed.dto.StoryResponseDto;
@@ -31,8 +30,6 @@ public class FeedServiceImpl implements FeedService {
 
     private final FeedRepository feedRepository;
 
-    private final FeedMapper feedMapper;
-
     private final ImageUploadService imageUploadService;
 
     private final HashtagService hashtagService;
@@ -58,10 +55,12 @@ public class FeedServiceImpl implements FeedService {
             throw new IllegalArgumentException("imageUrl can't be null");
         }
 
-        feedRequestDto.setUserId(user.getUserId());
-
-        FeedEntity feed = feedMapper.dtoToEntity(feedRequestDto);
-        feed.updateImageUrl(imageUrl);
+        FeedEntity feed = FeedEntity.builder()
+                .user(user)
+                .contents(feedRequestDto.getContents())
+                .imageUrl(imageUrl)
+                .isDeleted(false)
+                .build();
 
         List<HashtagResponseDto> hashtagList = new ArrayList<>();
 
