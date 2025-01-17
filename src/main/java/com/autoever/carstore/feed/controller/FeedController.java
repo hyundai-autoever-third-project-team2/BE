@@ -19,7 +19,7 @@ public class FeedController {
 
     @PostMapping("/write")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> writeFeed(@ModelAttribute FeedRequestDto feedRequestDto) throws IOException {
+    public ResponseEntity<?> writeFeed(@RequestBody FeedRequestDto feedRequestDto) throws IOException {
         feedService.saveFeed(feedRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("success");
     }
