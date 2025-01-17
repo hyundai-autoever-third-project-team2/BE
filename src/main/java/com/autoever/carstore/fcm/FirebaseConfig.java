@@ -4,10 +4,11 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Configuration
 public class FirebaseConfig {
@@ -15,14 +16,16 @@ public class FirebaseConfig {
     @PostConstruct
     public void initializeFirebase() {
         try {
-            // 추후에 secret으로 숨겨야 함
-            FileInputStream serviceAccount = new FileInputStream("src/main/resources/firebase/carstore-d56d2-firebase-adminsdk-a1pun-c1bfa0593c.json");
+            ClassPathResource resource = new ClassPathResource("firebase/carstore-d56d2-firebase-adminsdk-a1pun-c1bfa0593c.json");
+            InputStream serviceAccount = resource.getInputStream();
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
 
-            FirebaseApp.initializeApp(options);
+            if (FirebaseApp.getApps().isEmpty()) {  // 이미 초기화되어 있는지 확인
+                FirebaseApp.initializeApp(options);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize Firebase", e);
         }
