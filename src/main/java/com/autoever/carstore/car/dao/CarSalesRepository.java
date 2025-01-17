@@ -135,4 +135,8 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "AND (:brand IS NULL OR cm.brand LIKE %:brand%) " +
             "OR (:modelName IS NULL OR cm.modelName LIKE %:modelName%)")
     List<CarSalesEntity> findByBrandOrCarName(String brand, String modelName);
+
+    @Query("SELECT cs FROM CarSalesEntity cs " +
+            "WHERE cs.progress = '판매중' ")
+    List<CarSalesEntity> findSalesCar();
 }

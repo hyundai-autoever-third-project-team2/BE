@@ -50,6 +50,7 @@ public class CarController {
         List<AbroadCarResponseDto> result = null;
 
         try {
+            System.out.println("abroad 컨트롤러");
             result = carService.getAbroadCarList();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
