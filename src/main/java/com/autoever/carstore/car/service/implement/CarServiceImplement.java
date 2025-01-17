@@ -137,8 +137,8 @@ public class CarServiceImplement implements CarService {
 
     //해외 차량 조회 서비스
     @Override
-    public List<AbroadCarResponseDto> getAbroadCarList() {
-         System.out.println("getAbroadCarList 서비스");
+    public List<AbroadCarResponseDto> getAbroadCarList(long userId) {
+
         List<AbroadCarResponseDto> result = new ArrayList<>();
 
         List<String> brands = Arrays.asList("현대", "기아", "제네시스", "KG모빌리티");
@@ -162,6 +162,8 @@ public class CarServiceImplement implements CarService {
 
             int view_count = car_sales.getCount();
 
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
+
             abroad_car = AbroadCarResponseDto.builder()
                     .carId(carId)
                     .imageUrl(imageUrl)
@@ -174,6 +176,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(abroad_car);
@@ -406,7 +409,7 @@ public class CarServiceImplement implements CarService {
 
     //차량 상세보기 서비스
     @Override
-    public DetailCarResponseDto findByCarId(Long carId) {
+    public DetailCarResponseDto findByCarId(Long carId, Long userId) {
         CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
         LocalDateTime create_date = carSales.getCreatedAt();
         int price = carSales.getPrice();
@@ -439,6 +442,7 @@ public class CarServiceImplement implements CarService {
         String gear = carSales.getCar().getCarModel().getGear();
         String model_name = carSales.getCar().getCarModel().getModelName();
         String model_year = carSales.getCar().getCarModel().getModelYear();
+        boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSales.getCarSalesId(), userId);
 
         List<String> carImages = new ArrayList<>();
         for(CarImageEntity carImageEntity : carSales.getCar().getImages()){
@@ -459,6 +463,7 @@ public class CarServiceImplement implements CarService {
             if (count >= 3) break;
             int recommend_discount_price = carSalesEntity.getDiscountPrice();
             LocalDateTime recommend_create_date = carSalesEntity.getCreatedAt();
+            boolean recommend_isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSalesEntity.getCarSalesId(), userId);
 
             SimilarCarResponseDto similarCarDto =SimilarCarResponseDto.builder()
                     .carId(carSalesEntity.getCar().getCarId())
@@ -467,6 +472,7 @@ public class CarServiceImplement implements CarService {
                     .model_name(carSalesEntity.getCar().getCarModel().getModelName())
                     .price(carSalesEntity.getPrice())
                     .discount_price(recommend_discount_price)
+                    .isLiked(recommend_isLiked)
                     .build();
             similarCarResponseDtos.add(similarCarDto); // 리스트에 추가
             count++;
@@ -508,6 +514,7 @@ public class CarServiceImplement implements CarService {
                 .carImages(carImages)
                 .fixedImages(fixedCarImages)
                 .recommendCars(similarCarResponseDtos)
+                .isLiked(isLiked)
                 .build();
 
         return result;

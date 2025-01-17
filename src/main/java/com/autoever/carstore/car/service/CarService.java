@@ -13,13 +13,13 @@ import java.util.List;
 public interface CarService{
     public List<LatelyCarResponseDto> getLatelyCarList();
     public List<DomesticCarResponseDto> getDomesticCarList();
-    public List<AbroadCarResponseDto> getAbroadCarList();
+    public List<AbroadCarResponseDto> getAbroadCarList(long userId);
     public List<PopularityCarResponseDto> getPopularityCarList();
     public List<DiscountCarResponseDto> getDiscountCarList();
     public List<LikelyCarResponseDto> getLikelyCarList();
     public List<SearchCarResponseDto> searchCars(String brand, String modelName);
     public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto);
-    public DetailCarResponseDto findByCarId(Long carId);
+    public DetailCarResponseDto findByCarId(Long carId, Long userId);
     public List<DetailCarResponseDto> compareCars(List<Long> carIds);
     public void updateViewCount(Long carId);
     public List<TransactionStatusResponseDto> viewTransaction(long userId);

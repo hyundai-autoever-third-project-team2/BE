@@ -13,4 +13,5 @@ public class SimilarCarResponseDto {
     String model_name;
     int price; //car sales
     double discount_price = 0;
+    boolean isLiked;
 }

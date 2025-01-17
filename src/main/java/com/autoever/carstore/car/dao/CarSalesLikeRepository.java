@@ -18,4 +18,9 @@ public interface CarSalesLikeRepository extends JpaRepository<CarSalesLikeEntity
     int countByUserId(@Param("userId") long userId);
 
     List<CarSalesLikeEntity> findByCarSales(CarSalesEntity carSales);
+
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END " +
+            "FROM CarSalesLikeEntity c " +
+            "WHERE c.carSales.carSalesId = :carSalesId AND c.user.userId = :userId")
+    boolean findByCarSalesIdUserId(long carSalesId, long userId);
 }
