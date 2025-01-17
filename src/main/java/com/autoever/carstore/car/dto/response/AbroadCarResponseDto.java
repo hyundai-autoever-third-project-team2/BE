@@ -19,4 +19,5 @@ public class AbroadCarResponseDto{
     int month_price;
     LocalDateTime create_date; //car sales
     int view_count; //car_sales_view
+    boolean isLiked;
 }

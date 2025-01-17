@@ -49,7 +49,7 @@ public class CarServiceImplement implements CarService {
 
     //최신순 차량 조회 서비스
     @Override
-    public List<LatelyCarResponseDto> getLatelyCarList() {
+    public List<LatelyCarResponseDto> getLatelyCarList(long userId) {
         List<LatelyCarResponseDto> result = new ArrayList<>();
 
         List<CarSalesEntity> car_sales_lately_list = carSalesRepository.findAllLately();
@@ -70,6 +70,7 @@ public class CarServiceImplement implements CarService {
             LocalDateTime create_date = car_sales.getCreatedAt();
 
             int view_count = carSalesViewRepository.getCountByCarSalesId(car_sales.getCarSalesId());
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             lately_car = LatelyCarResponseDto.builder()
                     .carId(carId)
@@ -83,6 +84,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(lately_car);
@@ -93,7 +95,7 @@ public class CarServiceImplement implements CarService {
 
     //국내차량 조회 서비스
     @Override
-    public List<DomesticCarResponseDto> getDomesticCarList(){
+    public List<DomesticCarResponseDto> getDomesticCarList(long userId){
         List<DomesticCarResponseDto> result = new ArrayList<>();
         List<String> brands = Arrays.asList("현대", "기아", "제네시스", "KG모빌리티");
         List<CarSalesEntity> car_sales_domestic_list = carSalesRepository.findAllWithCarAndCarModelByBrands(brands);
@@ -114,6 +116,7 @@ public class CarServiceImplement implements CarService {
             LocalDateTime create_date = car_sales.getCreatedAt();
 
             int view_count = car_sales.getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             domestic_car = DomesticCarResponseDto.builder()
                     .carId(carId)
@@ -127,6 +130,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(domestic_car);
@@ -137,8 +141,8 @@ public class CarServiceImplement implements CarService {
 
     //해외 차량 조회 서비스
     @Override
-    public List<AbroadCarResponseDto> getAbroadCarList() {
-         System.out.println("getAbroadCarList 서비스");
+    public List<AbroadCarResponseDto> getAbroadCarList(long userId) {
+
         List<AbroadCarResponseDto> result = new ArrayList<>();
 
         List<String> brands = Arrays.asList("현대", "기아", "제네시스", "KG모빌리티");
@@ -162,6 +166,8 @@ public class CarServiceImplement implements CarService {
 
             int view_count = car_sales.getCount();
 
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
+
             abroad_car = AbroadCarResponseDto.builder()
                     .carId(carId)
                     .imageUrl(imageUrl)
@@ -174,6 +180,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(abroad_car);
@@ -183,7 +190,7 @@ public class CarServiceImplement implements CarService {
 
     //인기 차량 조회 서비스(top50)
     @Override
-    public List<PopularityCarResponseDto> getPopularityCarList() {
+    public List<PopularityCarResponseDto> getPopularityCarList(long userId) {
         List<PopularityCarResponseDto> result = new ArrayList<>();
 
         Pageable pageable = PageRequest.of(0, 50); // 0번 페이지에서 50개 가져오기
@@ -205,6 +212,7 @@ public class CarServiceImplement implements CarService {
             LocalDateTime create_date = car_sales.getCreatedAt();
 
             int view_count = car_sales.getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             popularity_car = PopularityCarResponseDto.builder()
                     .carId(carId)
@@ -218,6 +226,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(popularity_car);
@@ -227,7 +236,7 @@ public class CarServiceImplement implements CarService {
 
     //할인 차량 조회 서비스
     @Override
-    public List<DiscountCarResponseDto> getDiscountCarList() {
+    public List<DiscountCarResponseDto> getDiscountCarList(long userId) {
         List<DiscountCarResponseDto> result = new ArrayList<>();
         List<CarSalesEntity> car_sales_discount_list = carSalesRepository.findAll();
 
@@ -248,6 +257,7 @@ public class CarServiceImplement implements CarService {
                 LocalDateTime create_date = car_sales.getCreatedAt();
 
                 int view_count = car_sales.getCount();
+                boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
                 discount_car = DiscountCarResponseDto.builder()
                         .carId(carId)
@@ -261,6 +271,7 @@ public class CarServiceImplement implements CarService {
                         .month_price(month_price)
                         .create_date(create_date)
                         .view_count(view_count)
+                        .isLiked(isLiked)
                         .build();
 
                 result.add(discount_car);
@@ -271,7 +282,7 @@ public class CarServiceImplement implements CarService {
 
     //인기순 차량 조회(전체보기에서의 필터링) 서비스
     @Override
-    public List<LikelyCarResponseDto> getLikelyCarList() {
+    public List<LikelyCarResponseDto> getLikelyCarList(long userId) {
         List<LikelyCarResponseDto> result = new ArrayList<>();
 
         List<CarSalesEntity> car_sales_likely_list = carSalesRepository.findByOrderByLikesDesc();
@@ -292,6 +303,8 @@ public class CarServiceImplement implements CarService {
 
             int view_count = car_sales.getCount();
 
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
+
             likely_car = LikelyCarResponseDto.builder()
                     .carId(carId)
                     .imageUrl(imageUrl)
@@ -304,6 +317,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(likely_car);
@@ -313,7 +327,7 @@ public class CarServiceImplement implements CarService {
 
     //검색 차량 조회(브랜드, 모델) 서비스
     @Override
-    public List<SearchCarResponseDto> searchCars(String brand, String modelName) {
+    public List<SearchCarResponseDto> searchCars(String brand, String modelName, long userId) {
         List<SearchCarResponseDto> result = new ArrayList<>();
         List<CarSalesEntity> car_sales_search_list = carSalesRepository.findByBrandOrCarName(brand, modelName);
 
@@ -333,6 +347,8 @@ public class CarServiceImplement implements CarService {
 
                 int view_count = car_sales.getCount();
 
+                boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
+
                 search_car = SearchCarResponseDto.builder()
                         .carId(carId)
                         .imageUrl(imageUrl)
@@ -345,6 +361,7 @@ public class CarServiceImplement implements CarService {
                         .month_price(month_price)
                         .create_date(create_date)
                         .view_count(view_count)
+                        .isLiked(isLiked)
                         .build();
 
                 result.add(search_car);
@@ -354,7 +371,7 @@ public class CarServiceImplement implements CarService {
 
     //카테고리 필터링 서비스
     @Override
-    public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto) {
+    public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto, long userId) {
         List<FilterCarResponseDto> result = new ArrayList<>();
         List<String> carTypes = requestDto.getCarTypes();
         int startDisplacement = requestDto.getStart_displacement();
@@ -383,6 +400,7 @@ public class CarServiceImplement implements CarService {
             LocalDateTime create_date = car_sales.getCreatedAt();
 
             int view_count = car_sales.getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             filter_car = FilterCarResponseDto.builder()
                     .carId(carId)
@@ -396,6 +414,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(filter_car);
@@ -406,7 +425,7 @@ public class CarServiceImplement implements CarService {
 
     //차량 상세보기 서비스
     @Override
-    public DetailCarResponseDto findByCarId(Long carId) {
+    public DetailCarResponseDto findByCarId(Long carId, Long userId) {
         CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
         LocalDateTime create_date = carSales.getCreatedAt();
         int price = carSales.getPrice();
@@ -439,6 +458,7 @@ public class CarServiceImplement implements CarService {
         String gear = carSales.getCar().getCarModel().getGear();
         String model_name = carSales.getCar().getCarModel().getModelName();
         String model_year = carSales.getCar().getCarModel().getModelYear();
+        boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSales.getCarSalesId(), userId);
 
         List<String> carImages = new ArrayList<>();
         for(CarImageEntity carImageEntity : carSales.getCar().getImages()){
@@ -459,6 +479,7 @@ public class CarServiceImplement implements CarService {
             if (count >= 3) break;
             int recommend_discount_price = carSalesEntity.getDiscountPrice();
             LocalDateTime recommend_create_date = carSalesEntity.getCreatedAt();
+            boolean recommend_isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSalesEntity.getCarSalesId(), userId);
 
             SimilarCarResponseDto similarCarDto =SimilarCarResponseDto.builder()
                     .carId(carSalesEntity.getCar().getCarId())
@@ -467,6 +488,7 @@ public class CarServiceImplement implements CarService {
                     .model_name(carSalesEntity.getCar().getCarModel().getModelName())
                     .price(carSalesEntity.getPrice())
                     .discount_price(recommend_discount_price)
+                    .isLiked(recommend_isLiked)
                     .build();
             similarCarResponseDtos.add(similarCarDto); // 리스트에 추가
             count++;
@@ -508,6 +530,7 @@ public class CarServiceImplement implements CarService {
                 .carImages(carImages)
                 .fixedImages(fixedCarImages)
                 .recommendCars(similarCarResponseDtos)
+                .isLiked(isLiked)
                 .build();
 
         return result;
@@ -515,7 +538,7 @@ public class CarServiceImplement implements CarService {
 
     //차량 비교하기 서비스
     @Override
-    public List<DetailCarResponseDto> compareCars(List<Long> carIds) {
+    public List<DetailCarResponseDto> compareCars(List<Long> carIds, long userId) {
         List<DetailCarResponseDto> result = new ArrayList<>();
         for(Long carId : carIds){
             CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
@@ -555,6 +578,7 @@ public class CarServiceImplement implements CarService {
             for(FixedImageEntity fixedImageEntity : carSales.getCar().getFixedImages()){
                 fixedCarImages.add(fixedImageEntity.getFixedImageUrl());
             }
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSales.getCarSalesId(), userId);
 
             DetailCarResponseDto dto = DetailCarResponseDto.builder()
                     .created_at(carSales.getCreatedAt())
@@ -586,13 +610,13 @@ public class CarServiceImplement implements CarService {
                     .model_year(model_year)
                     .carImages(carImages)
                     .fixedImages(fixedCarImages)
+                    .isLiked(isLiked)
                     .build();
             result.add(dto);
         }
         return result;
     }
-
-    //상세보기 페이지 이동 시 조회수 증가 서비스
+    //상세보기 페이지 이동 시 조회수 증가 서비스carSalesRepository.deleteByCarId(userId, carId
     @Override
     public void updateViewCount(Long carId) {
         // 차 정보를 DB에서 조회
@@ -668,6 +692,7 @@ public class CarServiceImplement implements CarService {
 
             LocalDateTime create_date = car_sales_like.getCarSales().getCreatedAt();
             int view_count = car_sales_like.getCarSales().getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales_like.getCarSales().getCarSalesId(), userId);
 
             isHeart_car = IsHeartCarResponseDto.builder()
                     .carId(carId)
@@ -681,6 +706,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(isHeart_car);
@@ -713,6 +739,7 @@ public class CarServiceImplement implements CarService {
                 int discount_price = carSalesEntity.getDiscountPrice();
                 int month_price = price / 6;
                 LocalDateTime create_date = carSalesEntity.getCreatedAt();
+                boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSalesEntity.getCarSalesId(), userId);
 
                 // DTO 생성
                 RecommendCarResponseDto recommendCarResponseDto = RecommendCarResponseDto.builder()
@@ -727,6 +754,7 @@ public class CarServiceImplement implements CarService {
                         .month_price(month_price)
                         .create_date(create_date)
                         .view_count(carSalesEntity.getCount())
+                        .isLiked(isLiked)
                         .build();
 
                 // 결과 리스트에 추가
@@ -768,7 +796,7 @@ public class CarServiceImplement implements CarService {
     }
 
     @Override
-    public List<SearchCarResponseDto> searchCarsBrandAndModelName(String brand, String modelName) {
+    public List<SearchCarResponseDto> searchCarsBrandAndModelName(String brand, String modelName, long userId) {
         List<SearchCarResponseDto> result = new ArrayList<>();
         List<CarSalesEntity> car_sales_search_list = carSalesRepository.findByBrandAndCarName(brand, modelName);
 
@@ -787,6 +815,7 @@ public class CarServiceImplement implements CarService {
             LocalDateTime create_date = car_sales.getCreatedAt();
 
             int view_count = car_sales.getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             search_car = SearchCarResponseDto.builder()
                     .carId(carId)
@@ -800,6 +829,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(search_car);
@@ -870,5 +900,21 @@ public class CarServiceImplement implements CarService {
             }
         }
 
+    }
+
+    @Override
+    public void isLikedCar(UserEntity user, long carId) {
+        CarSalesEntity carSalesEntity = carSalesRepository.findByCarId(carId);
+        CarSalesLikeEntity carSalesLikeEntity = CarSalesLikeEntity.builder()
+                .carSales(carSalesEntity)
+                .user(user)
+                .build();
+        carSalesLikeRepository.save(carSalesLikeEntity);
+    }
+
+    @Override
+    public void unLikedCar(UserEntity user, long carId) {
+        CarSalesEntity carSalesEntity = carSalesRepository.findByCarId(carId);
+        carSalesLikeRepository.deleteByUserIdCarId(user.getUserId(), carSalesEntity.getCarSalesId());
     }
 }
