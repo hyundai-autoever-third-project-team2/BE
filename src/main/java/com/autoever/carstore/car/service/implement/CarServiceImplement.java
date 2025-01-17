@@ -334,7 +334,7 @@ public class CarServiceImplement implements CarService {
     @Override
     public List<SearchCarResponseDto> searchCars(String brand, String modelName) {
         List<SearchCarResponseDto> result = new ArrayList<>();
-        List<CarSalesEntity> car_sales_search_list = carSalesRepository.findByBrandAndCarName(brand, modelName);
+        List<CarSalesEntity> car_sales_search_list = carSalesRepository.findByBrandOrCarName(brand, modelName);
 
         for(CarSalesEntity car_sales : car_sales_search_list) {
                 SearchCarResponseDto search_car;
@@ -656,8 +656,8 @@ public class CarServiceImplement implements CarService {
 
     //구매 내역 조회 서비스
     @Override
-    public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress) {
-        List<CarSalesEntity> carSalesEntities = carSalesRepository.findByUserIdAndProgress(userId, progress);
+    public List<TransactionStatusResponseDto> viewTransaction(long userId) {
+        List<CarSalesEntity> carSalesEntities = carSalesRepository.findByUserId(userId);
         List<TransactionStatusResponseDto> results = new ArrayList<>();
         for(CarSalesEntity carSalesEntity : carSalesEntities){
             TransactionStatusResponseDto transactionStatusResponseDto = TransactionStatusResponseDto.builder()
@@ -668,6 +668,7 @@ public class CarServiceImplement implements CarService {
                     .model_name(carSalesEntity.getCar().getCarModel().getModelName())
                     .order_number(carSalesEntity.getOrderNumber())
                     .price(carSalesEntity.getPrice())
+                    .imageUrl(carSalesEntity.getCar().getImages().get(0).getImageUrl())
                     .build();
             results.add(transactionStatusResponseDto);
         }
@@ -676,8 +677,8 @@ public class CarServiceImplement implements CarService {
 
     //판매 내역 조회 서비스
     @Override
-    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress) {
-        List<CarPurchaseEntity> carPurchaseEntities = carPurchaseRepository.findByUserIdAndProgress(userId, progress);
+    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId) {
+        List<CarPurchaseEntity> carPurchaseEntities = carPurchaseRepository.findByUserId(userId);
         List<UserCarTransactionStatusResponseDto> results = new ArrayList<>();
         for(CarPurchaseEntity carPurchaseEntity : carPurchaseEntities){
             UserCarTransactionStatusResponseDto userCarTransactionStatusResponseDto = UserCarTransactionStatusResponseDto.builder()
@@ -687,6 +688,7 @@ public class CarServiceImplement implements CarService {
                     .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
                     .model_name(carPurchaseEntity.getCar().getCarModel().getModelName())
                     .price(carPurchaseEntity.getPrice())
+                    .imageUrl(carPurchaseEntity.getCar().getImages().get(0).getImageUrl())
                     .build();
             results.add(userCarTransactionStatusResponseDto);
         }
@@ -824,6 +826,50 @@ public class CarServiceImplement implements CarService {
         carSalesRepository.save(carSalesEntity);
     }
 
+    @Override
+    public List<SearchCarResponseDto> searchCarsBrandAndModelName(String brand, String modelName) {
+        List<SearchCarResponseDto> result = new ArrayList<>();
+        List<CarSalesEntity> car_sales_search_list = carSalesRepository.findByBrandAndCarName(brand, modelName);
+
+        for(CarSalesEntity car_sales : car_sales_search_list) {
+            SearchCarResponseDto search_car;
+            long carId = car_sales.getCar().getCarId();
+            String imageUrl = car_sales.getCar().getImages().get(0).getImageUrl();
+            String s_brand = car_sales.getCar().getCarModel().getBrand();
+            String model_name = car_sales.getCar().getCarModel().getModelName();
+            String model_year = car_sales.getCar().getCarModel().getModelYear();
+            int distance = car_sales.getCar().getDistance();
+            int price = car_sales.getPrice();
+            int discount_price = 0;
+            int month_price = price / 6;
+
+            LocalDateTime create_date = car_sales.getCreatedAt();
+
+            int view_count = car_sales.getCount();
+            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+            if (create_date.isBefore(oneWeekAgo)) {
+                discount_price = (int) (price * 0.97); // 3% 할인
+                month_price = discount_price / 6;
+            }
+
+            search_car = SearchCarResponseDto.builder()
+                    .carId(carId)
+                    .imageUrl(imageUrl)
+                    .brand(s_brand)
+                    .model_name(model_name)
+                    .model_year(model_year)
+                    .distance(distance)
+                    .price(price)
+                    .discount_price(discount_price)
+                    .month_price(month_price)
+                    .create_date(create_date)
+                    .view_count(view_count)
+                    .build();
+
+            result.add(search_car);
+        }
+        return result.isEmpty() ? null : result;
+    }
     // 추천된 차량 ID를 인덱스에 맞게 가져오는 메서드
     private Long getRecommendCarIdByIndex(RecommendEntity recommend, int index) {
         switch (index) {

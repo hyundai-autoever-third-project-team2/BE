@@ -22,9 +22,10 @@ public interface CarService{
     public DetailCarResponseDto findByCarId(Long carId);
     public List<DetailCarResponseDto> compareCars(List<Long> carIds);
     public void updateViewCount(Long carId);
-    public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress);
-    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress);
+    public List<TransactionStatusResponseDto> viewTransaction(long userId);
+    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId);
     public List<IsHeartCarResponseDto> viewIsHeartCar(long userId);
     public List<RecommendCarResponseDto> viewUserCarRecommend(long userId);
     public void contractCar(long userId, long carId);
+    public List<SearchCarResponseDto> searchCarsBrandAndModelName(String token, String token1);
 }

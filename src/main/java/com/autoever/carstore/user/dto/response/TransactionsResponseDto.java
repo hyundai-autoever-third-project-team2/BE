@@ -7,13 +7,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class TransactionStatusResponseDto {
+public class TransactionsResponseDto {
     long car_sales_id;
-    String imageUrl;
     LocalDateTime sales_date;
     String progress;
     String brand;
     String model_name;
     String order_number;
     int price;
+    Long userId;
+    String userName;
 }
+

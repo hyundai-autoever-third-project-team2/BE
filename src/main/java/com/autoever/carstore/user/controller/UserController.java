@@ -3,12 +3,15 @@ package com.autoever.carstore.user.controller;
 import com.autoever.carstore.car.service.CarService;
 import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.user.dto.request.SurveyRequestDto;
+import com.autoever.carstore.user.dto.response.*;
 import com.autoever.carstore.user.dto.request.TokenRequest;
 import com.autoever.carstore.user.dto.request.UpdateNicknameRequestDto;
 import com.autoever.carstore.user.dto.request.UpdateProfileRequestDto;
 import com.autoever.carstore.user.dto.response.*;
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
+import com.google.firebase.auth.UserInfo;
+import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,12 +52,11 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
+    //구매내역 조회
     @GetMapping("/transaction")
-    public ResponseEntity<List<TransactionStatusResponseDto>> transaction(
-            @RequestParam String progress
-    ) {
+    public ResponseEntity<List<TransactionStatusResponseDto>> transaction() {
         UserEntity user = securityUtil.getLoginUser();
-        List<TransactionStatusResponseDto> result = carService.viewTransaction(user.getUserId(), progress);
+        List<TransactionStatusResponseDto> result = carService.viewTransaction(user.getUserId());
         return ResponseEntity.ok(result);
     }
 
@@ -64,7 +66,7 @@ public class UserController {
             @RequestParam String progress
     ){
         UserEntity user = securityUtil.getLoginUser();
-        List<UserCarTransactionStatusResponseDto> result = carService.viewUserCarTransaction(user.getUserId(), progress);
+        List<UserCarTransactionStatusResponseDto> result = carService.viewUserCarTransaction(user.getUserId());
         return ResponseEntity.ok(result);
     }
 
@@ -100,6 +102,22 @@ public class UserController {
         UserEntity user = securityUtil.getLoginUser();
         List<RecommendCarResponseDto> result = carService.viewUserCarRecommend(user.getUserId());
         return ResponseEntity.ok(result);
+    }
+
+    //사용자 정보 조회
+    @GetMapping("/info")
+    public ResponseEntity<UserInfoResponseDto> viewUserInfo(){
+        UserEntity user = securityUtil.getLoginUser();
+
+        UserInfoResponseDto userInfoResponse = UserInfoResponseDto.builder()
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .profileImage(user.getProfileImage())
+                .refreshToken(user.getRefreshToken())
+                .userName(user.getUsername())
+                .build();
+
+        return ResponseEntity.ok(userInfoResponse);
     }
 
     @PutMapping("/fcmToken")

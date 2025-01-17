@@ -9,7 +9,9 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
+
         corsRegistry.addMapping("/**")
+                .allowedOriginPatterns("http://localhost", "https://autoever.site", "https://twomuchcar.shop") // 와일드카드 허용 도메인
 
                 .allowedOrigins("https://twomuchcar.shop",
                         "https://www.googleapis.com/auth/cloud-platform",

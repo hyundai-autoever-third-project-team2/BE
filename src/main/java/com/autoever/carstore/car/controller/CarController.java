@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.StringTokenizer;
 
 @RestController
 @RequestMapping("/car")
@@ -116,12 +117,16 @@ public class CarController {
     //검색 차량 조회(브랜드, 모델)
     @GetMapping("/search")
     public ResponseEntity<List<SearchCarResponseDto>> searchCars(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String modelName) {
+            @RequestParam String searchCar) {
 
         List<SearchCarResponseDto> result = null;
         try {
-            result = carService.searchCars(brand, modelName);
+            String[] tokens = searchCar.split(" ", 2);
+            if (tokens.length == 1) {
+                result = carService.searchCars(searchCar, searchCar);
+            } else if (tokens.length == 2) {
+                result = carService.searchCarsBrandAndModelName(tokens[0], tokens[1]);
+            }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -182,6 +187,17 @@ public class CarController {
         return ResponseEntity.ok("Successfully registered!");
     }
 
+    //등록 차량 취소하기
+    @PutMapping("/updatePurchaseCar")
+    public ResponseEntity<String> updatePurchaseCar(
+            @RequestParam long car_purchase_id,
+            @RequestParam String progress
+    ){
+        carPurchaseService.updateCar(car_purchase_id, progress);
+        return ResponseEntity.ok("Successfully updated!");
+    }
+
+
     //차량 거래하기
     @PutMapping("/contract")
     public ResponseEntity<String> contractCar(
@@ -191,4 +207,5 @@ public class CarController {
         carService.contractCar(user.getUserId(), carId);
         return ResponseEntity.ok("Successfully contract!");
     }
+
 }

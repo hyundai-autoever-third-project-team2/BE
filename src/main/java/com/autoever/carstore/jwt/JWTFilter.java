@@ -32,7 +32,6 @@ public class JWTFilter extends OncePerRequestFilter {
         String accessToken = null;
         String refreshToken = null;
 
-        System.out.println("JWTFilter 실행 후 토큰 확인 중");
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -44,9 +43,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 }
             }
         }
-
-        System.out.println("accessToken : " + accessToken);
-        System.out.println("refreshToken : " + refreshToken);
 
         // Access Token이 없는 경우
         if (accessToken == null) {

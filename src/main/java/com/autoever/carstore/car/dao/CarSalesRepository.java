@@ -78,8 +78,9 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "AND cm.brand = :brand")
     List<CarSalesEntity> findSimilarCar(String carType, String brand);
 
-    @Query("SELECT c FROM CarSalesEntity c WHERE c.user.userId = :userId AND c.progress = :progress")
-    List<CarSalesEntity> findByUserIdAndProgress(@Param("userId") long userId, @Param("progress") String progress);
+    @Query("SELECT c FROM CarSalesEntity c WHERE c.user.userId = :userId " +
+            "ORDER BY c.salesDate DESC")
+    List<CarSalesEntity> findByUserId(@Param("userId") long userId);
 
     //판매중인 차량 카테고리 필터링
     @Query("SELECT cs FROM CarSalesEntity cs " +
@@ -126,4 +127,12 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
 
     @Query("SELECT COUNT(c) FROM CarSalesEntity c WHERE c.user.userId = :userId")
     int countByUserId(@Param("userId") long userId);
+
+    @Query("SELECT cs FROM CarSalesEntity cs " +
+            "JOIN cs.car c " +
+            "JOIN c.carModel cm " +
+            "WHERE cs.progress = '판매중' " +
+            "AND (:brand IS NULL OR cm.brand LIKE %:brand%) " +
+            "OR (:modelName IS NULL OR cm.modelName LIKE %:modelName%)")
+    List<CarSalesEntity> findByBrandOrCarName(String brand, String modelName);
 }

@@ -1,3 +1,53 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Admin Dashboard</title>-->
+<!--    <link rel="stylesheet" href="/styles.css">-->
+<!--</head>-->
+<!--<body>-->
+<!--<script>-->
+<!--    // 계정 상태를 표시하는 요소-->
+<!--    const accountStatus = document.getElementById('account-status');-->
+<!--    const actionButton = document.getElementById('account-action-btn');-->
+<!--    let isActive = accountStatus.textContent.trim()==='활성화';-->
+
+<!--    function toggleAccountStatus() {-->
+
+<!--        // 현재 상태 가져오기-->
+<!--        isActive = !isActive;-->
+
+<!--        console.log('초기 isActive 값:', isActive);-->
+
+<!--        // UI 업데이트-->
+<!--        accountStatus.textContent = isActive ? '활성화' : '비활성화';-->
+<!--        actionButton.textContent = isActive ? '계정 정지' : '계정 복구';-->
+<!--    }-->
+<!--</script>-->
+
+<!--<div class="modal-content">-->
+<!--    <div>-->
+<!--        <p><strong>이름:</strong> <span th:text="${user.nickname}"></span></p>-->
+<!--    </div>-->
+
+<!--    <div>-->
+<!--        <p><strong>이메일:</strong> <span th:text="${user.email}"></span></p>-->
+<!--    </div>-->
+
+<!--    <div>-->
+<!--        <p><strong>계정 상태:</strong>-->
+<!--            <span id="account-status" th:text="${user.isActive} ? '활성화' : '비활성화'"></span>-->
+<!--        </p>-->
+
+<!--        &lt;!&ndash; 버튼은 초기 상태에 따라 다르게 표시 &ndash;&gt;-->
+<!--        <button id="account-action-btn"-->
+<!--                th:text="${user.isActive} ? '계정 정지' : '계정 활성화'"-->
+<!--                onclick="toggleAccountStatus()">-->
+<!--        </button>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -5,30 +55,6 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-<script>
-    function toggleAccountStatus() {
-        // 계정 상태를 표시하는 요소
-        const accountStatus = document.getElementById('account-status');
-        const actionButton = document.getElementById('account-action-btn');
-
-        // 디버깅: 현재 상태 출력
-        console.log('Before toggle:', accountStatus.textContent);
-
-        // 현재 상태 가져오기
-        const isActive = accountStatus.textContent.trim() === '활성화';
-
-        // 상태 반전
-        const newStatus = !isActive;
-
-        // UI 업데이트
-        accountStatus.textContent = newStatus ? '활성화' : '비활성화';
-        actionButton.textContent = newStatus ? '계정 정지' : '계정 활성화';
-
-        // 디버깅: 변경된 상태 출력
-        console.log('After toggle:', accountStatus.textContent);
-    }
-</script>
-
 <div class="modal-content">
     <div>
         <p><strong>이름:</strong> <span th:text="${user.nickname}"></span></p>
@@ -40,17 +66,43 @@
 
     <div>
         <p><strong>계정 상태:</strong>
-            <span id="account-status" th:text="${user.isActive} ? '활성화' : '비활성화'"></span>
+            <span id="account-status" th:text="${user.isActive} ? '활성화' : '비활성화'">비활성화</span>
         </p>
-    </div>
 
-    <div>
         <!-- 버튼은 초기 상태에 따라 다르게 표시 -->
         <button id="account-action-btn"
-                th:text="${user.isActive} ? '계정 정지' : '계정 활성화'"
-                onclick="toggleAccountStatus()">
+                th:text="${user.isActive} ? '계정 정지' : '계정 활성화'">
+            계정 활성화
         </button>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 계정 상태를 표시하는 요소
+        const accountStatus = document.getElementById('account-status');
+        const actionButton = document.getElementById('account-action-btn');
+
+        // 초기 상태 가져오기
+        let isActive = accountStatus.textContent.trim() === '활성화';
+
+        console.log('초기 상태:', isActive);
+
+        // 상태 변경 함수
+        function toggleAccountStatus() {
+            // 상태 반전
+            isActive = !isActive;
+            console.log('토글 후 isActive 값:', isActive);
+
+            // UI 업데이트
+            accountStatus.textContent = isActive ? '활성화' : '비활성화';
+            actionButton.textContent = isActive ? '계정 정지' : '계정 복구';
+        }
+
+        // 버튼 클릭 이벤트 리스너 추가
+        actionButton.addEventListener('click', toggleAccountStatus);
+    });
+</script>
 </body>
 </html>
+

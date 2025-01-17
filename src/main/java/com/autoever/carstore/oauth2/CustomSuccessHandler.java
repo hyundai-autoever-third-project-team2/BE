@@ -135,29 +135,47 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             userRepository.save(user); // 변경사항 저장
         }
 
+        // 역할(Role)에 따라 리디렉션 URL 설정
+        String targetUrl;
+        if ("ROLE_ADMIN".equals(role)) {
+            targetUrl = "https://twomuchcar.shop/admin/home";
+        } else {
+            targetUrl = "https://autoever.site/";
+        }
+
+        // 리디렉션 URL에 JWT 토큰 추가 (쿼리 파라미터로 전달)
+        targetUrl = String.format("%s/success?accessToken=%s&refreshToken=%s", targetUrl, accessToken, refreshToken);
+
+        // 리디렉션
+        response.sendRedirect(targetUrl);
+
         // 쿠키에 Access Token 저장
-        response.addHeader("Set-Cookie", createSecureCookie("AccessToken", accessToken, 60 * 60 * 24)); // 24시간 유효
+        //response.addHeader("Set-Cookie", createSecureCookie("AccessToken", accessToken, 60 * 60 * 24)); // 24시간 유효
         // 쿠키에 Refresh Token 저장
-        response.addHeader("Set-Cookie", createSecureCookie("RefreshToken", refreshToken, 60 * 60 * 24 * 7)); // 7일 유효
+        //response.addHeader("Set-Cookie", createSecureCookie("RefreshToken", refreshToken, 60 * 60 * 24 * 7)); // 7일 유효
+
+
 
         // 역할(Role)에 따른 리디렉션
-        if ("ROLE_ADMIN".equals(role)) {
-            response.sendRedirect("http://localhost:8080/admin/home"); // Admin 사용자 리디렉션
-        } else {
-            response.sendRedirect("https://autoever.site/"); // 일반 사용자 리디렉션
-        }
+//        if ("ROLE_ADMIN".equals(role)) {
+//            //https://twomuchcar.shop/admin/home
+//            //http://localhost:8080/admin/home
+//            response.sendRedirect("http://localhost:8080/admin/home"); // Admin 사용자 리디렉션
+//        } else {
+//            response.sendRedirect("https://autoever.site/"); // 일반 사용자 리디렉션
+//        }
     }
 
-    private String createSecureCookie(String name, String value, int maxAge) {
-        return ResponseCookie.from(name, value)
-                .domain(".twomuchcar.shop") // 메인 도메인과 서브도메인 간 공유
-                .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .maxAge(maxAge)
-                .build()
-                .toString();
-    }
+//    private String createSecureCookie(String name, String value, int maxAge) {
+//        return ResponseCookie.from(name, value)
+//                .domain(".twomuchcar.shop") // 메인 도메인과 서브도메인 간 공유
+//                .path("/")
+//                .httpOnly(true)
+//                .secure(true)
+//                .sameSite("None")
+//                .maxAge(maxAge)
+//                .build()
+//                .toString();
+//    }
 }
 

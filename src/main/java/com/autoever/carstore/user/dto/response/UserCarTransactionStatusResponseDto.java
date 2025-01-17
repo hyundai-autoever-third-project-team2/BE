@@ -8,6 +8,7 @@ import lombok.Getter;
 @Builder
 public class UserCarTransactionStatusResponseDto{
     long car_purchase_id;
+    String imageUrl;
     LocalDateTime purchase_date;
     String progress;
     String brand;
