@@ -1,0 +1,75 @@
+package com.autoever.carstore.notification.service;
+
+import com.autoever.carstore.notification.dao.NotificationRepository;
+import com.autoever.carstore.notification.dto.NotificationRequestDto;
+import com.autoever.carstore.notification.dto.NotificationResponseDto;
+import com.autoever.carstore.notification.entity.NotificationEntity;
+import com.autoever.carstore.oauthjwt.util.SecurityUtil;
+import com.autoever.carstore.user.entity.UserEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class NotificationServiceImpl implements NotificationService {
+
+    private final NotificationRepository notificationRepository;
+    private final SecurityUtil securityUtil;
+
+    @Override
+    public NotificationResponseDto addNotification(NotificationRequestDto request) {
+
+        NotificationEntity notificationEntity = NotificationEntity.builder()
+                .user(request.getUser())
+                .notificationType(request.getNotificationType())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .isRead(false)
+                .build();
+
+        NotificationEntity entity = notificationRepository.save(notificationEntity);
+
+        return NotificationResponseDto.builder()
+                .notificationId(entity.getNotificationId())
+                .notificationType(entity.getNotificationType())
+                .title(entity.getTitle())
+                .content(entity.getContent())
+                .isRead(entity.isRead())
+                .build();
+    }
+
+    @Override
+    public void clickNotification(Long notificationId) {
+        NotificationEntity notification = notificationRepository.findById(notificationId).orElse(null);
+
+        if(notification != null) {
+            throw new NotFoundException("Notification with id " + notificationId + " not found");
+        }
+
+        notification.updateIsRead();
+
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public List<NotificationResponseDto> getNotificationList() {
+        UserEntity user = securityUtil.getLoginUser();
+
+        List<NotificationEntity> list = notificationRepository.findByUserOrderByCreatedAtDesc(user);
+
+        return list.stream()
+                .map(notification ->
+                        NotificationResponseDto.builder()
+                                .notificationId(notification.getNotificationId())
+                                .notificationType(notification.getNotificationType())
+                                .title(notification.getTitle())
+                                .content(notification.getContent())
+                                .isRead(notification.isRead())
+                                .build())
+                .collect(Collectors.toList());
+    }
+}
