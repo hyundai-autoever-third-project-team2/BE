@@ -18,10 +18,9 @@ public class FeedController {
     private final FeedService feedService;
 
     @PostMapping("/write")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> writeFeed(@ModelAttribute FeedRequestDto feedRequestDto) throws IOException {
+    public ResponseEntity<String> writeFeed(@RequestBody FeedRequestDto feedRequestDto) throws IOException {
         feedService.saveFeed(feedRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("success");
+        return ResponseEntity.ok("Success");
     }
 
     @PutMapping("/delete")

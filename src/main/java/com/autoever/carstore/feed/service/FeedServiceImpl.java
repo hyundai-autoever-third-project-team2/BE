@@ -52,7 +52,7 @@ public class FeedServiceImpl implements FeedService {
             throw new IllegalArgumentException("로그인된 사용자가 없습니다.");
         }
 
-        String imageUrl = imageUploadService.upload(feedRequestDto.getImage());
+        String imageUrl = feedRequestDto.getImageUrl();
 
         if(imageUrl == null){
             throw new IllegalArgumentException("imageUrl can't be null");
