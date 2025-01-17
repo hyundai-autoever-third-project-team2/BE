@@ -92,7 +92,8 @@ public class SecurityConfig {
                                 Arrays.asList(
                                         "https://twomuchcar.shop",  // 운영 도메인
                                         "https://autoever.site",
-                                        "http://localhost:8080"    // 로컬 테스트 도메인
+                                        "http://localhost:8080",    // 로컬 테스트 도메인
+                                        "http://localhost:5173"
                                 )
                         );
                         configuration.setAllowedMethods(Collections.singletonList("*"));
