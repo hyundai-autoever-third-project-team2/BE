@@ -78,7 +78,8 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "AND cm.brand = :brand")
     List<CarSalesEntity> findSimilarCar(String carType, String brand);
 
-    @Query("SELECT c FROM CarSalesEntity c WHERE c.user.userId = :userId")
+    @Query("SELECT c FROM CarSalesEntity c WHERE c.user.userId = :userId " +
+            "ORDER BY c.salesDate DESC")
     List<CarSalesEntity> findByUserId(@Param("userId") long userId);
 
     //판매중인 차량 카테고리 필터링
