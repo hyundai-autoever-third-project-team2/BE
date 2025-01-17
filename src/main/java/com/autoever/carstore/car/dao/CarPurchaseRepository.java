@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface CarPurchaseRepository  extends JpaRepository<CarPurchaseEntity, Long> {
-    @Query("SELECT c FROM CarPurchaseEntity c WHERE c.user.userId = :userId AND c.progress = :progress")
-    List<CarPurchaseEntity> findByUserIdAndProgress(@Param("userId") long userId, @Param("progress") String progress);
+    @Query("SELECT c FROM CarPurchaseEntity c WHERE c.user.userId = :userId")
+    List<CarPurchaseEntity> findByUserId(@Param("userId") long userId);
 
     @Query("SELECT COUNT(c) FROM CarPurchaseEntity c WHERE c.user.userId = :userId")
     int countByUserId(@Param("userId") long userId);

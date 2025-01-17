@@ -52,12 +52,11 @@ public class UserController {
         return ResponseEntity.ok("");
     }
 
+    //구매내역 조회
     @GetMapping("/transaction")
-    public ResponseEntity<List<TransactionStatusResponseDto>> transaction(
-            @RequestParam String progress
-    ) {
+    public ResponseEntity<List<TransactionStatusResponseDto>> transaction() {
         UserEntity user = securityUtil.getLoginUser();
-        List<TransactionStatusResponseDto> result = carService.viewTransaction(user.getUserId(), progress);
+        List<TransactionStatusResponseDto> result = carService.viewTransaction(user.getUserId());
         return ResponseEntity.ok(result);
     }
 
@@ -67,7 +66,7 @@ public class UserController {
             @RequestParam String progress
     ){
         UserEntity user = securityUtil.getLoginUser();
-        List<UserCarTransactionStatusResponseDto> result = carService.viewUserCarTransaction(user.getUserId(), progress);
+        List<UserCarTransactionStatusResponseDto> result = carService.viewUserCarTransaction(user.getUserId());
         return ResponseEntity.ok(result);
     }
 

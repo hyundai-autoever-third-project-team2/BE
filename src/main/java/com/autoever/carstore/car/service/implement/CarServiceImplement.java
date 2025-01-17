@@ -656,8 +656,8 @@ public class CarServiceImplement implements CarService {
 
     //구매 내역 조회 서비스
     @Override
-    public List<TransactionStatusResponseDto> viewTransaction(long userId, String progress) {
-        List<CarSalesEntity> carSalesEntities = carSalesRepository.findByUserIdAndProgress(userId, progress);
+    public List<TransactionStatusResponseDto> viewTransaction(long userId) {
+        List<CarSalesEntity> carSalesEntities = carSalesRepository.findByUserId(userId);
         List<TransactionStatusResponseDto> results = new ArrayList<>();
         for(CarSalesEntity carSalesEntity : carSalesEntities){
             TransactionStatusResponseDto transactionStatusResponseDto = TransactionStatusResponseDto.builder()
@@ -668,6 +668,7 @@ public class CarServiceImplement implements CarService {
                     .model_name(carSalesEntity.getCar().getCarModel().getModelName())
                     .order_number(carSalesEntity.getOrderNumber())
                     .price(carSalesEntity.getPrice())
+                    .imageUrl(carSalesEntity.getCar().getImages().get(0).getImageUrl())
                     .build();
             results.add(transactionStatusResponseDto);
         }
@@ -676,8 +677,8 @@ public class CarServiceImplement implements CarService {
 
     //판매 내역 조회 서비스
     @Override
-    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId, String progress) {
-        List<CarPurchaseEntity> carPurchaseEntities = carPurchaseRepository.findByUserIdAndProgress(userId, progress);
+    public List<UserCarTransactionStatusResponseDto> viewUserCarTransaction(long userId) {
+        List<CarPurchaseEntity> carPurchaseEntities = carPurchaseRepository.findByUserId(userId);
         List<UserCarTransactionStatusResponseDto> results = new ArrayList<>();
         for(CarPurchaseEntity carPurchaseEntity : carPurchaseEntities){
             UserCarTransactionStatusResponseDto userCarTransactionStatusResponseDto = UserCarTransactionStatusResponseDto.builder()
@@ -687,6 +688,7 @@ public class CarServiceImplement implements CarService {
                     .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
                     .model_name(carPurchaseEntity.getCar().getCarModel().getModelName())
                     .price(carPurchaseEntity.getPrice())
+                    .imageUrl(carPurchaseEntity.getCar().getImages().get(0).getImageUrl())
                     .build();
             results.add(userCarTransactionStatusResponseDto);
         }
