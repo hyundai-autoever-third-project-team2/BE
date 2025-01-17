@@ -13,6 +13,6 @@ import java.util.List;
 public class FeedRequestDto {
     private Long userId;
     private String contents;
-    private MultipartFile image;
+    private String imageUrl;
     private List<String> hashtagList;
 }
