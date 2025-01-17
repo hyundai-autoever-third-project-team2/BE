@@ -48,10 +48,10 @@ public class CarController {
     @GetMapping("/abroad")
     public ResponseEntity<? super List<AbroadCarResponseDto>> viewAbroadCar() {
         List<AbroadCarResponseDto> result = null;
+        UserEntity user = securityUtil.getLoginUser();
 
         try {
-            System.out.println("abroad 컨트롤러");
-            result = carService.getAbroadCarList();
+            result = carService.getAbroadCarList(user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -155,9 +155,10 @@ public class CarController {
         @RequestParam(required = false) Long carId
     ){
         DetailCarResponseDto result = null;
+        UserEntity user = securityUtil.getLoginUser();
         try {
             carService.updateViewCount(carId);
-            result = carService.findByCarId(carId);
+            result = carService.findByCarId(carId, user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

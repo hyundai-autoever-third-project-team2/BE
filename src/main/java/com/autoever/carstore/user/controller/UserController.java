@@ -109,6 +109,7 @@ public class UserController {
         UserEntity user = securityUtil.getLoginUser();
 
         UserInfoResponseDto userInfoResponse = UserInfoResponseDto.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
