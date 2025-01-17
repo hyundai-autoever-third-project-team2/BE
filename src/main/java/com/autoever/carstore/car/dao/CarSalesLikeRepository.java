@@ -2,7 +2,9 @@ package com.autoever.carstore.car.dao;
 
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.CarSalesLikeEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,4 +25,9 @@ public interface CarSalesLikeRepository extends JpaRepository<CarSalesLikeEntity
             "FROM CarSalesLikeEntity c " +
             "WHERE c.carSales.carSalesId = :carSalesId AND c.user.userId = :userId")
     boolean findByCarSalesIdUserId(long carSalesId, long userId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CarSalesLikeEntity  c WHERE c.user.userId = :userId AND c.carSales.carSalesId  = :carSalesId")
+    void deleteByUserIdCarId(@Param("userId") long userId, @Param("carSalesId") long carSalesId);
 }
