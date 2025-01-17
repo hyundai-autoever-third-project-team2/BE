@@ -21,6 +21,24 @@ public class FCMService {
     private final ObjectMapper objectMapper;
 
     // 메시지를 구성하고 토큰을 받아서 FCM으로 메시지를 처리한다.
+//    public void sendMessageTo(String targetToken, String title, String body) throws Exception {
+//        String message = makeMessage(targetToken, title, body);
+//
+//        OkHttpClient client = new OkHttpClient();
+//        RequestBody requestBody = RequestBody.create(message, // 만든 message body에 넣기
+//                MediaType.get("application/json; charset=utf-8"));
+//
+//        Request request = new Request.Builder()
+//                .url(API_URL)
+//                .post(requestBody)
+//                .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken()) // header에 포함
+//                .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
+//                .build();
+//        Response response = client.newCall(request).execute(); // 요청 보냄
+//
+//        System.out.println(response.body().string());
+//    }
+
     public void sendMessageTo(String targetToken, String title, String body) throws Exception {
         String message = makeMessage(targetToken, title, body);
 
@@ -47,9 +65,9 @@ public class FCMService {
                         .notification(FcmMessage.Notification.builder()
                                 .title(title)
                                 .body(body)
-                                .image(null)
                                 .build()
-                        ).build()).validateOnly(false).build();
+                        )
+                        .build()).validateOnly(false).build();
         return objectMapper.writeValueAsString(fcmMessage);
     }
 

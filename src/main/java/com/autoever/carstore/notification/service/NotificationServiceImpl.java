@@ -8,7 +8,6 @@ import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,10 +44,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void clickNotification(Long notificationId) {
         NotificationEntity notification = notificationRepository.findById(notificationId).orElse(null);
-
-        if(notification != null) {
-            throw new NotFoundException("Notification with id " + notificationId + " not found");
-        }
 
         notification.updateIsRead();
 

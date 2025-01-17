@@ -2,11 +2,13 @@ package com.autoever.carstore.reservation.service;
 
 import com.autoever.carstore.agency.dao.AgencyRepository;
 import com.autoever.carstore.agency.entity.AgencyEntity;
+import com.autoever.carstore.fcm.service.FCMService;
+import com.autoever.carstore.notification.dto.NotificationRequestDto;
+import com.autoever.carstore.notification.service.NotificationService;
 import com.autoever.carstore.oauthjwt.util.SecurityUtil;
 import com.autoever.carstore.reservation.dao.ReservationRepository;
 import com.autoever.carstore.reservation.dto.ReservationResponseDto;
 import com.autoever.carstore.reservation.entity.ReservationEntity;
-import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,9 +22,10 @@ import java.util.stream.Collectors;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
-    private final UserRepository userRepository;
     private final AgencyRepository agencyRepository;
     private final SecurityUtil securityUtil;
+    private final FCMService fcmService;
+    private final NotificationService notificationService;
 
     @Override
     public ReservationResponseDto makeReservation(Long agencyId, LocalDateTime time) {
@@ -58,6 +61,22 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         List<ReservationEntity> li = reservationRepository.findByUser(user);
+
+        String title = "예약 조회 완료!";
+        String body = li.size() + "건의 예약이 조회되었습니다.";
+        NotificationRequestDto notification = NotificationRequestDto.builder()
+                .user(user)
+                .notificationType(1)
+                .title(title)
+                .content(body)
+                .build();
+
+        try{
+            fcmService.sendMessageTo(user.getFcmToken(), title, body);
+            notificationService.addNotification(notification);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return li.stream()
                 .map(reservation -> ReservationResponseDto.builder()
