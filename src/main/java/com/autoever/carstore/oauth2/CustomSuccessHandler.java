@@ -144,7 +144,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
         // 리디렉션 URL에 JWT 토큰 추가 (쿼리 파라미터로 전달)
-        targetUrl = String.format("%s?accessToken=%s&refreshToken=%s", targetUrl, accessToken, refreshToken);
+        targetUrl = String.format("%s/success?accessToken=%s&refreshToken=%s", targetUrl, accessToken, refreshToken);
 
         // 리디렉션
         response.sendRedirect(targetUrl);
