@@ -1,8 +1,10 @@
 package com.autoever.carstore.admin.controller;
 
 
+import com.autoever.carstore.admin.dto.response.AgencyDto;
 import com.autoever.carstore.admin.dto.response.JudgeResponseDto;
 import com.autoever.carstore.admin.service.AdminService;
+import com.autoever.carstore.agency.entity.AgencyEntity;
 import com.autoever.carstore.car.entity.CarPurchaseEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.oauthjwt.util.SecurityUtil;
@@ -24,6 +26,11 @@ public class AdminController {
     private final AdminService adminService;
     private final UserService userService;
     private final SecurityUtil securityUtil;
+
+    @ModelAttribute("agencies")
+    public List<AgencyDto> getAgencies() {
+        return adminService.getAllAgencies();
+    }
 
     // 메인 페이지 (유저 리스트 포함)
     @GetMapping("/admin/home")
@@ -66,19 +73,18 @@ public class AdminController {
         return "admin/judge";
     }
 
-//    @PostMapping("/admin/judge/complete")
-//    public ResponseEntity<Void> completeJudge(@RequestBody Map<String, Object> request) {
-//        Long purchaseId = Long.parseLong(request.get("purchaseId").toString());
-//        int price = Integer.parseInt(request.get("price").toString());
-//        adminService.completeJudge(purchaseId, price);
-//        return ResponseEntity.ok().build();
-//    }
-//    @PostMapping("/admin/judge/reject")
-//    public ResponseEntity<Void> rejectJudge(@RequestBody Map<String, Object> request) {
-//        Long purchaseId = Long.parseLong(request.get("purchaseId").toString());
-//        adminService.rejectJudge(purchaseId);
-//        return ResponseEntity.ok().build();
-//    }
+    @GetMapping("/admin/registration")
+    public String registration(Model model) {
+        model.addAttribute("currentProgress", false); // 초기 상태
+        model.addAttribute("registrationCars", adminService.getRegistrationCarsByProgress(false));
+        return "admin/registration";
+    }
 
+    @GetMapping("/admin/registration/{isVisible}")
+    public String registration(@PathVariable boolean isVisible, Model model) {
+        model.addAttribute("currentProgress", isVisible);
+        model.addAttribute("registrationCars", adminService.getRegistrationCarsByProgress(isVisible));
+        return "admin/registration";
+    }
 
 }

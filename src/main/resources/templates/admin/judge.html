@@ -1,3 +1,108 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Judge Cars</title>-->
+<!--    &lt;!&ndash; Bootstrap CSS &ndash;&gt;-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--</head>-->
+<!--<body class="bg-light">-->
+
+<!--<div class="container mt-5">-->
+<!--    &lt;!&ndash; 카테고리 버튼 &ndash;&gt;-->
+<!--    <div class="d-flex justify-content-start mb-4">-->
+<!--        <button class="btn btn-outline-secondary me-2"-->
+<!--                data-progress="before"-->
+<!--                th:classappend="${currentProgress == 'before'} ? 'active btn-secondary' : ''"-->
+<!--                onclick="loadPage('/admin/judge/before')">심사 전</button>-->
+<!--        <button class="btn btn-outline-danger me-2"-->
+<!--                data-progress="deny"-->
+<!--                th:classappend="${currentProgress == 'deny'} ? 'active btn-danger' : ''"-->
+<!--                onclick="loadPage('/admin/judge/deny')">심사 거절</button>-->
+<!--        <button class="btn btn-outline-success"-->
+<!--                data-progress="complete"-->
+<!--                th:classappend="${currentProgress == 'complete'} ? 'active btn-success' : ''"-->
+<!--                onclick="loadPage('/admin/judge/complete')">심사 완료</button>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; 심사 상태 테이블 &ndash;&gt;-->
+<!--    <div class="table-responsive">-->
+<!--        <table class="table table-striped table-bordered text-center">-->
+<!--            <thead class="table-success">-->
+<!--            <tr>-->
+<!--                <th>No</th>-->
+<!--                <th>회원 번호</th>-->
+<!--                <th>회원 이름</th>-->
+<!--                <th>브랜드</th>-->
+<!--                <th>모델명</th>-->
+<!--                <th>등록일</th>-->
+<!--                <th>심사</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            <tr th:each="car, iterStat : ${judgeCars}">-->
+<!--                <td th:text="${iterStat.index + 1}"></td>-->
+<!--                <td th:text="${car.userId}"></td>-->
+<!--                <td th:text="${car.userName}"></td>-->
+<!--                <td th:text="${car.brand}"></td>-->
+<!--                <td th:text="${car.modelName}"></td>-->
+<!--                <td th:text="${car.purchaseDate}"></td>-->
+<!--                <td>-->
+<!--                    &lt;!&ndash; 심사하기 버튼 &ndash;&gt;-->
+<!--                    <button class="btn btn-secondary"-->
+<!--                            th:data-user-id="${car.userId}"-->
+<!--                            th:data-user-name="${car.userName}"-->
+<!--                            th:data-model-name="${car.modelName}"-->
+<!--                            th:data-model-purchaseId="${car.carPurchaseId}"-->
+<!--                            th:data-model-carImage="${car.carImage}"-->
+<!--                            th:data-model-userCarImages="${car.userCarImages}"-->
+<!--                            th:data-model-brand="${car.brand}"-->
+<!--                            th:data-model-comments="${car.comments}"-->
+<!--                            data-bs-toggle="modal"-->
+<!--                            data-bs-target="#judgeModal"-->
+<!--                            onclick="openJudgeModal(this)">-->
+<!--                        심사 하기-->
+<!--                    </button>-->
+<!--                </td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--        </table>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 심사 모달 &ndash;&gt;-->
+<!--<div class="modal fade" id="judgeModal" tabindex="-1" aria-labelledby="judgeModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-dialog-centered">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="judgeModalLabel">심사하기</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <p><strong>구매 번호:</strong> <span id="modal-model-purchaseId"></span></p>-->
+<!--                <p><strong>회원 번호:</strong> <span id="modal-user-id"></span></p>-->
+<!--                <p><strong>회원 이름:</strong> <span id="modal-user-name"></span></p>-->
+<!--                <p><strong>모델명:</strong> <span id="modal-model-name"></span></p>-->
+<!--                <p><strong>브랜드:</strong> <span id="modal-model-brand"></span></p>-->
+<!--                <p><strong>추가 설명:</strong> <span id="modal-model-comments"></span></p>-->
+<!--                <p><strong>대표 이미지:</strong></p>-->
+<!--                <img id="modal-model-carImage" alt="Car Image" class="img-fluid mb-3">-->
+<!--                <p><strong>사용자 업로드 이미지:</strong></p>-->
+<!--                <div id="modal-userCarImages" class="d-flex flex-wrap gap-2"></div>-->
+<!--                <p><strong>가격 설정:</strong></p>-->
+<!--                <input type="number" id="modal-price" class="form-control" placeholder="가격을 입력하세요">-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>-->
+<!--                <button type="button" class="btn btn-success" onclick="submitJudge()">심사 제출</button>-->
+<!--                <button type="button" class="btn btn-danger" onclick="rejectJudge()">심사 반려</button>-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -10,13 +115,13 @@
 <div class="container mt-5">
     <!-- 카테고리 버튼 -->
     <div class="d-flex justify-content-start mb-4">
-        <button class="btn btn-outline-primary me-2"
-                data-progress="before"
-                th:classappend="${currentProgress == 'before'} ? 'active btn-primary' : ''"
-                onclick="loadPage('/admin/judge/before')">심사 전</button>
         <button class="btn btn-outline-secondary me-2"
+                data-progress="before"
+                th:classappend="${currentProgress == 'before'} ? 'active btn-secondary' : ''"
+                onclick="loadPage('/admin/judge/before')">심사 전</button>
+        <button class="btn btn-outline-danger me-2"
                 data-progress="deny"
-                th:classappend="${currentProgress == 'deny'} ? 'active btn-secondary' : ''"
+                th:classappend="${currentProgress == 'deny'} ? 'active btn-danger' : ''"
                 onclick="loadPage('/admin/judge/deny')">심사 거절</button>
         <button class="btn btn-outline-success"
                 data-progress="complete"
@@ -27,7 +132,7 @@
     <!-- 심사 상태 테이블 -->
     <div class="table-responsive">
         <table class="table table-striped table-bordered text-center">
-            <thead class="table-dark">
+            <thead class="table-success">
             <tr>
                 <th>No</th>
                 <th>회원 번호</th>
@@ -39,16 +144,18 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="car, iterStat : ${judgeCars}">
+            <tr th:each="car, iterStat : ${judgeCars} " >
                 <td th:text="${iterStat.index + 1}"></td>
                 <td th:text="${car.userId}"></td>
                 <td th:text="${car.userName}"></td>
                 <td th:text="${car.brand}"></td>
                 <td th:text="${car.modelName}"></td>
                 <td th:text="${car.purchaseDate}"></td>
-                <td>
-                    <!-- 심사하기 버튼 -->
-                    <button class="btn btn-primary"
+                <td class="d-flex justify-content-center align-items-center" style="min-height: 50px;">
+                    <!-- 심사하기 버튼: car.progress가 "심사전"일 때만 표시 -->
+                    <button
+                            th:if="${car.progress == '심사중'}"
+                            class="btn btn-secondary"
                             th:data-user-id="${car.userId}"
                             th:data-user-name="${car.userName}"
                             th:data-model-name="${car.modelName}"
@@ -93,9 +200,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                <button type="button" class="btn btn-primary" onclick="submitJudge()">심사 제출</button>
-                <button type="button" class="btn btn-primary" onclick="rejectJudge()">심사 반려</button>
-
+                <button type="button" class="btn btn-success" onclick="submitJudge()">심사 제출</button>
+                <button type="button" class="btn btn-danger" onclick="rejectJudge()">심사 반려</button>
             </div>
         </div>
     </div>
@@ -103,3 +209,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

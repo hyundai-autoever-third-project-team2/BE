@@ -1,10 +1,12 @@
 package com.autoever.carstore.admin.controller;
 
+import com.autoever.carstore.admin.dto.request.RegistrationRequestDto;
 import com.autoever.carstore.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -27,4 +29,17 @@ public class AdminRestController {
         adminService.rejectJudge(purchaseId);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/admin/registration/submit")
+    @ResponseBody
+    public ResponseEntity<?> submitRegistration(@RequestBody RegistrationRequestDto requestDto) {
+        boolean success = adminService.submitRegistration(requestDto);
+        if(success){
+            return ResponseEntity.ok().body("{\"success\": true}");
+        } else {
+            return ResponseEntity.status(500).body("{\"success\": false}");
+        }
+    }
+
+
 }

@@ -128,6 +128,100 @@
             document.getElementById('judge-modal').style.display = 'none';
         };
 
+        // 등록 모달
+        window.openRegistrationModal = function (button) {
+            // 데이터 속성에서 필요한 정보를 추출하여 모달에 표시
+            const carSalesId = button.getAttribute('data-car-sales-id');
+            const carId = button.getAttribute('data-car-id');
+            const distance = button.getAttribute('data-distance');
+            const navigation = button.getAttribute('data-navigation');
+            const hud = button.getAttribute('data-hud');
+            const ventilatedSeat = button.getAttribute('data-ventilated-seat');
+            const cruiseControl = button.getAttribute('data-cruise-control');
+            const sunroof = button.getAttribute('data-sunroof');
+            const parkingDistanceWarning = button.getAttribute('data-parking-distance-warning');
+            const lineOutWarning = button.getAttribute('data-line-out-warning');
+            const carImage = button.getAttribute('data-car-image');
+            const carBrand = button.getAttribute('data-car-brand');
+            const carModel = button.getAttribute('data-car-model');
+            // userCarImages와 modelComments는 제거됨
+
+            // 모달에 데이터 설정
+            document.getElementById('modal-model-purchaseId').textContent = carSalesId || "N/A";
+            document.getElementById('modal-car-id').textContent = carId || "N/A";
+            document.getElementById('modal-distance').textContent = distance || "N/A";
+            document.getElementById('modal-navigation').textContent = navigation === 'true' ? '있음' : '없음';
+            document.getElementById('modal-hud').textContent = hud === 'true' ? '있음' : '없음';
+            document.getElementById('modal-ventilated-seat').textContent = ventilatedSeat === 'true' ? '있음' : '없음';
+            document.getElementById('modal-cruise-control').textContent = cruiseControl === 'true' ? '있음' : '없음';
+            document.getElementById('modal-sunroof').textContent = sunroof === 'true' ? '있음' : '없음';
+            document.getElementById('modal-parking-distance-warning').textContent = parkingDistanceWarning === 'true' ? '있음' : '없음';
+            document.getElementById('modal-line-out-warning').textContent = lineOutWarning === 'true' ? '있음' : '없음';
+            document.getElementById('modal-car-brand').textContent = carBrand || "N/A";
+            document.getElementById('modal-car-model').textContent = carModel || "N/A";
+            document.getElementById('modal-model-carImage').src = carImage || "/placeholder.jpg";
+
+            // 가격 입력 초기화
+            document.getElementById('modal-price').value = '';
+
+            // 지점 설정 초기화
+            document.getElementById('modal-agency-id').value = "";
+        };
+
+        window.submitRegistration = function () {
+            // 등록 제출 로직 구현
+            const carSalesId = document.getElementById('modal-model-purchaseId').textContent;
+            // const carId = document.getElementById('modal-car-id').textContent;
+            // const distance = document.getElementById('modal-distance').textContent;
+            // const navigation = document.getElementById('modal-navigation').textContent === '있음';
+            // const hud = document.getElementById('modal-hud').textContent === '있음';
+            // const ventilatedSeat = document.getElementById('modal-ventilated-seat').textContent === '있음';
+            // const cruiseControl = document.getElementById('modal-cruise-control').textContent === '있음';
+            // const sunroof = document.getElementById('modal-sunroof').textContent === '있음';
+            // const parkingDistanceWarning = document.getElementById('modal-parking-distance-warning').textContent === '있음';
+            // const lineOutWarning = document.getElementById('modal-line-out-warning').textContent === '있음';
+            // const carBrand = document.getElementById('modal-car-brand').textContent;
+            // const carModel = document.getElementById('modal-car-model').textContent;
+            const agencyId = document.getElementById('modal-agency-id').value;
+            const price = document.getElementById('modal-price').value;
+
+            if (!agencyId) {
+                alert('지점을 선택해주세요.');
+                return;
+            }
+
+            if (!price) {
+                alert('가격을 입력해주세요.');
+                return;
+            }
+
+            fetch('/admin/registration/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    purchaseId: carSalesId,
+                    price: price,
+                    agencyId: agencyId,
+                    isVisible: true // isVisible을 true로 설정
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success){
+                        alert('등록이 완료되었습니다.');
+                        const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
+                        registrationModal.hide();
+                        location.reload();
+                    } else {
+                        alert('등록에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('등록 중 오류가 발생했습니다.');
+                });
+        };
+
 
     </script>
 </head>
@@ -144,7 +238,6 @@
     </div>
     <nav>
         <a onclick="loadPage('/admin/users')">회원 조회</a>
-        <a onclick="loadPage('/admin/transaction')">거래 리스트</a>
         <a onclick="loadPage('/admin/judge')">매물 심사</a>
         <a onclick="loadPage('/admin/registration')">매물 등록</a>
 
