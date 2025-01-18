@@ -29,7 +29,7 @@ public class KakaoPayService {
         params.put("total_amount", String.valueOf(request.getTotal_amount()));
         params.put("vat_amount", "10");
         params.put("tax_free_amount", "0");
-        params.put("approval_url", "http://localhost:5173/kakaopay/success")
+        params.put("approval_url", "http://localhost:5173/kakaopay/success");
         params.put("cancel_url", "https://twomuchcar.shop/kakaopay/cancel");
         params.put("fail_url", "https://twomuchcar.shop/kakaopay/fail");
 
