@@ -18,24 +18,18 @@ public class KakaoPayController {
 
     @PostMapping("/ready")
     public KakaoPayReadyResponseDto ready(@RequestBody KakaoPayReadyRequestDto request) {
-        // 카카오페이 준비 요청
-        KakaoPayReadyResponseDto response = new KakaoPayReadyResponseDto();
-        response = kakaoPayService.preparePayment(request);
-        SessionUtils.addAttribute("tid", response.getTid());
+        KakaoPayReadyResponseDto response = kakaoPayService.preparePayment(request);
 
+        // 응답에 tid를 포함시켜 반환
         log.info("결제 고유번호: " + response.getTid());
         return response;
     }
 
     @GetMapping("/success")
-    public String payCompleted(@RequestParam("pg_token") String pgToken) {
-
-        String tid = SessionUtils.getStringAttributeValue("tid");
-
+    public String payCompleted(@RequestParam("pg_token") String pgToken,
+                               @RequestParam("tid") String tid) {  // URL 파라미터로 tid를 받음
         // 카카오 결제 요청하기
         KakaoPayAproveResponseDto approveResponse = kakaoPayService.payApprove(tid, pgToken);
-
         return "success";
     }
-
 }
