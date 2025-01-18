@@ -29,9 +29,9 @@ public class KakaoPayService {
         params.put("total_amount", String.valueOf(request.getTotal_amount()));
         params.put("vat_amount", "10");
         params.put("tax_free_amount", "0");
-        params.put("approval_url", "http://localhost:8080/kakaopay/success");
-        params.put("cancel_url", "http://localhost:8080/kakaopay/cancel");
-        params.put("fail_url", "http://localhost:8080/kakaopay/fail");
+        params.put("approval_url", "https://twomuchcar.shop/kakaopay/success");
+        params.put("cancel_url", "https://twomuchcar.shop/kakaopay/cancel");
+        params.put("fail_url", "https://twomuchcar.shop/kakaopay/fail");
 
         // 파라미터, 헤더
         HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, this.getHeaders());
