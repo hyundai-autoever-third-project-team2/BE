@@ -6,6 +6,7 @@ import com.autoever.carstore.kakaopay.dto.response.KakaoPayReadyResponseDto;
 import com.autoever.carstore.kakaopay.service.KakaoPayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -26,10 +27,9 @@ public class KakaoPayController {
     }
 
     @GetMapping("/success")
-    public String payCompleted(@RequestParam("pg_token") String pgToken,
-                               @RequestParam("tid") String tid) {  // URL 파라미터로 tid를 받음
+    public ResponseEntity<? super KakaoPayAproveResponseDto> payCompleted(@RequestParam("pg_token") String pgToken, @RequestParam("tid") String tid) {  // URL 파라미터로 tid를 받음
         // 카카오 결제 요청하기
         KakaoPayAproveResponseDto approveResponse = kakaoPayService.payApprove(tid, pgToken);
-        return "success";
+        return ResponseEntity.ok(approveResponse);
     }
 }
