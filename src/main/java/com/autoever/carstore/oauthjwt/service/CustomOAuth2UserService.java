@@ -63,17 +63,27 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         // 이미 정보가 존재하면 업데이트 처리
         else {
-            existData.updateNickname(oAuth2Response.getName());
+            // 최초 로그인 시에만 기본 정보를 설정하고,
+            // 이후에는 기존 정보를 유지
+            if (existData.getNickname() == null) {
+                existData.updateNickname(oAuth2Response.getName());
+            }
+            if (existData.getProfileImage() == null || existData.getProfileImage().isEmpty()) {
+                existData.updateProfileImage(oAuth2Response.getProfileImage() != null ?
+                        oAuth2Response.getProfileImage() : "");
+            }
+
+            // 이메일은 OAuth2 제공자의 이메일로 항상 동기화가 필요하다면 유지
             existData.updateEmail(oAuth2Response.getEmail());
-            existData.updateProfileImage(oAuth2Response.getProfileImage() != null ? oAuth2Response.getProfileImage() : "");
 
             userRepository.save(existData);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(existData.getUsername());
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setEmail(oAuth2Response.getEmail());
-            userDTO.setProfileImage(oAuth2Response.getProfileImage());
+            // DTO에는 현재 DB에 저장된 값을 사용
+            userDTO.setName(existData.getNickname());
+            userDTO.setEmail(existData.getEmail());
+            userDTO.setProfileImage(existData.getProfileImage());
             userDTO.setRole(existData.getUserRole());
 
             return new CustomOAuth2User(userDTO);
