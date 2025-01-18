@@ -45,12 +45,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         UserEntity existData = userRepository.findByUsername(username);
 
         if (existData == null) {
+            String profileImageUrl = oAuth2Response.getProfileImage();
+            if (profileImageUrl.startsWith("http://")) {
+                profileImageUrl = profileImageUrl.replace("http://", "https://");
+            }
 
             UserEntity userEntity = UserEntity.builder()
                     .username(username)
                     .email(oAuth2Response.getEmail())
                     .nickname(oAuth2Response.getName())
-                    .profileImage(oAuth2Response.getProfileImage() != null ? oAuth2Response.getProfileImage() : "")
+                    .profileImage(oAuth2Response.getProfileImage() != null ? profileImageUrl : "")
                     .userRole("ROLE_USER")
                     .survey(false) // 설문 기본값
                     .isActive(true) // 활성화 상태
