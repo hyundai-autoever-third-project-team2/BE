@@ -71,6 +71,9 @@ public class UserServiceImplement implements UserService {
                 .build();
         SurveyEntity survey = surveyRepository.save(surveyEntity);
 
+        userEntity.updateSurvey();
+        userRepository.save(userEntity);
+
         for (Long carModelId : carModelIds) {
             CarModelEntity carModel = carModelRepository.findByCarModelId(carModelId);
             SurveyCarModelEntity surveyCarModelEntity = SurveyCarModelEntity.builder()
