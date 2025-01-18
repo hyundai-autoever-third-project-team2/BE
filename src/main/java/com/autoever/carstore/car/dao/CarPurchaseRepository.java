@@ -20,5 +20,6 @@ public interface CarPurchaseRepository  extends JpaRepository<CarPurchaseEntity,
     @Query("SELECT c FROM CarPurchaseEntity c WHERE c.carPurchaseId = :carPurchaseId")
     CarPurchaseEntity findByCarPurchaseId(@Param("carPurchaseId") long carPurchaseId);
 
+    List<CarPurchaseEntity> findByProgress(String progress);
 }
 

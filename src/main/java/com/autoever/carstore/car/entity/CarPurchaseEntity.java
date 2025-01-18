@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -45,6 +46,9 @@ public class CarPurchaseEntity extends BaseTimeEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
+
+    @OneToMany(mappedBy = "carPurchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarPurchaseImageEntity> images;
 
     public void updateComments(String comments) {
         this.comments = comments;

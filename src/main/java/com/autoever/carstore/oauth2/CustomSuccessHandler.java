@@ -139,7 +139,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String targetUrl;
         if ("ROLE_ADMIN".equals(role)) {
             //http://localhost:8080/admin/home
-            targetUrl = "https://twomuchcar.shop/admin/home";
+            //https://twomuchcar.shop/admin/home
+            targetUrl = "http://localhost:8080/admin/home";
 
             //쿠키에 Access Token 저장
             response.addHeader("Set-Cookie", createSecureCookie("AccessToken", accessToken, 60 * 60 * 24)); // 24시간 유효

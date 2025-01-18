@@ -1,6 +1,9 @@
 package com.autoever.carstore.admin.service;
 
+import com.autoever.carstore.admin.dto.response.JudgeResponseDto;
+import com.autoever.carstore.car.dao.CarPurchaseRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
+import com.autoever.carstore.car.entity.CarPurchaseEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
@@ -19,6 +22,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AdminService {
     private final CarSalesRepository carSalesRepository;
+    private final CarPurchaseRepository carPurchaseRepository;
 
     public List<TransactionsResponseDto> getAllRecentTransactions() {
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findAll();
@@ -49,5 +53,52 @@ public class AdminService {
         }
         return results;
 
+    }
+
+
+    public List<JudgeResponseDto> getCarsByProgress(String progress) {
+        switch (progress) {
+            case "before":
+                progress = "심사중";
+                break;
+            case "deny":
+                progress = "거절";
+                break;
+            case "complete":
+                progress = "심사 완료";
+                break;
+            default:
+                progress = "심사중";
+                break;
+        }
+        return carPurchaseRepository.findByProgress(progress).stream()
+                .map(carPurchaseEntity -> JudgeResponseDto.builder()
+                        .userId(carPurchaseEntity.getUser().getUserId())
+                        .userName(carPurchaseEntity.getUser().getNickname())
+                        .carPurchaseId(carPurchaseEntity.getCarPurchaseId())
+                        .carImage(carPurchaseEntity.getCar().getImages().get(0).getImageUrl())
+                        .userCarImages(carPurchaseEntity.getImages())
+                        .purchaseDate(carPurchaseEntity.getPurchaseDate())
+                        .progress(carPurchaseEntity.getProgress())
+                        .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
+                        .modelName(carPurchaseEntity.getCar().getCarModel().getModelName())
+                        .comments(carPurchaseEntity.getComments())
+                        .build())
+                .toList();
+    }
+
+    public void completeJudge(Long purchaseId, int price) {
+        CarPurchaseEntity car = carPurchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid purchase ID"));
+        car.updatePrice(price);
+        car.updateProgress("심사 완료");
+        carPurchaseRepository.save(car);
+    }
+
+    public void rejectJudge(Long purchaseId) {
+        CarPurchaseEntity car = carPurchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid purchase ID"));
+        car.updateProgress("거절");
+        carPurchaseRepository.save(car);
     }
 }
