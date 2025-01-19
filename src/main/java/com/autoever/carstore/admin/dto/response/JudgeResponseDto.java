@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,8 +21,6 @@ public class JudgeResponseDto {
     long carPurchaseId;
     // 자동차 모델 이미지
     String carImage;
-    // 유저가 등록한 자동차 이미지
-    List<CarPurchaseImageEntity> userCarImages;
     LocalDateTime purchaseDate;
     String progress;
     String brand;

@@ -1,6 +1,5 @@
 /* 공통 스타일 */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -14,6 +13,7 @@ body {
     padding: 10px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 */
     z-index: 1000;
+    color: white;
 }
 
 .logo {

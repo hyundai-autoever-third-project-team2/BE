@@ -1,6 +1,8 @@
 package com.autoever.carstore.car.dao;
 
 import com.autoever.carstore.car.entity.CarPurchaseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +22,6 @@ public interface CarPurchaseRepository  extends JpaRepository<CarPurchaseEntity,
     @Query("SELECT c FROM CarPurchaseEntity c WHERE c.carPurchaseId = :carPurchaseId")
     CarPurchaseEntity findByCarPurchaseId(@Param("carPurchaseId") long carPurchaseId);
 
-    List<CarPurchaseEntity> findByProgress(String progress);
+    Page<CarPurchaseEntity> findByProgress(String progress, Pageable pageable);
 }
 

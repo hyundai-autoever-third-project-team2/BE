@@ -43,39 +43,111 @@
             location.href = '/admin/home';
         }
 
-        window.openJudgeModal = function (button) {
+        window.openJudgeModal = async function (button) {
+            const purchaseId = button.getAttribute('data-model-purchaseId');
             const userId = button.getAttribute('data-user-id');
             const userName = button.getAttribute('data-user-name');
             const modelName = button.getAttribute('data-model-name');
-            const purchaseId = button.getAttribute('data-model-purchaseId');
             const carImage = button.getAttribute('data-model-carImage');
-            const userCarImages = JSON.parse(button.getAttribute('data-model-userCarImages') || "[]");
             const brand = button.getAttribute('data-model-brand');
             const comments = button.getAttribute('data-model-comments');
-            // const price = button.getAttribute('data-model-price');
 
-            // 모달 데이터 채우기
+            // 모달 데이터 설정
+            document.getElementById('modal-model-purchaseId').textContent = purchaseId || "N/A";
             document.getElementById('modal-user-id').textContent = userId || "N/A";
             document.getElementById('modal-user-name').textContent = userName || "N/A";
             document.getElementById('modal-model-name').textContent = modelName || "N/A";
             document.getElementById('modal-model-brand').textContent = brand || "N/A";
-            document.getElementById('modal-model-purchaseId').textContent = purchaseId || "N/A";
             document.getElementById('modal-model-comments').textContent = comments || "N/A";
             document.getElementById('modal-model-carImage').src = carImage || "/placeholder.jpg";
-            // document.getElementById('modal-price').value = price || "";
 
-            // 사용자 업로드 이미지 갤러리 채우기
+            // 사용자 업로드 이미지 로드
             const userCarImagesContainer = document.getElementById('modal-userCarImages');
             userCarImagesContainer.innerHTML = "";
-            userCarImages.forEach(imageUrl => {
-                const imgElement = document.createElement('img');
-                imgElement.src = imageUrl;
-                imgElement.alt = "User Car Image";
-                imgElement.className = "img-thumbnail";
-                imgElement.style.maxWidth = "100px";
-                userCarImagesContainer.appendChild(imgElement);
-            });
+
+            try {
+                const response = await fetch(`/admin/judge/images/${purchaseId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to load user car images');
+                }
+
+                const images = await response.json();
+                if (images.length === 0) {
+                    const noImageMessage = document.createElement('p');
+                    noImageMessage.textContent = "사용자가 업로드한 이미지가 없습니다.";
+                    noImageMessage.className = "text-muted";
+                    userCarImagesContainer.appendChild(noImageMessage);
+                } else {
+                    images.forEach(imageUrl => {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = imageUrl;
+                        imgElement.alt = "User Car Image";
+                        imgElement.className = "img-thumbnail";
+                        imgElement.style.objectFit = "cover";
+                        imgElement.style.width = "116px";
+                        imgElement.style.height = "116px";
+                        imgElement.style.margin = "2px";
+                        userCarImagesContainer.appendChild(imgElement);
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                const errorMessage = document.createElement('p');
+                errorMessage.textContent = "이미지를 불러오는 중 오류가 발생했습니다.";
+                errorMessage.className = "text-danger";
+                userCarImagesContainer.appendChild(errorMessage);
+            }
+
+            document.getElementById('modal-price').value = '';
         };
+
+
+        // window.openJudgeModal = function (button) {
+        //     const userId = button.getAttribute('data-user-id');
+        //     const userName = button.getAttribute('data-user-name');
+        //     const modelName = button.getAttribute('data-model-name');
+        //     const purchaseId = button.getAttribute('data-model-purchaseId');
+        //     const carImage = button.getAttribute('data-model-carImage');
+        //     const brand = button.getAttribute('data-model-brand');
+        //     const comments = button.getAttribute('data-model-comments');
+        //
+        //
+        //     const userCarImages = button.getAttribute('data-model-userCarImages')
+        //         ? JSON.parse(button.getAttribute('data-model-userCarImages'))
+        //         : []; // 데이터가 없을 경우 빈 배열 처리
+        //     const userCarImagesContainer = document.getElementById('modal-userCarImages');
+        //     userCarImagesContainer.innerHTML = "";
+        //
+        //     // 모달 데이터 채우기
+        //     document.getElementById('modal-user-id').textContent = userId || "N/A";
+        //     document.getElementById('modal-user-name').textContent = userName || "N/A";
+        //     document.getElementById('modal-model-name').textContent = modelName || "N/A";
+        //     document.getElementById('modal-model-brand').textContent = brand || "N/A";
+        //     document.getElementById('modal-model-purchaseId').textContent = purchaseId || "N/A";
+        //     document.getElementById('modal-model-comments').textContent = comments || "N/A";
+        //     document.getElementById('modal-model-carImage').src = carImage || "/placeholder.jpg";
+        //     // document.getElementById('modal-price').value = price || "";
+        //
+        //     if (userCarImages.length === 0) {
+        //         const noImageMessage = document.createElement('p');
+        //         noImageMessage.textContent = "사용자가 업로드한 이미지가 없습니다.";
+        //         noImageMessage.className = "text-muted";
+        //         userCarImagesContainer.appendChild(noImageMessage);
+        //     } else {
+        //         userCarImages.forEach(imageUrl => {
+        //             const imgElement = document.createElement('img');
+        //             imgElement.src = imageUrl;
+        //             imgElement.alt = "User Car Image";
+        //             imgElement.className = "img-thumbnail";
+        //             imgElement.style.maxWidth = "100px";
+        //             imgElement.style.marginRight = "10px";
+        //             userCarImagesContainer.appendChild(imgElement);
+        //         });
+        //     }
+        //
+        //     // 가격 입력 필드 초기화
+        //     document.getElementById('modal-price').value = '';
+        // };
 
         window.submitJudge = function () {
             const purchaseId = document.getElementById('modal-model-purchaseId').textContent;
@@ -248,15 +320,6 @@
 <div id="content-area">
     <h2>Welcome to the Admin Dashboard</h2>
     <p>Select a menu option to view its content.</p>
-</div>
-
-<!-- User Detail Modal -->
-<div id="user-detail-modal" class="modal">
-    <div class="modal-header">
-        <h2>회원 정보</h2>
-        <span class="modal-close" onclick="closeModal()">✖</span>
-    </div>
-    <div id="modal-content" class="modal-body"></div>
 </div>
 
 </body>

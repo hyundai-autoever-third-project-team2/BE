@@ -3,12 +3,11 @@ package com.autoever.carstore.admin.controller;
 import com.autoever.carstore.admin.dto.request.RegistrationRequestDto;
 import com.autoever.carstore.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,6 +38,15 @@ public class AdminRestController {
         } else {
             return ResponseEntity.status(500).body("{\"success\": false}");
         }
+    }
+
+    @GetMapping("/admin/judge/images/{purchaseId}")
+    public ResponseEntity<List<String>> getUserCarImages(@PathVariable Long purchaseId) {
+        List<String> images = adminService.getImagesByPurchaseId(purchaseId);
+        if (images == null || images.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.ok(images);
     }
 
 

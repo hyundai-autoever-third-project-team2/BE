@@ -6,15 +6,20 @@ import com.autoever.carstore.admin.dto.response.JudgeResponseDto;
 import com.autoever.carstore.admin.dto.response.RegistrationResponseDto;
 import com.autoever.carstore.agency.dao.AgencyRepository;
 import com.autoever.carstore.agency.entity.AgencyEntity;
+import com.autoever.carstore.car.dao.CarPurchaseImageRepository;
 import com.autoever.carstore.car.dao.CarPurchaseRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
 import com.autoever.carstore.car.entity.CarPurchaseEntity;
+import com.autoever.carstore.car.entity.CarPurchaseImageEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.user.dto.response.TransactionsResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,40 +27,9 @@ public class AdminService {
     private final CarSalesRepository carSalesRepository;
     private final CarPurchaseRepository carPurchaseRepository;
     private final AgencyRepository agencyRepository;
+    private final CarPurchaseImageRepository carPurchaseImageRepository;
 
-//    public List<TransactionsResponseDto> getAllRecentTransactions() {
-//        List<CarSalesEntity> carSalesEntities = carSalesRepository.findAll();
-//        List<TransactionsResponseDto> results = new ArrayList<>();
-//
-//        for (CarSalesEntity carSaleEntity : carSalesEntities) {
-//            if (carSaleEntity.getUser() == null) { // 방어 코드 추가
-//
-//                continue; // 해당 레코드 스킵
-//            }
-//
-//
-//            for (CarSalesEntity carSalesEntity : carSalesEntities) {
-//                TransactionsResponseDto transactionsResponseDto = TransactionsResponseDto.builder()
-//                        .car_sales_id(carSalesEntity.getCarSalesId())
-//                        .sales_date(carSalesEntity.getUpdatedAt())
-//                        .progress(carSalesEntity.getProgress())
-//                        .brand(carSalesEntity.getCar().getCarModel().getBrand())
-//                        .model_name(carSalesEntity.getCar().getCarModel().getModelName())
-//                        .order_number(carSalesEntity.getOrderNumber())
-//                        .price(carSalesEntity.getPrice())
-//                        .userId(carSalesEntity.getUser().getUserId()) // 유저 ID 추가
-//                        .userName(carSalesEntity.getUser().getNickname()) // 유저 이름 추가
-//                        .build();
-//                results.add(transactionsResponseDto);
-//            }
-//
-//        }
-//        return results;
-//
-//    }
-
-
-    public List<JudgeResponseDto> getCarsByProgress(String progress) {
+    public Page<JudgeResponseDto> getCarsByProgress(String progress, Pageable pageable) {
         switch (progress) {
             case "before":
                 progress = "심사중";
@@ -70,20 +44,20 @@ public class AdminService {
                 progress = "심사중";
                 break;
         }
-        return carPurchaseRepository.findByProgress(progress).stream()
+
+        return carPurchaseRepository.findByProgress(progress, pageable)
                 .map(carPurchaseEntity -> JudgeResponseDto.builder()
                         .userId(carPurchaseEntity.getUser().getUserId())
                         .userName(carPurchaseEntity.getUser().getNickname())
                         .carPurchaseId(carPurchaseEntity.getCarPurchaseId())
                         .carImage(carPurchaseEntity.getCar().getImages().get(0).getImageUrl())
-                        .userCarImages(carPurchaseEntity.getImages())
                         .purchaseDate(carPurchaseEntity.getPurchaseDate())
                         .progress(carPurchaseEntity.getProgress())
                         .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
                         .modelName(carPurchaseEntity.getCar().getCarModel().getModelName())
                         .comments(carPurchaseEntity.getComments())
-                        .build())
-                .toList();
+                        .build()
+                );
     }
 
     public void completeJudge(Long purchaseId, int price) {
@@ -101,9 +75,9 @@ public class AdminService {
         carPurchaseRepository.save(car);
     }
 
-    public List<RegistrationResponseDto> getRegistrationCarsByProgress(boolean isVisible) {
+    public Page<RegistrationResponseDto> getRegistrationCarsByProgress(boolean isVisible, Pageable pageable) {
 
-        return carSalesRepository.findByIsVisibleAndProgress(isVisible, "판매중").stream()
+        return carSalesRepository.findByIsVisibleAndProgress(isVisible, "판매중", pageable)
                 .map(carSalesEntity -> RegistrationResponseDto.builder()
                         .isVisible(carSalesEntity.isVisible())
                         .carSalesId(carSalesEntity.getCarSalesId())
@@ -119,8 +93,7 @@ public class AdminService {
                         .carImage(carSalesEntity.getCar().getImages().get(0).getImageUrl())
                         .carBrand(carSalesEntity.getCar().getCarModel().getBrand())
                         .carModel(carSalesEntity.getCar().getCarModel().getModelName())
-                        .build())
-                .toList();
+                        .build());
     }
 
     public List<AgencyDto> getAllAgencies() {
@@ -147,5 +120,22 @@ public class AdminService {
             return true;
         }
         return false;
+    }
+
+    public List<String> getAllUserCarImages() {
+        // 모든 CarPurchaseImageEntity를 가져옴
+        List<CarPurchaseImageEntity> carPurchaseImageEntities = carPurchaseImageRepository.findAll();
+
+        // 이미지 URL만 추출하여 리스트로 변환
+        return carPurchaseImageEntities.stream()
+                .map(CarPurchaseImageEntity::getImageUrl) // 각 엔티티의 imageUrl 필드를 가져옴
+                .collect(Collectors.toList()); // 리스트로 변환하여 반환
+    }
+
+    public List<String> getImagesByPurchaseId(Long purchaseId) {
+        return carPurchaseImageRepository.findByCarPurchase_CarPurchaseId(purchaseId)
+                .stream()
+                .map(CarPurchaseImageEntity::getImageUrl)
+                .collect(Collectors.toList());
     }
 }

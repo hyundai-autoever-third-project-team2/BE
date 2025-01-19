@@ -3,6 +3,7 @@ package com.autoever.carstore.car.dao;
 import com.autoever.carstore.car.entity.CarPurchaseEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.CarSalesLikeEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -139,6 +140,6 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     List<CarSalesEntity> findByBrandOrCarName(String brand, String modelName);
 
     @Query("SELECT c FROM CarSalesEntity c WHERE c.isVisible = :visible AND c.progress = :progress")
-    List<CarSalesEntity> findByIsVisibleAndProgress(@Param("visible") boolean visible, @Param("progress") String progress);
+    Page<CarSalesEntity> findByIsVisibleAndProgress(@Param("visible") boolean visible, @Param("progress") String progress, Pageable pageable);
 
 }

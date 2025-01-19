@@ -8,6 +8,8 @@ import com.autoever.carstore.user.entity.UserEntity;
 
 import java.util.List;
 import com.autoever.carstore.user.dto.response.UserResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     UserCountingResponseDto getUserCounting(long userId);
@@ -18,7 +20,7 @@ public interface UserService {
 
     String getUserName();
 
-    List<UserEntity> getAllUsers();
+    Page<UserEntity> getAllUsers(Pageable pageable);
 
     void toggleUserActive(Long id);
 
