@@ -53,6 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .isRead(entity.isRead())
+                .receivedTime(entity.getCreatedAt())
                 .build();
     }
 
@@ -80,6 +81,7 @@ public class NotificationServiceImpl implements NotificationService {
                                 .title(notification.getTitle())
                                 .content(notification.getContent())
                                 .isRead(notification.isRead())
+                                .receivedTime(notification.getCreatedAt())
                                 .build())
                 .collect(Collectors.toList());
     }

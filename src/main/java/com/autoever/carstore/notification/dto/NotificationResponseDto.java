@@ -2,6 +2,8 @@ package com.autoever.carstore.notification.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,4 +15,5 @@ public class NotificationResponseDto {
     private String title;
     private String content;
     private boolean isRead;
+    private LocalDateTime receivedTime;
 }
