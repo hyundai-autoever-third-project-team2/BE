@@ -21,6 +21,21 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponseDto addNotification(NotificationRequestDto request) {
+        String type = "";
+
+        switch(request.getNotificationType()){
+            case 0:
+                type = "result";
+                break;
+            case 1:
+                type = "wishlist";
+                break;
+            case 2:
+                type = "discount";
+                break;
+            default:
+                break;
+        }
 
         NotificationEntity notificationEntity = NotificationEntity.builder()
                 .user(request.getUser())
@@ -34,7 +49,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         return NotificationResponseDto.builder()
                 .notificationId(entity.getNotificationId())
-                .notificationType(entity.getNotificationType())
+                .notificationType(type)
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .isRead(entity.isRead())
@@ -60,7 +75,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .map(notification ->
                         NotificationResponseDto.builder()
                                 .notificationId(notification.getNotificationId())
-                                .notificationType(notification.getNotificationType())
+                                .notificationType(notification.getNotificationType() == 0 ? "result" :
+                                        (notification.getNotificationType() == 1 ? "wishlist" : "discount"))
                                 .title(notification.getTitle())
                                 .content(notification.getContent())
                                 .isRead(notification.isRead())

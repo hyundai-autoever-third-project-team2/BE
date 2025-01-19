@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class NotificationResponseDto {
     private long notificationId;
-    private int notificationType;
+    private String notificationType;
     private String title;
     private String content;
     private boolean isRead;
