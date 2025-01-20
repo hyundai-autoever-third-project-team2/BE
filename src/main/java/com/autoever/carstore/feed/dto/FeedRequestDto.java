@@ -11,8 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedRequestDto {
-    private Long userId;
     private String contents;
-    private MultipartFile image;
+    private String imageUrl;
     private List<String> hashtagList;
 }

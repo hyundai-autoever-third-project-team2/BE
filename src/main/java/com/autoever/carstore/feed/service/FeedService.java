@@ -9,5 +9,5 @@ import java.util.List;
 public interface FeedService {
     public void saveFeed(FeedRequestDto feedRequestDto) throws IOException;
     public Boolean deleteFeed(Long feedId);
-    public List<StoryResponseDto> findFeedList();
+    public List<StoryResponseDto> findFeedList(Long userId);
 }

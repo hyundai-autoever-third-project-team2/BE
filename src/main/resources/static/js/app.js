@@ -15,6 +15,67 @@ var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
+var currentSubscription = null;
+
+function onConnected() {
+    // 이전 구독 취소
+    if (currentSubscription) {
+        currentSubscription.unsubscribe();
+    }
+
+    // 방 ID에 구독
+    currentSubscription = stompClient.subscribe(`/sub/chat/room/${roomId}`, onMessageReceived);
+
+    // 서버에 사용자 정보 전송
+    stompClient.send("/pub/chat/enter",
+        {},
+        JSON.stringify({ sender: username, content: 'JOIN', roomId: roomId })
+    );
+
+    connectingElement.classList.add('hidden');
+
+    // 기존 메시지 로드
+    loadChatHistory();
+}
+
+function loadChatHistory() {
+    // 메시지 영역 초기화
+    messageArea.innerHTML = '';
+
+    // 서버에서 방의 메시지 기록 가져오기
+    fetch(`/api/chat/history/${roomId}`)
+        .then(response => response.json())
+        .then(messages => {
+            messages.forEach(message => {
+                var messageElement = document.createElement('li');
+                messageElement.classList.add('chat-message');
+
+                var avatarElement = document.createElement('i');
+                var avatarText = document.createTextNode(message.sender[0]);
+                avatarElement.appendChild(avatarText);
+                avatarElement.style['background-color'] = getAvatarColor(message.sender);
+
+                messageElement.appendChild(avatarElement);
+
+                var usernameElement = document.createElement('span');
+                var usernameText = document.createTextNode(message.sender);
+                usernameElement.appendChild(usernameText);
+                messageElement.appendChild(usernameElement);
+
+                var textElement = document.createElement('p');
+                var messageText = document.createTextNode(message.content);
+                textElement.appendChild(messageText);
+
+                messageElement.appendChild(textElement);
+
+                messageArea.appendChild(messageElement);
+            });
+            messageArea.scrollTop = messageArea.scrollHeight;
+        })
+        .catch(error => {
+            console.error('Failed to load chat history:', error);
+        });
+}
 
 // 방에 연결하는 함수
 function connect(event) {

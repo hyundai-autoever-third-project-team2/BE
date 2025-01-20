@@ -6,27 +6,32 @@ import com.autoever.carstore.car.dto.request.FilterCarRequestDto;
 import com.autoever.carstore.car.dto.response.*;
 import com.autoever.carstore.car.entity.*;
 import com.autoever.carstore.car.service.CarService;
+import com.autoever.carstore.fcm.service.FCMService;
+import com.autoever.carstore.notification.dto.NotificationRequestDto;
+import com.autoever.carstore.notification.service.NotificationService;
 import com.autoever.carstore.recommend.dao.RecommendRepository;
 import com.autoever.carstore.recommend.entity.RecommendEntity;
 import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.dto.response.IsHeartCarResponseDto;
+import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
 import com.autoever.carstore.user.dto.response.TransactionStatusResponseDto;
 import com.autoever.carstore.user.dto.response.UserCarTransactionStatusResponseDto;
-import com.autoever.carstore.user.dto.response.RecommendCarResponseDto;
-
 import com.autoever.carstore.user.entity.UserEntity;
 import com.autoever.carstore.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class CarServiceImplement implements CarService {
@@ -39,10 +44,12 @@ public class CarServiceImplement implements CarService {
     private final RecommendRepository recommendRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final FCMService fcmService;
+    private final NotificationService notificationService;
 
     //최신순 차량 조회 서비스
     @Override
-    public List<LatelyCarResponseDto> getLatelyCarList() {
+    public List<LatelyCarResponseDto> getLatelyCarList(long userId) {
         List<LatelyCarResponseDto> result = new ArrayList<>();
 
         List<CarSalesEntity> car_sales_lately_list = carSalesRepository.findAllLately();
@@ -57,18 +64,13 @@ public class CarServiceImplement implements CarService {
             int distance = car_sales.getCar().getDistance();
 
             int price = car_sales.getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales.getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales.getCreatedAt();
 
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
-
             int view_count = carSalesViewRepository.getCountByCarSalesId(car_sales.getCarSalesId());
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             lately_car = LatelyCarResponseDto.builder()
                     .carId(carId)
@@ -82,6 +84,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(lately_car);
@@ -92,7 +95,7 @@ public class CarServiceImplement implements CarService {
 
     //국내차량 조회 서비스
     @Override
-    public List<DomesticCarResponseDto> getDomesticCarList(){
+    public List<DomesticCarResponseDto> getDomesticCarList(long userId){
         List<DomesticCarResponseDto> result = new ArrayList<>();
         List<String> brands = Arrays.asList("현대", "기아", "제네시스", "KG모빌리티");
         List<CarSalesEntity> car_sales_domestic_list = carSalesRepository.findAllWithCarAndCarModelByBrands(brands);
@@ -107,18 +110,13 @@ public class CarServiceImplement implements CarService {
             int distance = car_sales.getCar().getDistance();
 
             int price = car_sales.getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales.getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales.getCreatedAt();
 
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
-
             int view_count = car_sales.getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             domestic_car = DomesticCarResponseDto.builder()
                     .carId(carId)
@@ -132,6 +130,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(domestic_car);
@@ -142,7 +141,8 @@ public class CarServiceImplement implements CarService {
 
     //해외 차량 조회 서비스
     @Override
-    public List<AbroadCarResponseDto> getAbroadCarList() {
+    public List<AbroadCarResponseDto> getAbroadCarList(long userId) {
+
         List<AbroadCarResponseDto> result = new ArrayList<>();
 
         List<String> brands = Arrays.asList("현대", "기아", "제네시스", "KG모빌리티");
@@ -159,17 +159,14 @@ public class CarServiceImplement implements CarService {
             int distance = car_sales.getCar().getDistance();
 
             int price = car_sales.getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales.getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales.getCreatedAt();
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
 
             int view_count = car_sales.getCount();
+
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             abroad_car = AbroadCarResponseDto.builder()
                     .carId(carId)
@@ -183,6 +180,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(abroad_car);
@@ -192,7 +190,7 @@ public class CarServiceImplement implements CarService {
 
     //인기 차량 조회 서비스(top50)
     @Override
-    public List<PopularityCarResponseDto> getPopularityCarList() {
+    public List<PopularityCarResponseDto> getPopularityCarList(long userId) {
         List<PopularityCarResponseDto> result = new ArrayList<>();
 
         Pageable pageable = PageRequest.of(0, 50); // 0번 페이지에서 50개 가져오기
@@ -208,17 +206,13 @@ public class CarServiceImplement implements CarService {
             int distance = car_sales.getCar().getDistance();
 
             int price = car_sales.getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales.getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales.getCreatedAt();
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
 
             int view_count = car_sales.getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             popularity_car = PopularityCarResponseDto.builder()
                     .carId(carId)
@@ -232,6 +226,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(popularity_car);
@@ -241,51 +236,53 @@ public class CarServiceImplement implements CarService {
 
     //할인 차량 조회 서비스
     @Override
-    public List<DiscountCarResponseDto> getDiscountCarList() {
+    public List<DiscountCarResponseDto> getDiscountCarList(long userId) {
         List<DiscountCarResponseDto> result = new ArrayList<>();
-
-        LocalDateTime oneWeekAgo = LocalDateTime.now().minus(1, ChronoUnit.WEEKS);
-        List<CarSalesEntity> car_sales_discount_list = carSalesRepository.findAllOlderThanAWeek(oneWeekAgo);
+        List<CarSalesEntity> car_sales_discount_list = carSalesRepository.findAll();
 
         for (CarSalesEntity car_sales : car_sales_discount_list) {
-            DiscountCarResponseDto discount_car;
-            long carId = car_sales.getCar().getCarId();
-            String imageUrl = car_sales.getCar().getImages().get(0).getImageUrl();
-            String brand = car_sales.getCar().getCarModel().getBrand();
-            String model_name = car_sales.getCar().getCarModel().getModelName();
-            String model_year = car_sales.getCar().getCarModel().getModelYear();
-            int distance = car_sales.getCar().getDistance();
+            if(car_sales.getDiscountPrice() > 0){
+                DiscountCarResponseDto discount_car;
+                long carId = car_sales.getCar().getCarId();
+                String imageUrl = car_sales.getCar().getImages().get(0).getImageUrl();
+                String brand = car_sales.getCar().getCarModel().getBrand();
+                String model_name = car_sales.getCar().getCarModel().getModelName();
+                String model_year = car_sales.getCar().getCarModel().getModelYear();
+                int distance = car_sales.getCar().getDistance();
 
-            int price = car_sales.getPrice();
-            double discount_price = (price * 0.97);
-            int month_price = (int)discount_price / 6;
+                int price = car_sales.getPrice();
+                int discount_price = car_sales.getDiscountPrice();
+                int month_price = price / 6;
 
-            LocalDateTime create_date = car_sales.getCreatedAt();
+                LocalDateTime create_date = car_sales.getCreatedAt();
 
-            int view_count = car_sales.getCount();
+                int view_count = car_sales.getCount();
+                boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
-            discount_car = DiscountCarResponseDto.builder()
-                    .carId(carId)
-                    .imageUrl(imageUrl)
-                    .brand(brand)
-                    .model_name(model_name)
-                    .model_year(model_year)
-                    .distance(distance)
-                    .price(price)
-                    .discount_price(discount_price)
-                    .month_price(month_price)
-                    .create_date(create_date)
-                    .view_count(view_count)
-                    .build();
+                discount_car = DiscountCarResponseDto.builder()
+                        .carId(carId)
+                        .imageUrl(imageUrl)
+                        .brand(brand)
+                        .model_name(model_name)
+                        .model_year(model_year)
+                        .distance(distance)
+                        .price(price)
+                        .discount_price(discount_price)
+                        .month_price(month_price)
+                        .create_date(create_date)
+                        .view_count(view_count)
+                        .isLiked(isLiked)
+                        .build();
 
-            result.add(discount_car);
+                result.add(discount_car);
+            }
         }
         return result.isEmpty() ? null : result;
     }
 
     //인기순 차량 조회(전체보기에서의 필터링) 서비스
     @Override
-    public List<LikelyCarResponseDto> getLikelyCarList() {
+    public List<LikelyCarResponseDto> getLikelyCarList(long userId) {
         List<LikelyCarResponseDto> result = new ArrayList<>();
 
         List<CarSalesEntity> car_sales_likely_list = carSalesRepository.findByOrderByLikesDesc();
@@ -299,17 +296,14 @@ public class CarServiceImplement implements CarService {
             String model_year = car_sales.getCar().getCarModel().getModelYear();
             int distance = car_sales.getCar().getDistance();
             int price = car_sales.getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales.getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales.getCreatedAt();
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
 
             int view_count = car_sales.getCount();
+
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             likely_car = LikelyCarResponseDto.builder()
                     .carId(carId)
@@ -323,6 +317,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(likely_car);
@@ -332,7 +327,7 @@ public class CarServiceImplement implements CarService {
 
     //검색 차량 조회(브랜드, 모델) 서비스
     @Override
-    public List<SearchCarResponseDto> searchCars(String brand, String modelName) {
+    public List<SearchCarResponseDto> searchCars(String brand, String modelName, long userId) {
         List<SearchCarResponseDto> result = new ArrayList<>();
         List<CarSalesEntity> car_sales_search_list = carSalesRepository.findByBrandOrCarName(brand, modelName);
 
@@ -345,17 +340,14 @@ public class CarServiceImplement implements CarService {
                 String model_year = car_sales.getCar().getCarModel().getModelYear();
                 int distance = car_sales.getCar().getDistance();
                 int price = car_sales.getPrice();
-                int discount_price = 0;
+                int discount_price = car_sales.getDiscountPrice();
                 int month_price = price / 6;
 
                 LocalDateTime create_date = car_sales.getCreatedAt();
 
                 int view_count = car_sales.getCount();
-                LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-                if (create_date.isBefore(oneWeekAgo)) {
-                    discount_price = (int) (price * 0.97); // 3% 할인
-                    month_price = discount_price / 6;
-                }
+
+                boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
                 search_car = SearchCarResponseDto.builder()
                         .carId(carId)
@@ -369,6 +361,7 @@ public class CarServiceImplement implements CarService {
                         .month_price(month_price)
                         .create_date(create_date)
                         .view_count(view_count)
+                        .isLiked(isLiked)
                         .build();
 
                 result.add(search_car);
@@ -378,7 +371,7 @@ public class CarServiceImplement implements CarService {
 
     //카테고리 필터링 서비스
     @Override
-    public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto) {
+    public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto, long userId) {
         List<FilterCarResponseDto> result = new ArrayList<>();
         List<String> carTypes = requestDto.getCarTypes();
         int startDisplacement = requestDto.getStart_displacement();
@@ -401,17 +394,13 @@ public class CarServiceImplement implements CarService {
             String model_year = car_sales.getCar().getCarModel().getModelYear();
             int distance = car_sales.getCar().getDistance();
             int price = car_sales.getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales.getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales.getCreatedAt();
 
             int view_count = car_sales.getCount();
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             filter_car = FilterCarResponseDto.builder()
                     .carId(carId)
@@ -425,6 +414,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(filter_car);
@@ -435,11 +425,11 @@ public class CarServiceImplement implements CarService {
 
     //차량 상세보기 서비스
     @Override
-    public DetailCarResponseDto findByCarId(Long carId) {
+    public DetailCarResponseDto findByCarId(Long carId, Long userId) {
         CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
         LocalDateTime create_date = carSales.getCreatedAt();
         int price = carSales.getPrice();
-        int discount_price = 0;
+        int discount_price = carSales.getDiscountPrice();
         int month_price = price / 6;
         String progress = carSales.getProgress();
         int agency_id = carSales.getAgency().getAgencyId();
@@ -468,21 +458,16 @@ public class CarServiceImplement implements CarService {
         String gear = carSales.getCar().getCarModel().getGear();
         String model_name = carSales.getCar().getCarModel().getModelName();
         String model_year = carSales.getCar().getCarModel().getModelYear();
-
+        boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSales.getCarSalesId(), userId);
 
         List<String> carImages = new ArrayList<>();
         for(CarImageEntity carImageEntity : carSales.getCar().getImages()){
             carImages.add(carImageEntity.getImageUrl());
         }
+
         List<String> fixedCarImages = new ArrayList<>();
         for(FixedImageEntity fixedImageEntity : carSales.getCar().getFixedImages()){
             fixedCarImages.add(fixedImageEntity.getFixedImageUrl());
-        }
-
-        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-        if (create_date.isBefore(oneWeekAgo)) {
-            discount_price = (int) (price * 0.97); // 3% 할인
-            month_price = discount_price / 6;
         }
 
         //유사 차량 3개 만들기
@@ -492,13 +477,9 @@ public class CarServiceImplement implements CarService {
         int count = 0;
         for (CarSalesEntity carSalesEntity : recommendsEntity) {
             if (count >= 3) break;
-            int recommend_discount_price = 0;
+            int recommend_discount_price = carSalesEntity.getDiscountPrice();
             LocalDateTime recommend_create_date = carSalesEntity.getCreatedAt();
-
-            LocalDateTime recommend_oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (recommend_create_date.isBefore(recommend_oneWeekAgo)) {
-                recommend_discount_price = (int) (carSalesEntity.getPrice() * 0.97); // 3% 할인
-            }
+            boolean recommend_isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSalesEntity.getCarSalesId(), userId);
 
             SimilarCarResponseDto similarCarDto =SimilarCarResponseDto.builder()
                     .carId(carSalesEntity.getCar().getCarId())
@@ -507,6 +488,7 @@ public class CarServiceImplement implements CarService {
                     .model_name(carSalesEntity.getCar().getCarModel().getModelName())
                     .price(carSalesEntity.getPrice())
                     .discount_price(recommend_discount_price)
+                    .isLiked(recommend_isLiked)
                     .build();
             similarCarResponseDtos.add(similarCarDto); // 리스트에 추가
             count++;
@@ -548,6 +530,7 @@ public class CarServiceImplement implements CarService {
                 .carImages(carImages)
                 .fixedImages(fixedCarImages)
                 .recommendCars(similarCarResponseDtos)
+                .isLiked(isLiked)
                 .build();
 
         return result;
@@ -555,13 +538,13 @@ public class CarServiceImplement implements CarService {
 
     //차량 비교하기 서비스
     @Override
-    public List<DetailCarResponseDto> compareCars(List<Long> carIds) {
+    public List<DetailCarResponseDto> compareCars(List<Long> carIds, long userId) {
         List<DetailCarResponseDto> result = new ArrayList<>();
         for(Long carId : carIds){
             CarSalesEntity carSales = carSalesRepository.findByCarId(carId);
             LocalDateTime create_date = carSales.getCreatedAt();
             int price = carSales.getPrice();
-            int discount_price = 0;
+            int discount_price = carSales.getDiscountPrice();
             int month_price = price / 6;
             String progress = carSales.getProgress();
             int agency_id = carSales.getAgency().getAgencyId();
@@ -595,12 +578,7 @@ public class CarServiceImplement implements CarService {
             for(FixedImageEntity fixedImageEntity : carSales.getCar().getFixedImages()){
                 fixedCarImages.add(fixedImageEntity.getFixedImageUrl());
             }
-
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSales.getCarSalesId(), userId);
 
             DetailCarResponseDto dto = DetailCarResponseDto.builder()
                     .created_at(carSales.getCreatedAt())
@@ -632,13 +610,13 @@ public class CarServiceImplement implements CarService {
                     .model_year(model_year)
                     .carImages(carImages)
                     .fixedImages(fixedCarImages)
+                    .isLiked(isLiked)
                     .build();
             result.add(dto);
         }
         return result;
     }
-
-    //상세보기 페이지 이동 시 조회수 증가 서비스
+    //상세보기 페이지 이동 시 조회수 증가 서비스carSalesRepository.deleteByCarId(userId, carId
     @Override
     public void updateViewCount(Long carId) {
         // 차 정보를 DB에서 조회
@@ -709,17 +687,12 @@ public class CarServiceImplement implements CarService {
             String model_year = car_sales_like.getCarSales().getCar().getCarModel().getModelYear();
             int distance = car_sales_like.getCarSales().getCar().getDistance();
             int price = car_sales_like.getCarSales().getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales_like.getCarSales().getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales_like.getCarSales().getCreatedAt();
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
-
             int view_count = car_sales_like.getCarSales().getCount();
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales_like.getCarSales().getCarSalesId(), userId);
 
             isHeart_car = IsHeartCarResponseDto.builder()
                     .carId(carId)
@@ -733,6 +706,7 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(isHeart_car);
@@ -762,16 +736,10 @@ public class CarServiceImplement implements CarService {
 
             if (carSalesEntity != null) {
                 int price = carSalesEntity.getPrice();
-                int discount_price = 0;
+                int discount_price = carSalesEntity.getDiscountPrice();
                 int month_price = price / 6;
                 LocalDateTime create_date = carSalesEntity.getCreatedAt();
-                LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-
-                // 1주일 전부터 할인 적용
-                if (create_date.isBefore(oneWeekAgo)) {
-                    discount_price = (int) (price * 0.97); // 3% 할인
-                    month_price = discount_price / 6;
-                }
+                boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(carSalesEntity.getCarSalesId(), userId);
 
                 // DTO 생성
                 RecommendCarResponseDto recommendCarResponseDto = RecommendCarResponseDto.builder()
@@ -786,6 +754,7 @@ public class CarServiceImplement implements CarService {
                         .month_price(month_price)
                         .create_date(create_date)
                         .view_count(carSalesEntity.getCount())
+                        .isLiked(isLiked)
                         .build();
 
                 // 결과 리스트에 추가
@@ -827,7 +796,7 @@ public class CarServiceImplement implements CarService {
     }
 
     @Override
-    public List<SearchCarResponseDto> searchCarsBrandAndModelName(String brand, String modelName) {
+    public List<SearchCarResponseDto> searchCarsBrandAndModelName(String brand, String modelName, long userId) {
         List<SearchCarResponseDto> result = new ArrayList<>();
         List<CarSalesEntity> car_sales_search_list = carSalesRepository.findByBrandAndCarName(brand, modelName);
 
@@ -840,17 +809,13 @@ public class CarServiceImplement implements CarService {
             String model_year = car_sales.getCar().getCarModel().getModelYear();
             int distance = car_sales.getCar().getDistance();
             int price = car_sales.getPrice();
-            int discount_price = 0;
+            int discount_price = car_sales.getDiscountPrice();
             int month_price = price / 6;
 
             LocalDateTime create_date = car_sales.getCreatedAt();
 
             int view_count = car_sales.getCount();
-            LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-            if (create_date.isBefore(oneWeekAgo)) {
-                discount_price = (int) (price * 0.97); // 3% 할인
-                month_price = discount_price / 6;
-            }
+            boolean isLiked = carSalesLikeRepository.findByCarSalesIdUserId(car_sales.getCarSalesId(), userId);
 
             search_car = SearchCarResponseDto.builder()
                     .carId(carId)
@@ -864,12 +829,14 @@ public class CarServiceImplement implements CarService {
                     .month_price(month_price)
                     .create_date(create_date)
                     .view_count(view_count)
+                    .isLiked(isLiked)
                     .build();
 
             result.add(search_car);
         }
         return result.isEmpty() ? null : result;
     }
+
     // 추천된 차량 ID를 인덱스에 맞게 가져오는 메서드
     private Long getRecommendCarIdByIndex(RecommendEntity recommend, int index) {
         switch (index) {
@@ -884,5 +851,70 @@ public class CarServiceImplement implements CarService {
             case 9: return recommend.getRecommendCar9Id();
             default: return null;
         }
+    }
+
+    //차량 discount 업데이트 메소드
+    @Override
+    @Scheduled(cron = "0 0 0 * * MON")
+    @Transactional
+    public void updateDiscountPrice() {
+        log.info("시작1!");
+        List<CarSalesEntity> carSalesEntities = carSalesRepository.findSalesCar();
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+
+        for(CarSalesEntity carSalesEntity : carSalesEntities) {
+            if(carSalesEntity.getCreatedAt().isBefore(oneWeekAgo)) {  // 생성일이 1주일 이상 지났는지 체크
+                int originalPrice = carSalesEntity.getPrice();
+                int currentPrice = carSalesEntity.getDiscountPrice() == 0 ? originalPrice : carSalesEntity.getDiscountPrice();
+                int discountPrice = currentPrice - (int)(originalPrice * 0.03);   // 1주일이 지날때마다 원가의 3퍼센트씩 할인되도록 설정
+
+                // 해당 차량을 관심 차량으로 등록한 유저들을 불러오기 위한 부분
+                List<CarSalesLikeEntity> salesLikeLIst = carSalesLikeRepository.findByCarSales(carSalesEntity);
+                log.info(salesLikeLIst);
+
+                String title = "관심 차량의 가격이 인하되었습니다";
+                String body = carSalesEntity.getCar().getCarModel().getModelName() + " " + carSalesEntity.getCar().getCarModel().getModelYear()
+                        + " " + carSalesEntity.getCar().getCarNumber() + "\n"
+                        + currentPrice + "원 -> " + discountPrice + "원";
+
+                carSalesEntity.setDiscountPrice(discountPrice);
+                carSalesRepository.save(carSalesEntity);  // 변경사항 저장
+
+                for(CarSalesLikeEntity salesLike : salesLikeLIst) {
+                    NotificationRequestDto notification = NotificationRequestDto.builder()
+                            .user(salesLike.getUser())
+                            .notificationType(1)
+                            .title(title)
+                            .content(body)
+                            .build();
+
+                    try{
+                        log.info("알림 전송");
+                        fcmService.sendMessageTo(salesLike.getUser().getFcmToken(), title, body);
+                        log.info("알림 저장");
+                        notificationService.addNotification(notification);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+    }
+
+    @Override
+    public void isLikedCar(UserEntity user, long carId) {
+        CarSalesEntity carSalesEntity = carSalesRepository.findByCarId(carId);
+        CarSalesLikeEntity carSalesLikeEntity = CarSalesLikeEntity.builder()
+                .carSales(carSalesEntity)
+                .user(user)
+                .build();
+        carSalesLikeRepository.save(carSalesLikeEntity);
+    }
+
+    @Override
+    public void unLikedCar(UserEntity user, long carId) {
+        CarSalesEntity carSalesEntity = carSalesRepository.findByCarId(carId);
+        carSalesLikeRepository.deleteByUserIdCarId(user.getUserId(), carSalesEntity.getCarSalesId());
     }
 }

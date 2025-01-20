@@ -34,9 +34,9 @@ public class CarController {
     @GetMapping("/domestic")
     public ResponseEntity<? super List<DomesticCarResponseDto>> viewDomesticCar() {
         List<DomesticCarResponseDto> result = null;
-
+        UserEntity user = securityUtil.getLoginUser();
         try {
-            result = carService.getDomesticCarList();
+            result = carService.getDomesticCarList(user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -48,9 +48,10 @@ public class CarController {
     @GetMapping("/abroad")
     public ResponseEntity<? super List<AbroadCarResponseDto>> viewAbroadCar() {
         List<AbroadCarResponseDto> result = null;
+        UserEntity user = securityUtil.getLoginUser();
 
         try {
-            result = carService.getAbroadCarList();
+            result = carService.getAbroadCarList(user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -62,9 +63,9 @@ public class CarController {
     @GetMapping("/popularity")
     public ResponseEntity<? super List<PopularityCarResponseDto>> viewPopularityCar(){
         List<PopularityCarResponseDto> result = null;
-
+        UserEntity user = securityUtil.getLoginUser();
         try {
-            result = carService.getPopularityCarList();
+            result = carService.getPopularityCarList(user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -76,9 +77,10 @@ public class CarController {
     @GetMapping("/discount")
     public ResponseEntity<?super List<DiscountCarResponseDto>> viewDiscountCar(){
         List<DiscountCarResponseDto> result = null;
+        UserEntity user = securityUtil.getLoginUser();
 
         try {
-            result = carService.getDiscountCarList();
+            result = carService.getDiscountCarList(user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -90,9 +92,10 @@ public class CarController {
     @GetMapping("/lately")
     public ResponseEntity<? super List<LatelyCarResponseDto>> viewLatelyCar(){
         List<LatelyCarResponseDto> result = null;
+        UserEntity user = securityUtil.getLoginUser();
 
         try {
-            result = carService.getLatelyCarList();
+            result = carService.getLatelyCarList(user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -104,9 +107,9 @@ public class CarController {
     @GetMapping("/likely")
     public ResponseEntity<? super List<LikelyCarResponseDto>> viewLikelyCar(){
         List<LikelyCarResponseDto> result = null;
-
+        UserEntity user = securityUtil.getLoginUser();
         try {
-            result = carService.getLikelyCarList();
+            result = carService.getLikelyCarList(user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -118,14 +121,14 @@ public class CarController {
     @GetMapping("/search")
     public ResponseEntity<List<SearchCarResponseDto>> searchCars(
             @RequestParam String searchCar) {
-
         List<SearchCarResponseDto> result = null;
+        UserEntity user = securityUtil.getLoginUser();
         try {
             String[] tokens = searchCar.split(" ", 2);
             if (tokens.length == 1) {
-                result = carService.searchCars(searchCar, searchCar);
+                result = carService.searchCars(searchCar, searchCar, user.getUserId());
             } else if (tokens.length == 2) {
-                result = carService.searchCarsBrandAndModelName(tokens[0], tokens[1]);
+                result = carService.searchCarsBrandAndModelName(tokens[0], tokens[1], user.getUserId());
             }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -138,10 +141,10 @@ public class CarController {
     public ResponseEntity<List<FilterCarResponseDto>> filterCars(
             @RequestBody FilterCarRequestDto filterCarRequestDto
     ) {
-
         List<FilterCarResponseDto> result = null;
+        UserEntity user = securityUtil.getLoginUser();
         try {
-            result = carService.filterCars(filterCarRequestDto);
+            result = carService.filterCars(filterCarRequestDto, user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -154,9 +157,10 @@ public class CarController {
         @RequestParam(required = false) Long carId
     ){
         DetailCarResponseDto result = null;
+        UserEntity user = securityUtil.getLoginUser();
         try {
             carService.updateViewCount(carId);
-            result = carService.findByCarId(carId);
+            result = carService.findByCarId(carId, user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -164,13 +168,14 @@ public class CarController {
     }
 
     //차량 비교하기
-    @GetMapping("/compares")
+    @PostMapping("/compares")
     public ResponseEntity<List<DetailCarResponseDto>> compareCars(
             @RequestBody CompareRequestDto compareRequestDto
     ){
         List<DetailCarResponseDto> result = null;
+        UserEntity user = securityUtil.getLoginUser();
         try {
-            result = carService.compareCars(compareRequestDto.getCarIds());
+            result = carService.compareCars(compareRequestDto.getCarIds(), user.getUserId());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
@@ -208,4 +213,23 @@ public class CarController {
         return ResponseEntity.ok("Successfully contract!");
     }
 
+    @PostMapping("/isLiked")
+    public ResponseEntity<String> isLiked(
+            @RequestParam long carId
+    ){
+        UserEntity user = securityUtil.getLoginUser();
+        carService.isLikedCar(user, carId);
+
+        return ResponseEntity.ok("Successfully liked!");
+    }
+
+    @DeleteMapping("/unLiked")
+    public ResponseEntity<String> unLiked(
+            @RequestParam long carId
+    ){
+        UserEntity user = securityUtil.getLoginUser();
+        carService.unLikedCar(user, carId);
+
+        return ResponseEntity.ok("Successfully unliked!");
+    }
 }

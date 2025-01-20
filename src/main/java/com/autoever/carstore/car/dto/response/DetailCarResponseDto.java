@@ -43,4 +43,5 @@ public class DetailCarResponseDto {
       List<String> carImages;
       List<String> fixedImages;
       List<SimilarCarResponseDto> recommendCars;
+      boolean isLiked;
 }

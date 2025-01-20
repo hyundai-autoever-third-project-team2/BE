@@ -142,4 +142,8 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     @Query("SELECT c FROM CarSalesEntity c WHERE c.isVisible = :visible AND c.progress = :progress")
     Page<CarSalesEntity> findByIsVisibleAndProgress(@Param("visible") boolean visible, @Param("progress") String progress, Pageable pageable);
 
+
+    @Query("SELECT cs FROM CarSalesEntity cs " +
+            "WHERE cs.progress = '판매중' ")
+    List<CarSalesEntity> findSalesCar();
 }

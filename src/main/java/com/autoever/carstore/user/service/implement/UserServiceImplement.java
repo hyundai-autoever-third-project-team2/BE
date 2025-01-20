@@ -73,6 +73,9 @@ public class UserServiceImplement implements UserService {
                 .build();
         SurveyEntity survey = surveyRepository.save(surveyEntity);
 
+        userEntity.updateSurvey();
+        userRepository.save(userEntity);
+
         for (Long carModelId : carModelIds) {
             CarModelEntity carModel = carModelRepository.findByCarModelId(carModelId);
             SurveyCarModelEntity surveyCarModelEntity = SurveyCarModelEntity.builder()
@@ -183,6 +186,14 @@ public class UserServiceImplement implements UserService {
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
                 .build();
+    }
+
+    @Override
+    public void updateFcmToken(String token) {
+        UserEntity user = securityUtil.getLoginUser();
+        user.updateFcmToken(token);
+
+        userRepository.save(user);
     }
 
     private long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {
