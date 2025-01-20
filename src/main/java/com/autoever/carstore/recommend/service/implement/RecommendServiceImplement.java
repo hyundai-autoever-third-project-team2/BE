@@ -4,11 +4,15 @@ import com.autoever.carstore.car.dao.CarSalesLikeRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.CarSalesLikeEntity;
+import com.autoever.carstore.fcm.service.FCMService;
+import com.autoever.carstore.notification.dto.NotificationRequestDto;
+import com.autoever.carstore.notification.service.NotificationService;
 import com.autoever.carstore.recommend.dao.RecommendRepository;
 import com.autoever.carstore.recommend.entity.RecommendEntity;
 import com.autoever.carstore.recommend.service.RecommendService;
 import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.entity.UserEntity;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,9 +27,13 @@ public class RecommendServiceImplement implements RecommendService {
     private final UserRepository userRepository;
     private final CarSalesRepository carSalesRepository;
     private final CarSalesLikeRepository carSalesLikeRepository;
+    private final FCMService fcmService;
+    private final NotificationService notificationService;
 
     @Override
-    @Scheduled(cron = "0 0 0 * * MON")
+//    @Scheduled(cron = "0 0 0 * * MON")
+    @Scheduled(cron = "0 35 16 * * MON")
+    @Transactional
     public void updateRecommendations() {
         List<Long> userIds = recommendRepository.findAllUserIds();
 
@@ -42,6 +50,29 @@ public class RecommendServiceImplement implements RecommendService {
 
                 recommendEntity = updateRecommendEntity(recommendEntity, recommendedCars);
                 recommendRepository.save(recommendEntity);
+            }
+
+            String title = "추천 차량 업데이트";
+            String body = String.format("""
+[TABOLKA] 추천 매물 업데이트!
+
+이번 주 고객님을 위한 추천 차량이 업데이트 되었습니다.
+
+지금 바로 앱에서 확인해보세요 👉
+""");
+
+            NotificationRequestDto notification = NotificationRequestDto.builder()
+                    .user(user)
+                    .notificationType(3)
+                    .title(title)
+                    .content(body)
+                    .build();
+
+            try{
+                fcmService.sendMessageTo(user.getFcmToken(), title, body);
+                notificationService.addNotification(notification);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     }
