@@ -254,14 +254,13 @@
                     agencyId: agencyId,
                 }),
             })
-                .then(data => data.json())
-                .then(data => {
-                    if (data && data.ok) {
+                .then(response => {
+                    if (response.ok) {  // HTTP 상태가 200-299 범위인 경우
                         alert('등록이 완료되었습니다.');
                         const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
                         registrationModal.hide();
                     } else {
-                        alert('등록에 실패했습니다.');
+                        throw new Error('등록 실패');
                     }
                 })
                 .catch(error => {
