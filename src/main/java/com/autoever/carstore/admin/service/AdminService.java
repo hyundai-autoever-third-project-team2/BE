@@ -8,19 +8,26 @@ import com.autoever.carstore.agency.dao.AgencyRepository;
 import com.autoever.carstore.agency.entity.AgencyEntity;
 import com.autoever.carstore.car.dao.CarPurchaseImageRepository;
 import com.autoever.carstore.car.dao.CarPurchaseRepository;
+import com.autoever.carstore.car.dao.CarSalesLikeRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
 import com.autoever.carstore.car.entity.CarPurchaseEntity;
 import com.autoever.carstore.car.entity.CarPurchaseImageEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
-import com.autoever.carstore.user.dto.response.TransactionsResponseDto;
+import com.autoever.carstore.fcm.service.FCMService;
+import com.autoever.carstore.notification.dto.NotificationRequestDto;
+import com.autoever.carstore.notification.service.NotificationService;
+import com.autoever.carstore.user.entity.UserEntity;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -28,6 +35,9 @@ public class AdminService {
     private final CarPurchaseRepository carPurchaseRepository;
     private final AgencyRepository agencyRepository;
     private final CarPurchaseImageRepository carPurchaseImageRepository;
+    private final FCMService fcmService;
+    private final NotificationService notificationService;
+    private final CarSalesLikeRepository carSalesLikeRepository;
 
     public Page<JudgeResponseDto> getCarsByProgress(String progress, Pageable pageable) {
         switch (progress) {
@@ -60,19 +70,71 @@ public class AdminService {
                 );
     }
 
+    @Transactional
     public void completeJudge(Long purchaseId, int price) {
         CarPurchaseEntity car = carPurchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid purchase ID"));
         car.updatePrice(price);
         car.updateProgress("심사 완료");
+
         carPurchaseRepository.save(car);
+
+        String title = "등록한 차량의 심사가 완료되었습니다.";
+        String body = String.format("""
+[TABOLKA] 고객님의 차량 매입가가 산정되었습니다!
+
+소중한 %s (%s)의
+매입 견적이 완료되었습니다.
+
+제안 매입가: %,d 만원
+
+지금 바로 앱에서 확인해보세요 👉
+""", car.getCar().getCarModel(), car.getCar().getCarNumber(), price);
+
+        NotificationRequestDto notification = NotificationRequestDto.builder()
+                .user(car.getUser())
+                .notificationType(0)
+                .title(title)
+                .content(body)
+                .build();
+
+        try{
+            fcmService.sendMessageTo(car.getUser().getFcmToken(), title, body);
+            notificationService.addNotification(notification);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    @Transactional
     public void rejectJudge(Long purchaseId) {
         CarPurchaseEntity car = carPurchaseRepository.findById(purchaseId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid purchase ID"));
         car.updateProgress("거절");
         carPurchaseRepository.save(car);
+
+        String title = "등록한 차량의 매입이 거절되었습니다.";
+        String body = String.format("""
+[TABOLKA] 고객님의 차량 매입이 거부되었습니다!
+
+고객님의 차량 %s (%s)을 점검해본 결과 매입이 어려운 것으로 판단되었습니다.
+
+지금 바로 앱에서 확인해보세요 👉
+""", car.getCar().getCarModel(), car.getCar().getCarNumber());
+
+        NotificationRequestDto notification = NotificationRequestDto.builder()
+                .user(car.getUser())
+                .notificationType(0)
+                .title(title)
+                .content(body)
+                .build();
+
+        try{
+            fcmService.sendMessageTo(car.getUser().getFcmToken(), title, body);
+            notificationService.addNotification(notification);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Page<RegistrationResponseDto> getRegistrationCarsByProgress(boolean isVisible, Pageable pageable) {
@@ -108,10 +170,10 @@ public class AdminService {
 
     }
 
+    @Transactional
     public void submitRegistration(RegistrationRequestDto requestDto) {
         CarSalesEntity entity = carSalesRepository.findById(requestDto.getCarSalesId()).orElse(null);
         AgencyEntity agencyEntity = agencyRepository.findById(requestDto.getAgencyId()).orElseThrow(() -> new IllegalArgumentException("Invalid agency ID"));
-
 
         if(entity != null){
             entity.updateAgency(agencyEntity);
@@ -119,6 +181,34 @@ public class AdminService {
             entity.updateIsVisible(requestDto.isVisible()); // isVisible 설정
             carSalesRepository.save(entity);
 
+            List<UserEntity> users = carSalesLikeRepository.findUsersByCarModelId(entity.getCar().getCarModel());
+
+            for(UserEntity user : users){
+                String title = "고객님이 좋아하실만한 차량이 등록되었습니다.";
+                String body = String.format("""
+[TABOLKA] 신규 매물 알림!
+
+고객님이 관심 있으신 %s %s 차량이 새로 등록되었습니다.
+
+가격 : %,d 만원
+
+지금 바로 앱에서 확인해보세요 👉
+""", entity.getCar().getCarModel().getModelName(), entity.getCar().getCarModel().getModelYear(), entity.getPrice());
+
+                NotificationRequestDto notification = NotificationRequestDto.builder()
+                        .user(user)
+                        .notificationType(1)
+                        .title(title)
+                        .content(body)
+                        .build();
+
+                try{
+                    fcmService.sendMessageTo(user.getFcmToken(), title, body);
+                    notificationService.addNotification(notification);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
     }

@@ -858,7 +858,6 @@ public class CarServiceImplement implements CarService {
     @Scheduled(cron = "0 0 0 * * MON")
     @Transactional
     public void updateDiscountPrice() {
-        log.info("시작1!");
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findSalesCar();
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
 
@@ -873,9 +872,19 @@ public class CarServiceImplement implements CarService {
                 log.info(salesLikeLIst);
 
                 String title = "관심 차량의 가격이 인하되었습니다";
-                String body = carSalesEntity.getCar().getCarModel().getModelName() + " " + carSalesEntity.getCar().getCarModel().getModelYear()
-                        + " " + carSalesEntity.getCar().getCarNumber() + "\n"
-                        + currentPrice + "원 -> " + discountPrice + "원";
+
+                String body = String.format("""
+[TABOLKA] 관심 차량 가격 인하!
+
+%s %s (%s)
+%,d 만원 → %,d 만원
+
+지금 바로 앱에서 확인해보세요 👉
+""", carSalesEntity.getCar().getCarModel().getModelName(),
+                        carSalesEntity.getCar().getCarModel().getModelYear(),
+                        carSalesEntity.getCar().getCarNumber(),
+                        currentPrice,
+                        discountPrice);
 
                 carSalesEntity.setDiscountPrice(discountPrice);
                 carSalesRepository.save(carSalesEntity);  // 변경사항 저장
@@ -883,7 +892,7 @@ public class CarServiceImplement implements CarService {
                 for(CarSalesLikeEntity salesLike : salesLikeLIst) {
                     NotificationRequestDto notification = NotificationRequestDto.builder()
                             .user(salesLike.getUser())
-                            .notificationType(1)
+                            .notificationType(2)
                             .title(title)
                             .content(body)
                             .build();
