@@ -34,8 +34,8 @@ public class RecommendServiceImplement implements RecommendService {
 
     @Override
   //  @Scheduled(cron = "0 0 0 * * MON")
-//    @Scheduled(cron = "0 11 18 * * MON")
-    @Scheduled(cron = "0 45 21 * * MON" , zone = "Asia/Seoul")
+    @Scheduled(cron = "0 40 23 * * MON")
+//    @Scheduled(cron = "0 5 23 * * MON" , zone = "Asia/Seoul")
     @Transactional
     public void updateRecommendations() {
         List<Long> userIds = recommendRepository.findAllUserIds();
@@ -46,12 +46,19 @@ public class RecommendServiceImplement implements RecommendService {
 
             List<CarSalesLikeEntity> likeEntities = carSalesLikeRepository.findByUserId(userId);
             int count = likeEntities.size();
+            log.info(user.getNickname());
 
             if(count >= 5){
                 RecommendEntity recommendEntity = recommendRepository.findByUserId(userId);
                 List<CarSalesEntity> recommendedCars = getNewRecommendations(likeEntities);
 
+                log.info(recommendEntity.getUser().getNickname());
+
                 recommendEntity = updateRecommendEntity(recommendEntity, recommendedCars);
+
+                log.info(recommendEntity.getUser().getNickname());
+                if(recommendEntity.getUser() == null) continue;
+
                 recommendRepository.save(recommendEntity);
             }
 
@@ -121,6 +128,8 @@ public class RecommendServiceImplement implements RecommendService {
         }
 
         recommendEntity = RecommendEntity.builder()
+                .recommendId(recommendEntity.getRecommendId())
+                .user(recommendEntity.getUser())
                 .recommendCar1Id(recommendedCars.get(0) != null ? recommendedCars.get(0).getCarSalesId() : -1)
                 .recommendCar2Id(recommendedCars.get(1) != null ? recommendedCars.get(1).getCarSalesId() : -1)
                 .recommendCar3Id(recommendedCars.get(2) != null ? recommendedCars.get(2).getCarSalesId() : -1)
