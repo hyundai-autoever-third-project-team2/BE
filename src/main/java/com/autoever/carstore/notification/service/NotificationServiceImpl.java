@@ -34,6 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
                 type = "discount";
                 break;
             default:
+                type = "recommend";
                 break;
         }
 

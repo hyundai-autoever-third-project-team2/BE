@@ -873,7 +873,7 @@ public class CarServiceImplement implements CarService {
                 List<CarSalesLikeEntity> salesLikeLIst = carSalesLikeRepository.findByCarSales(carSalesEntity);
                 log.info(salesLikeLIst);
 
-                String title = "관심 차량의 가격이 인하되었습니다";
+                String title = "관심 차량 가격 인하";
 
                 String body = String.format("""
 [TABOLKA] 관심 차량 가격 인하!
@@ -900,9 +900,7 @@ public class CarServiceImplement implements CarService {
                             .build();
 
                     try{
-                        log.info("알림 전송");
                         fcmService.sendMessageTo(salesLike.getUser().getFcmToken(), title, body);
-                        log.info("알림 저장");
                         notificationService.addNotification(notification);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
