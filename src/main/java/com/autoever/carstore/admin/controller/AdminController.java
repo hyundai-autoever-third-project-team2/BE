@@ -96,6 +96,7 @@ public class AdminController {
         return "admin/registration";
     }
 
+
     @GetMapping("/admin/chat")
     public String chat() {
         return "admin/chat";

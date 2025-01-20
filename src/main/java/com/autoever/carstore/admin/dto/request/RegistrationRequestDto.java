@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RegistrationRequestDto {
-    private long carSalesId;
+    private long carPurchaseId;
     private int price;
     private long agencyId;
     private boolean isVisible;

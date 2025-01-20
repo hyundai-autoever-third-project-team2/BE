@@ -10,6 +10,7 @@ import com.autoever.carstore.car.dao.CarPurchaseImageRepository;
 import com.autoever.carstore.car.dao.CarPurchaseRepository;
 import com.autoever.carstore.car.dao.CarSalesLikeRepository;
 import com.autoever.carstore.car.dao.CarSalesRepository;
+import com.autoever.carstore.car.entity.CarEntity;
 import com.autoever.carstore.car.entity.CarPurchaseEntity;
 import com.autoever.carstore.car.entity.CarPurchaseImageEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
@@ -139,23 +140,43 @@ public class AdminService {
 
     public Page<RegistrationResponseDto> getRegistrationCarsByProgress(boolean isVisible, Pageable pageable) {
 
-        return carPurchaseRepository.findByProgress("판매중", pageable)
-                .map(carPurchaseEntity -> RegistrationResponseDto.builder()
-                        .carPurchaseId(carPurchaseEntity.getCarPurchaseId())
-                        .carId(carPurchaseEntity.getCar().getCarId())
-                        .distance(carPurchaseEntity.getCar().getDistance())
-                        .navigation(carPurchaseEntity.getCar().isNavigation())
-                        .hud(carPurchaseEntity.getCar().isHud())
-                        .ventilatedSeat(carPurchaseEntity.getCar().isVentilatedSeat())
-                        .heatedSeat(carPurchaseEntity.getCar().isHeatedSeat())
-                        .cruiseControl(carPurchaseEntity.getCar().isCruiseControl())
-                        .sunroof(carPurchaseEntity.getCar().isSunroof())
-                        .parkingDistanceWarning(carPurchaseEntity.getCar().isParkingDistanceWarning())
-                        .lineOutWarning(carPurchaseEntity.getCar().isLineOutWarning())
-                        .carImage(carPurchaseEntity.getCar().getImages().get(0).getImageUrl())
-                        .carBrand(carPurchaseEntity.getCar().getCarModel().getBrand())
-                        .carModel(carPurchaseEntity.getCar().getCarModel().getModelName())
-                        .build());
+        if(isVisible == false) {
+            return carPurchaseRepository.findByProgress("판매중", pageable)
+                    .map(carPurchaseEntity -> RegistrationResponseDto.builder()
+                            .carPurchaseId(carPurchaseEntity.getCarPurchaseId())
+                            .carId(carPurchaseEntity.getCar().getCarId())
+                            .distance(carPurchaseEntity.getCar().getDistance())
+                            .navigation(carPurchaseEntity.getCar().isNavigation())
+                            .hud(carPurchaseEntity.getCar().isHud())
+                            .ventilatedSeat(carPurchaseEntity.getCar().isVentilatedSeat())
+                            .heatedSeat(carPurchaseEntity.getCar().isHeatedSeat())
+                            .cruiseControl(carPurchaseEntity.getCar().isCruiseControl())
+                            .sunroof(carPurchaseEntity.getCar().isSunroof())
+                            .parkingDistanceWarning(carPurchaseEntity.getCar().isParkingDistanceWarning())
+                            .lineOutWarning(carPurchaseEntity.getCar().isLineOutWarning())
+                            .carImage(carPurchaseEntity.getCar().getImages().get(0).getImageUrl())
+                            .carBrand(carPurchaseEntity.getCar().getCarModel().getBrand())
+                            .carModel(carPurchaseEntity.getCar().getCarModel().getModelName())
+                            .build());
+        }else{
+            return carSalesRepository.findByIsVisibleAndProgress("판매중", pageable)
+                    .map(carSalesEntity ->  RegistrationResponseDto.builder()
+                            .carPurchaseId(carSalesEntity.getCarSalesId())
+                            .carId(carSalesEntity.getCar().getCarId())
+                            .distance(carSalesEntity.getCar().getDistance())
+                            .navigation(carSalesEntity.getCar().isNavigation())
+                            .hud(carSalesEntity.getCar().isHud())
+                            .ventilatedSeat(carSalesEntity.getCar().isVentilatedSeat())
+                            .heatedSeat(carSalesEntity.getCar().isHeatedSeat())
+                            .cruiseControl(carSalesEntity.getCar().isCruiseControl())
+                            .sunroof(carSalesEntity.getCar().isSunroof())
+                            .parkingDistanceWarning(carSalesEntity.getCar().isParkingDistanceWarning())
+                            .lineOutWarning(carSalesEntity.getCar().isLineOutWarning())
+                            .carImage(carSalesEntity.getCar().getImages().get(0).getImageUrl())
+                            .carBrand(carSalesEntity.getCar().getCarModel().getBrand())
+                            .carModel(carSalesEntity.getCar().getCarModel().getModelName())
+                            .build());
+        }
     }
 
     public List<AgencyDto> getAllAgencies() {
@@ -171,14 +192,24 @@ public class AdminService {
 
     @Transactional
     public void submitRegistration(RegistrationRequestDto requestDto) {
-        CarSalesEntity entity = carSalesRepository.findById(requestDto.getCarSalesId()).orElse(null);
+        CarPurchaseEntity entity = carPurchaseRepository.findById(requestDto.getCarPurchaseId()).orElse(null);
         AgencyEntity agencyEntity = agencyRepository.findById(requestDto.getAgencyId()).orElseThrow(() -> new IllegalArgumentException("Invalid agency ID"));
 
+        CarSalesEntity carSalesEntity = CarSalesEntity.builder()
+                .car(entity.getCar())
+                .user(null)
+                .agency(agencyEntity)
+                .price(requestDto.getPrice())
+                .discountPrice(0)
+                .progress("판매중")
+                .salesDate(null)
+                .orderNumber(null)
+                .isVisible(true)
+                .count(0)
+                .build();
+
         if(entity != null){
-            entity.updateAgency(agencyEntity);
-            entity.updatePrice(requestDto.getPrice());
-            entity.updateIsVisible(requestDto.isVisible()); // isVisible 설정
-            carSalesRepository.save(entity);
+            carSalesRepository.save(carSalesEntity);
 
             List<UserEntity> users = carSalesLikeRepository.findUsersByCarModelId(entity.getCar().getCarModel());
 

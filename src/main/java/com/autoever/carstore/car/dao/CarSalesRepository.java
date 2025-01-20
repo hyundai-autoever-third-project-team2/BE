@@ -1,5 +1,6 @@
 package com.autoever.carstore.car.dao;
 
+import com.autoever.carstore.admin.dto.response.RegistrationResponseDto;
 import com.autoever.carstore.car.entity.CarPurchaseEntity;
 import com.autoever.carstore.car.entity.CarSalesEntity;
 import com.autoever.carstore.car.entity.CarSalesLikeEntity;
@@ -139,11 +140,12 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "OR (:modelName IS NULL OR cm.modelName LIKE %:modelName%)")
     List<CarSalesEntity> findByBrandOrCarName(String brand, String modelName);
 
-    @Query("SELECT c FROM CarSalesEntity c WHERE c.isVisible = :visible AND c.progress = :progress")
-    Page<CarSalesEntity> findByIsVisibleAndProgress(@Param("visible") boolean visible, @Param("progress") String progress, Pageable pageable);
+    @Query("SELECT c FROM CarSalesEntity c WHERE c.progress = :progress")
+    Page<CarSalesEntity> findByIsVisibleAndProgress(@Param("progress") String progress, Pageable pageable);
 
 
     @Query("SELECT cs FROM CarSalesEntity cs " +
             "WHERE cs.progress = '판매중' ")
     List<CarSalesEntity> findSalesCar();
+
 }
