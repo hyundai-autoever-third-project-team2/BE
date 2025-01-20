@@ -857,7 +857,8 @@ public class CarServiceImplement implements CarService {
 
     //차량 discount 업데이트 메소드
     @Override
-    @Scheduled(cron = "0 0 0 * * MON")
+    //@Scheduled(cron = "0 0 0 * * MON")
+    @Scheduled(cron = "0 50 20 * * MON")
     @Transactional
     public void updateDiscountPrice() {
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findSalesCar();
