@@ -34,7 +34,7 @@ public class CarPurchaseImplement implements CarPurchaseService {
         CarPurchaseEntity carPurchaseEntity = CarPurchaseEntity.builder()
                 .comments(comments)
                 .price(0)
-                .progress("심사전")
+                .progress("심사중")
                 .purchaseDate(LocalDateTime.now())
                 .car(carEntity)
                 .user(userEntity)

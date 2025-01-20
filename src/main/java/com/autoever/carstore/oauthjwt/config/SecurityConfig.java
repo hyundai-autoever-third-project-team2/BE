@@ -68,7 +68,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/**").permitAll() // 누구나 접근 가능
+                        .requestMatchers("/", "/login/**", "/admin/chat","/css/**", "/js/**", "/admin/chat/**").permitAll() // 누구나 접근 가능
                         .requestMatchers("/admin/**").hasRole("ADMIN") // ROLE_ADMIN만 접근 가능
                         .requestMatchers("/user/**").authenticated() // 로그인한 사용자만 접근 가능
                         .anyRequest().permitAll() // 그 외의 요청은 인증 없이 접근 가능

@@ -142,7 +142,9 @@
                     if (!response.ok) throw new Error('심사 완료 처리에 실패했습니다.');
                     alert('심사가 성공적으로 완료되었습니다.');
                     const modal = bootstrap.Modal.getInstance(document.getElementById('judgeModal'));
-                    modal.hide();
+                    if (modal) {
+                        modal.hide();
+                    }
                 })
                 .catch(error => {
                     console.error(error);
@@ -162,7 +164,9 @@
                     if (!response.ok) throw new Error('심사 반려 처리에 실패했습니다.');
                     alert('심사가 반려되었습니다.');
                     const modal = bootstrap.Modal.getInstance(document.getElementById('judgeModal'));
-                    modal.hide();
+                    if (modal) {
+                        modal.hide();
+                    }
                 })
                 .catch(error => {
                     console.error(error);
@@ -243,13 +247,12 @@
                     isVisible: true // isVisible을 true로 설정
                 }),
             })
-                .then(response => response.json())
+                .then(data => data.json())
                 .then(data => {
-                    if(data.success){
+                    if(data.ok){
                         alert('등록이 완료되었습니다.');
                         const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
                         registrationModal.hide();
-                        location.reload();
                     } else {
                         alert('등록에 실패했습니다.');
                     }
@@ -271,6 +274,7 @@
             }
         }
 
+
     </script>
 </head>
 <body>
@@ -288,7 +292,7 @@
         <a onclick="loadPage('/admin/users')">회원 조회</a>
         <a onclick="loadPage('/admin/judge')">매물 심사</a>
         <a onclick="loadPage('/admin/registration')">매물 등록</a>
-        <a onclick="loadPage('/admin/chat')">상담</a>
+        <a href="/index.html">상담</a>
     </nav>
 </div>
 

@@ -29,17 +29,11 @@ import java.util.Map;
 public class AdminController {
     private final AdminService adminService;
     private final UserService userService;
-    private final SecurityUtil securityUtil;
 
     @ModelAttribute("agencies")
     public List<AgencyDto> getAgencies() {
         return adminService.getAllAgencies();
     }
-
-//    @ModelAttribute("userCarImages")
-//    public List<String> getUserCarImages() {
-//        return adminService.getAllUserCarImages();
-//    }
 
     // 메인 페이지
     @GetMapping("/admin/home")
@@ -100,5 +94,10 @@ public class AdminController {
         model.addAttribute("currentProgress", isVisible);
         model.addAttribute("registrationCars", adminService.getRegistrationCarsByProgress(isVisible, pageable));
         return "admin/registration";
+    }
+
+    @GetMapping("/admin/chat")
+    public String chat() {
+        return "admin/chat";
     }
 }
