@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RegistrationResponseDto {
-    private boolean isVisible;
-    private long carSalesId;
+    private long carPurchaseId;
     private long carId;
     private int distance;
     private boolean navigation;
@@ -25,5 +24,4 @@ public class RegistrationResponseDto {
     private String carImage;
     private String carBrand;
     private String carModel;
-
 }

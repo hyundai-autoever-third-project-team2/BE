@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CarPurchaseRepository  extends JpaRepository<CarPurchaseEntity, Long> {
@@ -23,5 +24,6 @@ public interface CarPurchaseRepository  extends JpaRepository<CarPurchaseEntity,
     CarPurchaseEntity findByCarPurchaseId(@Param("carPurchaseId") long carPurchaseId);
 
     Page<CarPurchaseEntity> findByProgress(String progress, Pageable pageable);
+
 }
 
