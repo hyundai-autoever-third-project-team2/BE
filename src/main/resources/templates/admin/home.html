@@ -221,6 +221,14 @@
             document.getElementById('modal-agency-id').value = "";
         };
 
+        window.handleChatClick = function(button) {
+            // 버튼에서 userId 값을 가져옵니다
+            const userId = button.getAttribute('data-user-id');
+
+            // index.html로 이동하면서 userId를 쿼리 파라미터로 전달합니다
+            window.location.href = `/index.html?userId=${userId}`;
+        };
+
         window.submitRegistration = function () {
             // 등록 제출 로직 구현
             const carPurchaseId = document.getElementById('modal-model-salesId').textContent;
