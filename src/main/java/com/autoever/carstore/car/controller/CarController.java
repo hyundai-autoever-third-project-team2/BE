@@ -137,7 +137,7 @@ public class CarController {
     }
 
     //카테고리 필터링
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     public ResponseEntity<List<FilterCarResponseDto>> filterCars(
             @RequestBody FilterCarRequestDto filterCarRequestDto
     ) {

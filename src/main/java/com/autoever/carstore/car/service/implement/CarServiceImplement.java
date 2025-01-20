@@ -640,6 +640,7 @@ public class CarServiceImplement implements CarService {
         for(CarSalesEntity carSalesEntity : carSalesEntities){
             TransactionStatusResponseDto transactionStatusResponseDto = TransactionStatusResponseDto.builder()
                     .car_sales_id(carSalesEntity.getCarSalesId())
+                    .car_id(carSalesEntity.getCar().getCarId())
                     .sales_date(carSalesEntity.getUpdatedAt())
                     .progress(carSalesEntity.getProgress())
                     .brand(carSalesEntity.getCar().getCarModel().getBrand())
@@ -661,6 +662,7 @@ public class CarServiceImplement implements CarService {
         for(CarPurchaseEntity carPurchaseEntity : carPurchaseEntities){
             UserCarTransactionStatusResponseDto userCarTransactionStatusResponseDto = UserCarTransactionStatusResponseDto.builder()
                     .car_purchase_id(carPurchaseEntity.getCarPurchaseId())
+                    .car_id(carPurchaseEntity.getCar().getCarId())
                     .purchase_date(carPurchaseEntity.getPurchaseDate())
                     .progress(carPurchaseEntity.getProgress())
                     .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
