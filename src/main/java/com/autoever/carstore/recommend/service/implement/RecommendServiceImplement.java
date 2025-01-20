@@ -35,7 +35,7 @@ public class RecommendServiceImplement implements RecommendService {
     @Override
   //  @Scheduled(cron = "0 0 0 * * MON")
 //    @Scheduled(cron = "0 11 18 * * MON")
-    @Scheduled(cron = "0 55 20 * * MON")
+    @Scheduled(cron = "0 02 21 * * MON")
     @Transactional
     public void updateRecommendations() {
         List<Long> userIds = recommendRepository.findAllUserIds();
