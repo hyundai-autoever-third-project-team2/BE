@@ -214,6 +214,6 @@ public class UserServiceImplement implements UserService {
         if (index < selectedCars.size()) {
             return selectedCars.get(index).getCarSalesId();
         }
-        return null; 
+        return null;
     }
 }
