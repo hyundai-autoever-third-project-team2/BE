@@ -259,7 +259,9 @@
                         alert('등록이 완료되었습니다.');
                         const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
                         registrationModal.hide();
-                        window.location.href = '/registration.html';
+                        // isVisible 값을 true 또는 false로 전달
+                        const isVisible = false; // 필요에 따라 true 또는 false로 설정
+                        window.location.href = `/admin/registration/${isVisible}`;
                     } else {
                         throw new Error('등록 실패');
                     }
