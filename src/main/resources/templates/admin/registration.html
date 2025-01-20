@@ -376,7 +376,7 @@
                             <label for="modal-price" class="form-label"><strong>가격 설정:</strong></label>
                             <div class="input-group">
                                 <input type="number" id="modal-price" class="form-control" placeholder="가격을 입력하세요">
-                                <span class="input-group-text">원</span>
+                                <span class="input-group-text">만 원</span>
                             </div>
                             <small id="priceHelp" class="form-text text-muted">
                                 차량의 판매 가격을 입력하세요. (숫자만 입력)
@@ -388,7 +388,7 @@
             <!-- modal-footer를 modal-content 내부로 이동 -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                <button type="button" class="btn btn-success" onclick="submitRegistration()">등록 제출</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" aria-label="Close" onclick="submitRegistration()">등록 제출</button>
             </div>
         </div>
     </div>
