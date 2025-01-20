@@ -374,8 +374,8 @@ public class CarServiceImplement implements CarService {
     public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto, long userId) {
         List<FilterCarResponseDto> result = new ArrayList<>();
         List<String> carTypes = requestDto.getCarTypes();
-        int startDisplacement = requestDto.getStart_displacement();
-        int endDisplacement = requestDto.getEnd_displacement();
+        int startYear = requestDto.getStart_year();
+        int endYear = requestDto.getEnd_year();
         int startDistance = requestDto.getStart_distance();
         int endDistance = requestDto.getEnd_distance();
         int startPrice = requestDto.getStart_price();
@@ -383,7 +383,7 @@ public class CarServiceImplement implements CarService {
 
         List<String> colors = requestDto.getColors();
 
-        List<CarSalesEntity> car_sales_filter_list = carSalesRepository.filterCars(carTypes, startDisplacement, endDisplacement, startDistance, endDistance, startPrice, endPrice, colors);
+        List<CarSalesEntity> car_sales_filter_list = carSalesRepository.filterCars(carTypes, startYear, endYear, startDistance, endDistance, startPrice, endPrice, colors);
 
         for(CarSalesEntity car_sales : car_sales_filter_list) {
             FilterCarResponseDto filter_car;
