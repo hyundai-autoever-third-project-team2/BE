@@ -139,6 +139,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String targetUrl;
         if ("ROLE_ADMIN".equals(role)) {
             //http://localhost:8080/admin/home
+            //https://twomuchcar.shop/admin/home
             targetUrl = "https://twomuchcar.shop/admin/home";
 
             //쿠키에 Access Token 저장
