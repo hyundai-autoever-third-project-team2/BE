@@ -60,6 +60,7 @@ public class CarPurchaseImplement implements CarPurchaseService {
         int price = carPurchaseEntity.getPrice();
         LocalDateTime purchaseDate = carPurchaseEntity.getPurchaseDate();
         boolean isDeleted = carPurchaseEntity.isDeleted();
+        List<CarPurchaseImageEntity> images = carPurchaseEntity.getImages();
 
         carPurchaseEntity = CarPurchaseEntity.builder()
                 .carPurchaseId(carPurchaseId)
@@ -70,6 +71,7 @@ public class CarPurchaseImplement implements CarPurchaseService {
                 .price(price)
                 .purchaseDate(purchaseDate)
                 .isDeleted(isDeleted)
+                .images(images)
                 .build();
 
         carPurchaseRepository.save(carPurchaseEntity);
