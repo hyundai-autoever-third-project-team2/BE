@@ -61,13 +61,6 @@ public class AdminController {
         return "admin/users";
     }
 
-    // 유저 한 명 조회 (AJAX 요청에 사용)
-    @GetMapping("/admin/users/{id}")
-    public String getUserById(@PathVariable Long id, Model model) {
-        UserEntity user = userService.getUserById(id);
-        model.addAttribute("user", user); // "user"라는 이름으로 데이터 전달
-        return "admin/userDetail";
-    }
 
     @GetMapping("/admin/judge")
     public String judge(Model model,

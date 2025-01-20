@@ -2,9 +2,12 @@ package com.autoever.carstore.admin.controller;
 
 import com.autoever.carstore.admin.dto.request.RegistrationRequestDto;
 import com.autoever.carstore.admin.service.AdminService;
+import com.autoever.carstore.user.entity.UserEntity;
+import com.autoever.carstore.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminRestController {
     private final AdminService adminService;
+    private final UserService userService;
 
     @PostMapping("/admin/judge/complete")
     public ResponseEntity<Void> completeJudge(@RequestBody Map<String, Object> request) {
@@ -32,12 +36,8 @@ public class AdminRestController {
     @PostMapping("/admin/registration/submit")
     @ResponseBody
     public ResponseEntity<?> submitRegistration(@RequestBody RegistrationRequestDto requestDto) {
-        boolean success = adminService.submitRegistration(requestDto);
-        if(success){
-            return ResponseEntity.ok().body("{\"success\": true}");
-        } else {
-            return ResponseEntity.status(500).body("{\"success\": false}");
-        }
+        adminService.submitRegistration(requestDto);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/admin/judge/images/{purchaseId}")
@@ -47,6 +47,12 @@ public class AdminRestController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         return ResponseEntity.ok(images);
+    }
+
+    @GetMapping("/admin/users/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id, Model model) {
+        UserEntity user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 
 

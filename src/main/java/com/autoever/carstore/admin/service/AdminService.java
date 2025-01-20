@@ -86,6 +86,7 @@ public class AdminService {
                         .navigation(carSalesEntity.getCar().isNavigation())
                         .hud(carSalesEntity.getCar().isHud())
                         .ventilatedSeat(carSalesEntity.getCar().isVentilatedSeat())
+                        .heatedSeat(carSalesEntity.getCar().isHeatedSeat())
                         .cruiseControl(carSalesEntity.getCar().isCruiseControl())
                         .sunroof(carSalesEntity.getCar().isSunroof())
                         .parkingDistanceWarning(carSalesEntity.getCar().isParkingDistanceWarning())
@@ -107,7 +108,7 @@ public class AdminService {
 
     }
 
-    public boolean submitRegistration(RegistrationRequestDto requestDto) {
+    public void submitRegistration(RegistrationRequestDto requestDto) {
         CarSalesEntity entity = carSalesRepository.findById(requestDto.getCarSalesId()).orElse(null);
         AgencyEntity agencyEntity = agencyRepository.findById(requestDto.getAgencyId()).orElseThrow(() -> new IllegalArgumentException("Invalid agency ID"));
 
@@ -117,9 +118,9 @@ public class AdminService {
             entity.updatePrice(requestDto.getPrice());
             entity.updateIsVisible(requestDto.isVisible()); // isVisible 설정
             carSalesRepository.save(entity);
-            return true;
+
         }
-        return false;
+
     }
 
     public List<String> getAllUserCarImages() {

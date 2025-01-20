@@ -8,53 +8,157 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* 테이블 레이아웃 고정 */
+        body {
+            background-color: #f8f9fa;
+        }
+
         table {
-            table-layout: fixed;
-            width: 100%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        th, td {
-            word-wrap: break-word;
+        .table thead {
+            background: linear-gradient(45deg, #198754, #20c997);
+            color: white;
         }
 
-        th.no-wrap, td.no-wrap {
-            white-space: nowrap;
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
         }
 
-        /* 페이지네이션 링크 색상 녹색으로 변경 */
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+
+        .table td {
+            vertical-align: middle;
+            font-size: 0.95rem;
+        }
+
+
+        .pagination {
+            margin-top: 2rem;
+        }
+
         .pagination .page-link {
-            color: #198754; /* Bootstrap의 'success' 색상 (녹색) */
+            height: 42px;
+            width: 42px;
+            border-radius: 5px;
+            margin: 0 3px;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+            display: flex; /* 플렉스 박스 설정 */
+            justify-content: center; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
         }
 
-        /* 페이지네이션 링크 호버 시 색상 변경 */
-        .pagination .page-link:hover {
-            color: #155724; /* 더 어두운 녹색 */
-            background-color: #d1e7dd; /* 연한 녹색 배경 */
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        /* 활성 페이지 링크 스타일 변경 */
-        .pagination .page-item.active .page-link {
-            background-color: #198754; /* 녹색 배경 */
-            border-color: #198754; /* 녹색 테두리 */
-            color: white; /* 흰색 텍스트 */
+        .modal-header {
+            background: linear-gradient(45deg, #198754, #20c997);
+            border-bottom: none;
+            padding: 1.5rem;
         }
 
-        /* 비활성화된 페이지 링크 스타일 변경 */
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d; /* 회색 텍스트 */
-            pointer-events: none;
-            cursor: auto;
-            background-color: #e9ecef; /* 연한 회색 배경 */
-            border-color: #dee2e6; /* 연한 회색 테두리 */
+        .modal-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.25rem;
         }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        #modal-user-profile {
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        #modal-user-profile:hover {
+            transform: scale(1.05);
+        }
+
+        .badge {
+            padding: 0.5em 1em;
+            font-size: 0.85em;
+            border-radius: 6px;
+        }
+
+        /* 활성화 상태에 따른 배지 스타일 */
+        [data-active="true"] {
+            background-color: #198754;
+            color: black;
+        }
+
+        [data-active="false"] {
+            background-color: #dc3545;
+            color: black;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #f0f0f0;
+            padding: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        /* 버튼 호버 효과 */
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
     </style>
 </head>
 <body class="bg-light">
 <div class="container mt-5">
     <!-- 사용자 테이블 -->
     <div class="table-responsive">
-        <table class="table table-bordered table-striped text-center align-middle">
-            <thead class="table-success">
+        <table class="table table-hover table-striped table-bordered text-center align-middle">
+            <thead>
             <tr>
                 <th scope="col">프로필 사진</th>
                 <th scope="col">회원 번호</th>
@@ -70,10 +174,16 @@
                 <td th:text="${user.userId}">User ID</td>
                 <td th:text="${user.nickname}">User Nickname</td>
                 <td>
-                    <button class="btn btn-secondary btn-sm text-white"
+                    <button
+                            class="btn btn-secondary btn-sm text-white"
+                            th:data-user-id="${user.userId}"
+                            th:data-user-nickname="${user.nickname}"
+                            th:data-user-email="${user.email}"
+                            th:data-user-profile="${user.profileImage}"
+                            th:data-user-active="${user.isActive}"
                             data-bs-toggle="modal"
                             data-bs-target="#userDetailModal"
-                            th:onclick="showUserDetails(${user.userId})">
+                            onclick="showUserDetails(this)">
                         조회 하기
                     </button>
                 </td>
@@ -119,50 +229,51 @@
 
 <!-- 회원 상세 정보 모달 -->
 <div class="modal fade" id="userDetailModal" tabindex="-1" aria-labelledby="userDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">회원 상세 정보</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" id="userDetailModalLabel">회원 상세 정보</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <!-- 회원 상세 정보를 표시할 요소들 -->
-                <p><strong>회원 번호:</strong> <span id="detail-user-id"></span></p>
-                <p><strong>회원 이름:</strong> <span id="detail-user-name"></span></p>
-                <p><strong>프로필 사진:</strong></p>
-                <img id="detail-user-image" src="" alt="Profile Image" class="rounded-circle" style="width: 100px; height: 100px;">
-                <!-- 추가적인 회원 정보들 -->
+            <div class="modal-body p-0">
+                <!-- 프로필 섹션 -->
+                <div class="text-center p-4 bg-light">
+                    <img id="modal-user-profile" src="/placeholder.jpg" alt="프로필 사진"
+                         class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    <h4 id="modal-user-nickname" class="mb-0"></h4>
+                    <p id="modal-user-email" class="text-muted mb-0"></p>
+                </div>
+
+                <!-- 상세 정보 섹션 -->
+                <div class="p-4">
+                    <div class="info-card">
+                        <div class="info-item">
+                            <div class="info-label">회원 번호</div>
+                            <div class="info-value" id="modal-user-id"></div>
+                        </div>
+                        <div class="info-item text-center">
+                            <div class="info-label">계정 상태</div>
+                            <div class="info-value">
+                                <span id="modal-user-active"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                <!-- 필요한 경우 추가 버튼들 -->
+                <button type="button" class="btn btn-danger" id="deactivate-user-btn" onclick="deactivateUser()">
+                    계정 정지
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    닫기
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+
 <!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    /**
-     * 회원 상세 정보 모달 열기 및 데이터 설정
-     */
-    function showUserDetails(userId) {
-        // Ajax 요청을 통해 회원 상세 정보를 가져옵니다.
-        fetch('/admin/users/' + userId)
-            .then(response => response.json())
-            .then(data => {
-                // 모달에 데이터를 설정합니다.
-                document.getElementById('detail-user-id').textContent = data.userId;
-                document.getElementById('detail-user-name').textContent = data.nickname;
-                document.getElementById('detail-user-image').src = data.profileImage;
-                // 추가적인 데이터 설정
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('회원 정보를 불러오는 중 오류가 발생했습니다.');
-            });
-    }
-</script>
 </body>
 </html>
