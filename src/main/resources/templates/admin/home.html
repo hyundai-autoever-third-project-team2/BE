@@ -51,16 +51,16 @@
 
 
                 // 모달 표시
-                const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
-                modal.show();
+                // const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
+                // modal.show();
             } catch (error) {
 
             }
         };
 
-        function closeModal() {
+        window.closeUserDetailModal = function () {
             document.getElementById('user-detail-modal').style.display = 'none';
-        }
+        };
 
         //Admin Dashboard 클릭 시 홈으로 이동
         function goToHome() {
@@ -260,7 +260,7 @@
                 });
         };
 
-        window.deactivateUser= function(button) {
+        window.deactivateUser= function() {
             const confirmDeactivate = confirm("계정을 정지하시겠습니까?");
             if (confirmDeactivate) {
                 alert("계정을 정지 처리했습니다."); // 확인 시 동작
@@ -288,6 +288,7 @@
         <a onclick="loadPage('/admin/users')">회원 조회</a>
         <a onclick="loadPage('/admin/judge')">매물 심사</a>
         <a onclick="loadPage('/admin/registration')">매물 등록</a>
+        <a onclick="loadPage('/admin/chat')">상담</a>
     </nav>
 </div>
 

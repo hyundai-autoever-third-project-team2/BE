@@ -50,7 +50,7 @@ public class AdminRestController {
     }
 
     @GetMapping("/admin/users/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id, Model model) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         UserEntity user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
