@@ -256,7 +256,7 @@
             })
                 .then(data => data.json())
                 .then(data => {
-                    if(data.ok){
+                    if (data && data.ok) {
                         alert('등록이 완료되었습니다.');
                         const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
                         registrationModal.hide();
@@ -299,7 +299,6 @@
         <a onclick="loadPage('/admin/users')">회원 조회</a>
         <a onclick="loadPage('/admin/judge')">매물 심사</a>
         <a onclick="loadPage('/admin/registration')">매물 등록</a>
-        <a href="/index.html">상담</a>
     </nav>
 </div>
 
