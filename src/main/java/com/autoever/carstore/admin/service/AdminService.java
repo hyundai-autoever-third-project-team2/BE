@@ -79,7 +79,7 @@ public class AdminService {
 
         carPurchaseRepository.save(car);
 
-        String title = "등록한 차량의 심사가 완료되었습니다.";
+        String title = "등록 차량 심사 결과";
         String body = String.format("""
 [TABOLKA] 고객님의 차량 매입가가 산정되었습니다!
 
@@ -113,7 +113,7 @@ public class AdminService {
         car.updateProgress("거절");
         carPurchaseRepository.save(car);
 
-        String title = "등록한 차량의 매입이 거절되었습니다.";
+        String title = "등록 차량 심사 결과";
         String body = String.format("""
 [TABOLKA] 고객님의 차량 매입이 거부되었습니다!
 
@@ -184,7 +184,7 @@ public class AdminService {
             List<UserEntity> users = carSalesLikeRepository.findUsersByCarModelId(entity.getCar().getCarModel());
 
             for(UserEntity user : users){
-                String title = "고객님이 좋아하실만한 차량이 등록되었습니다.";
+                String title = "관심 차종 등록";
                 String body = String.format("""
 [TABOLKA] 신규 매물 알림!
 
