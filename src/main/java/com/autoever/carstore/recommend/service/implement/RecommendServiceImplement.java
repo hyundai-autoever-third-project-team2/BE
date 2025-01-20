@@ -34,7 +34,7 @@ public class RecommendServiceImplement implements RecommendService {
 
     @Override
   //  @Scheduled(cron = "0 0 0 * * MON")
-    @Scheduled(cron = "0 30 23 * * MON")
+    @Scheduled(cron = "0 40 23 * * MON")
 //    @Scheduled(cron = "0 5 23 * * MON" , zone = "Asia/Seoul")
     @Transactional
     public void updateRecommendations() {
