@@ -210,38 +210,38 @@ public class AdminService {
         carSalesRepository.save(carSalesEntity);
         carPurchaseRepository.delete(entity);
 
-//        if(entity != null){
+        if(entity != null){
 
 
-//            List<UserEntity> users = carSalesLikeRepository.findUsersByCarModelId(entity.getCar().getCarModel());
-//
-//            for(UserEntity user : users){
-//                String title = "관심 차종 등록";
-//                String body = String.format("""
-//[TABOLKA] 신규 매물 알림!
-//
-//고객님이 관심 있으신 %s %s 차량이 새로 등록되었습니다.
-//
-//가격 : %,d 만원
-//
-//지금 바로 앱에서 확인해보세요 👉
-//""", entity.getCar().getCarModel().getModelName(), entity.getCar().getCarModel().getModelYear(), entity.getPrice());
-//
-//                NotificationRequestDto notification = NotificationRequestDto.builder()
-//                        .user(user)
-//                        .notificationType(1)
-//                        .title(title)
-//                        .content(body)
-//                        .build();
-//
-//                try{
-//                    fcmService.sendMessageTo(user.getFcmToken(), title, body);
-//                    notificationService.addNotification(notification);
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        }
+            List<UserEntity> users = carSalesLikeRepository.findUsersByCarModelId(entity.getCar().getCarModel());
+
+            for(UserEntity user : users){
+                String title = "관심 차종 등록";
+                String body = String.format("""
+[TABOLKA] 신규 매물 알림!
+
+고객님이 관심 있으신 %s %s 차량이 새로 등록되었습니다.
+
+가격 : %,d 만원
+
+지금 바로 앱에서 확인해보세요 👉
+""", entity.getCar().getCarModel().getModelName(), entity.getCar().getCarModel().getModelYear(), entity.getPrice());
+
+                NotificationRequestDto notification = NotificationRequestDto.builder()
+                        .user(user)
+                        .notificationType(1)
+                        .title(title)
+                        .content(body)
+                        .build();
+
+                try{
+                    fcmService.sendMessageTo(user.getFcmToken(), title, body);
+                    notificationService.addNotification(notification);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
 
     }
 
