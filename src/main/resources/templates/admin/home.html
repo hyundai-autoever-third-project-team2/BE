@@ -259,6 +259,7 @@
                         alert('등록이 완료되었습니다.');
                         const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
                         registrationModal.hide();
+                        window.location.reload();
                     } else {
                         throw new Error('등록 실패');
                     }
