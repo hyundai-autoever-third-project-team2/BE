@@ -5,45 +5,130 @@
     <title>매물 등록</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
         table {
-            table-layout: fixed;
-            width: 100%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        th, td {
-            word-wrap: break-word;
+        .table thead {
+            background: linear-gradient(45deg, #198754, #20c997);
+            color: white;
         }
 
-        th.no-wrap, td.no-wrap {
-            white-space: nowrap;
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
         }
 
-        /* 페이지네이션 링크 색상 녹색으로 변경 */
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+
+        .table td {
+            vertical-align: middle;
+            font-size: 0.95rem;
+        }
+
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            margin-top: 2rem;
+        }
+
         .pagination .page-link {
-            color: #198754; /* Bootstrap의 'success' 색상 (녹색) */
+            height: 42px;
+            width: 42px;
+            border-radius: 5px;
+            margin: 0 3px;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+            display: flex; /* 플렉스 박스 설정 */
+            justify-content: center; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
         }
 
-        /* 페이지네이션 링크 호버 시 색상 변경 */
-        .pagination .page-link:hover {
-            color: #155724; /* 더 어두운 녹색 */
-            background-color: #d1e7dd; /* 연한 녹색 배경 */
+        /* 이미지 컨테이너 스타일링 */
+        .car-image-container {
+            height: 120px;
+            width: 180px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* 활성 페이지 링크 스타일 변경 */
-        .pagination .page-item.active .page-link {
-            background-color: #198754; /* 녹색 배경 */
-            border-color: #198754; /* 녹색 테두리 */
-            color: white; /* 흰색 텍스트 */
+        .car-image-container img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
         }
 
-        /* 비활성화된 페이지 링크 스타일 변경 */
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d; /* 회색 텍스트 */
-            pointer-events: none;
-            cursor: auto;
-            background-color: #e9ecef; /* 연한 회색 배경 */
-            border-color: #dee2e6; /* 연한 회색 테두리 */
+        .car-image-container img:hover {
+            transform: scale(1.05);
+        }
+
+
+        /* 모달 관련 스타일 */
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.5em 1em;
+        }
+
+        #modal-navigation.badge,
+        #modal-hud.badge,
+        #modal-ventilated-seat.badge,
+        #modal-heated-seat.badge,
+        #modal-cruise-control.badge,
+        #modal-sunroof.badge,
+        #modal-parking-distance-warning.badge,
+        #modal-line-out-warning.badge {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .badge[data-status="true"] {
+            background-color: #198754 !important;
+            color: white !important;
+        }
+
+        .badge[data-status="false"] {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        .card {
+            transition: transform 0.2s;
+            border: 1px solid rgba(0,0,0,.125);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,.1);
+        }
+
+        .bi {
+            color: #198754;
+        }
+
+        .modal-header {
+            background: linear-gradient(45deg, #198754, #20c997);
+        }
+
+        .modal-title {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: white;
         }
 
     </style>
@@ -65,8 +150,8 @@
 
     <!-- 심사 상태 테이블 -->
     <div class="table-responsive">
-        <table class="table table-striped table-bordered text-center align-middle">
-            <thead class="table-success">
+        <table class="table table-hover table-striped table-bordered text-center align-middle">
+            <thead>
             <tr>
                 <th class="no-wrap" style="width: 5%;">No</th>
                 <th class="no-wrap" style="width: 15%;">자동차 아이디</th>
@@ -82,12 +167,12 @@
                 <td th:text="${car.carId}"></td>
                 <td th:text="${car.carBrand}"></td>
                 <td th:text="${car.carModel}"></td>
-                <td style="height: 120px; width: 180px;">
-                    <img th:src="${car.carImage}" alt="Car Image" class="img-fluid h-100 w-100"
-                         style="object-fit: cover;" />
+                <td>
+                    <div class="car-image-container">
+                        <img th:src="@{${car.carImage}}" alt="Car Image" class="img-fluid"/>
+                    </div>
                 </td>
                 <td>
-                    <!-- 등록하기 버튼: car.isVisible == false 일 때만 표시 -->
                     <button
                             th:if="${car.isVisible == false}"
                             class="btn btn-secondary"
@@ -97,6 +182,7 @@
                             th:data-navigation="${car.navigation}"
                             th:data-hud="${car.hud}"
                             th:data-ventilated-seat="${car.ventilatedSeat}"
+                            th:data-heated-seat="${car.heatedSeat}"
                             th:data-cruise-control="${car.cruiseControl}"
                             th:data-sunroof="${car.sunroof}"
                             th:data-parking-distance-warning="${car.parkingDistanceWarning}"
@@ -115,10 +201,9 @@
         </table>
     </div>
 
-    <!-- 매물 등록 페이지네이션 -->
+    <!-- 페이지네이션 -->
     <nav aria-label="매물 등록 페이지네이션">
         <ul class="pagination justify-content-center">
-            <!-- 이전 페이지 링크 -->
             <li class="page-item" th:classappend="${registrationCars.first} ? 'disabled'">
                 <a class="page-link"
                    th:onclick="|loadPage('@{/admin/registration/{isVisible}(isVisible=${currentProgress}, page=${registrationCars.number - 1}, size=${registrationCars.size})}')|"
@@ -126,16 +211,12 @@
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-
-            <!-- 페이지 번호 링크 -->
             <li class="page-item" th:each="i : ${#numbers.sequence(0, registrationCars.totalPages - 1)}"
                 th:classappend="${i == registrationCars.number} ? 'active'">
                 <a class="page-link"
                    th:onclick="|loadPage('@{/admin/registration/{isVisible}(isVisible=${currentProgress}, page=${i}, size=${registrationCars.size})}')|"
                    th:text="${i + 1}">1</a>
             </li>
-
-            <!-- 다음 페이지 링크 -->
             <li class="page-item" th:classappend="${registrationCars.last} ? 'disabled'">
                 <a class="page-link"
                    th:onclick="|loadPage('@{/admin/registration/{isVisible}(isVisible=${currentProgress}, page=${registrationCars.number + 1}, size=${registrationCars.size})}')|"
@@ -147,43 +228,164 @@
     </nav>
 </div>
 
-<!-- 등록 모달 -->
+<!-- 새로운 등록 모달 -->
 <div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">등록하기</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">차량 등록</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- 기존 필드 -->
-                <p><strong>구매 번호:</strong> <span id="modal-model-purchaseId"></span></p>
-                <p><strong>자동차 아이디:</strong> <span id="modal-car-id"></span></p>
-                <p><strong>거리:</strong> <span id="modal-distance"></span> km</p>
-                <p><strong>내비게이션:</strong> <span id="modal-navigation"></span></p>
-                <p><strong>HUD:</strong> <span id="modal-hud"></span></p>
-                <p><strong>통풍 시트:</strong> <span id="modal-ventilated-seat"></span></p>
-                <p><strong>크루즈 컨트롤:</strong> <span id="modal-cruise-control"></span></p>
-                <p><strong>선루프:</strong> <span id="modal-sunroof"></span></p>
-                <p><strong>주차 거리 경고:</strong> <span id="modal-parking-distance-warning"></span></p>
-                <p><strong>차선 이탈 경고:</strong> <span id="modal-line-out-warning"></span></p>
-                <p><strong>브랜드:</strong> <span id="modal-car-brand"></span></p>
-                <p><strong>모델명:</strong> <span id="modal-car-model"></span></p>
+                <!-- 기본 정보 섹션 -->
+                <div class="basic-info mb-4">
+                    <h6 class="border-bottom pb-2 mb-3">기본 정보</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-center">
+                                <i class="bi bi-hash me-2" aria-hidden="true"></i>
+                                <div class="text-center">
+                                    <small class="text-muted d-block">구매 번호</small>
+                                    <strong id="modal-model-salesId"></strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-center">
+                                <i class="bi bi-car-front me-2" aria-hidden="true"></i>
+                                <div class="text-center">
+                                    <small class="text-muted d-block">자동차 ID</small>
+                                    <strong id="modal-car-id"></strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-center">
+                                <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>
+                                <div class="text-center">
+                                    <small class="text-muted d-block">주행거리</small>
+                                    <strong><span id="modal-distance"></span> km</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- 지점 설정 추가 -->
-                <p><strong>지점 설정:</strong></p>
-                <select id="modal-agency-id" class="form-control">
-                    <option value="" disabled selected>지점을 선택하세요</option>
-                    <option th:each="agency : ${agencies}"
-                            th:value="${agency.id}"
-                            th:text="${agency.name}">
-                    </option>
-                </select>
+                <!-- 차량 옵션 섹션 -->
+                <div class="vehicle-options">
+                    <h6 class="border-bottom pb-2 mb-3">차량 옵션</h6>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <!-- Flexbox 클래스 추가: d-flex flex-column -->
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-map fs-4"></i>
+                                    <h6 class="mt-2">내비</h6>
+                                    <!-- mt-auto 클래스 추가하여 배지를 하단으로 밀기 -->
+                                    <span id="modal-navigation" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-display fs-4"></i>
+                                    <h6 class="mt-2">HUD</h6>
+                                    <span id="modal-hud" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-wind fs-4"></i>
+                                    <h6 class="mt-2">통풍</h6>
+                                    <span id="modal-ventilated-seat" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-fire fs-4"></i>
+                                    <h6 class="mt-2">열선</h6>
+                                    <span id="modal-heated-seat" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-controller fs-4"></i>
+                                    <h6 class="mt-2">크루즈</h6>
+                                    <span id="modal-cruise-control" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-brightness-high fs-4"></i>
+                                    <h6 class="mt-2">선루프</h6>
+                                    <span id="modal-sunroof" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-p-circle fs-4"></i>
+                                    <h6 class="mt-2">주차경고</h6>
+                                    <span id="modal-parking-distance-warning" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center d-flex flex-column">
+                                    <i class="bi bi-sign-turn-slight-right fs-4"></i>
+                                    <h6 class="mt-2">차선경고</h6>
+                                    <span id="modal-line-out-warning" class="badge rounded-pill mt-auto" data-status="false"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- 가격 설정 -->
-                <p class="mt-3"><strong>가격 설정:</strong></p>
-                <input type="number" id="modal-price" class="form-control" placeholder="가격을 입력하세요">
+
+                <!-- 등록 정보 섹션 -->
+                <div class="registration-info mt-4">
+                    <h6 class="border-bottom pb-2 mb-3">등록 정보</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="modal-agency-id" class="form-label"><strong>지점 선택:</strong></label>
+                            <select id="modal-agency-id" class="form-select">
+                                <option value="" disabled selected>지점을 선택하세요</option>
+                                <option th:each="agency : ${agencies}"
+                                        th:value="${agency.id}"
+                                        th:text="${agency.name}">
+                                </option>
+                            </select>
+                            <small id="agencyHelp" class="form-text text-muted">
+                                등록할 차량이 연결될 지점을 선택하세요.
+                            </small>
+                        </div>
+
+                        <!-- 가격 설정 -->
+                        <div class="col-md-6">
+                            <label for="modal-price" class="form-label"><strong>가격 설정:</strong></label>
+                            <div class="input-group">
+                                <input type="number" id="modal-price" class="form-control" placeholder="가격을 입력하세요">
+                                <span class="input-group-text">원</span>
+                            </div>
+                            <small id="priceHelp" class="form-text text-muted">
+                                차량의 판매 가격을 입력하세요. (숫자만 입력)
+                            </small>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!-- modal-footer를 modal-content 내부로 이동 -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                 <button type="button" class="btn btn-success" onclick="submitRegistration()">등록 제출</button>
@@ -191,8 +393,6 @@
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

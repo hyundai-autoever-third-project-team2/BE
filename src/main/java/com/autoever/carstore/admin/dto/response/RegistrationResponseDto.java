@@ -17,6 +17,7 @@ public class RegistrationResponseDto {
     private boolean navigation;
     private boolean hud;
     private boolean ventilatedSeat;
+    private boolean heatedSeat;
     private boolean cruiseControl;
     private boolean sunroof;
     private boolean parkingDistanceWarning;
