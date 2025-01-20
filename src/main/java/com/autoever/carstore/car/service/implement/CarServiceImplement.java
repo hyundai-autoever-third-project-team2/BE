@@ -374,8 +374,8 @@ public class CarServiceImplement implements CarService {
     public List<FilterCarResponseDto> filterCars(FilterCarRequestDto requestDto, long userId) {
         List<FilterCarResponseDto> result = new ArrayList<>();
         List<String> carTypes = requestDto.getCarTypes();
-        int startDisplacement = requestDto.getStart_displacement();
-        int endDisplacement = requestDto.getEnd_displacement();
+        int startYear = requestDto.getStart_year();
+        int endYear = requestDto.getEnd_year();
         int startDistance = requestDto.getStart_distance();
         int endDistance = requestDto.getEnd_distance();
         int startPrice = requestDto.getStart_price();
@@ -383,7 +383,7 @@ public class CarServiceImplement implements CarService {
 
         List<String> colors = requestDto.getColors();
 
-        List<CarSalesEntity> car_sales_filter_list = carSalesRepository.filterCars(carTypes, startDisplacement, endDisplacement, startDistance, endDistance, startPrice, endPrice, colors);
+        List<CarSalesEntity> car_sales_filter_list = carSalesRepository.filterCars(carTypes, startYear, endYear, startDistance, endDistance, startPrice, endPrice, colors);
 
         for(CarSalesEntity car_sales : car_sales_filter_list) {
             FilterCarResponseDto filter_car;
@@ -640,6 +640,7 @@ public class CarServiceImplement implements CarService {
         for(CarSalesEntity carSalesEntity : carSalesEntities){
             TransactionStatusResponseDto transactionStatusResponseDto = TransactionStatusResponseDto.builder()
                     .car_sales_id(carSalesEntity.getCarSalesId())
+                    .car_id(carSalesEntity.getCar().getCarId())
                     .sales_date(carSalesEntity.getUpdatedAt())
                     .progress(carSalesEntity.getProgress())
                     .brand(carSalesEntity.getCar().getCarModel().getBrand())
@@ -661,6 +662,7 @@ public class CarServiceImplement implements CarService {
         for(CarPurchaseEntity carPurchaseEntity : carPurchaseEntities){
             UserCarTransactionStatusResponseDto userCarTransactionStatusResponseDto = UserCarTransactionStatusResponseDto.builder()
                     .car_purchase_id(carPurchaseEntity.getCarPurchaseId())
+                    .car_id(carPurchaseEntity.getCar().getCarId())
                     .purchase_date(carPurchaseEntity.getPurchaseDate())
                     .progress(carPurchaseEntity.getProgress())
                     .brand(carPurchaseEntity.getCar().getCarModel().getBrand())
@@ -858,7 +860,6 @@ public class CarServiceImplement implements CarService {
     @Scheduled(cron = "0 0 0 * * MON")
     @Transactional
     public void updateDiscountPrice() {
-        log.info("시작1!");
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findSalesCar();
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
 
@@ -873,9 +874,19 @@ public class CarServiceImplement implements CarService {
                 log.info(salesLikeLIst);
 
                 String title = "관심 차량의 가격이 인하되었습니다";
-                String body = carSalesEntity.getCar().getCarModel().getModelName() + " " + carSalesEntity.getCar().getCarModel().getModelYear()
-                        + " " + carSalesEntity.getCar().getCarNumber() + "\n"
-                        + currentPrice + "원 -> " + discountPrice + "원";
+
+                String body = String.format("""
+[TABOLKA] 관심 차량 가격 인하!
+
+%s %s (%s)
+%,d 만원 → %,d 만원
+
+지금 바로 앱에서 확인해보세요 👉
+""", carSalesEntity.getCar().getCarModel().getModelName(),
+                        carSalesEntity.getCar().getCarModel().getModelYear(),
+                        carSalesEntity.getCar().getCarNumber(),
+                        currentPrice,
+                        discountPrice);
 
                 carSalesEntity.setDiscountPrice(discountPrice);
                 carSalesRepository.save(carSalesEntity);  // 변경사항 저장
@@ -883,7 +894,7 @@ public class CarServiceImplement implements CarService {
                 for(CarSalesLikeEntity salesLike : salesLikeLIst) {
                     NotificationRequestDto notification = NotificationRequestDto.builder()
                             .user(salesLike.getUser())
-                            .notificationType(1)
+                            .notificationType(2)
                             .title(title)
                             .content(body)
                             .build();

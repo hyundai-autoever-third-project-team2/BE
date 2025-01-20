@@ -44,7 +44,7 @@ public class AdminController {
     }
 
 
-        // 유저 리스트
+    // 유저 리스트
     @GetMapping("/admin/users")
     public String getAllUsers(Model model,
                               @RequestParam(defaultValue = "0") int page,

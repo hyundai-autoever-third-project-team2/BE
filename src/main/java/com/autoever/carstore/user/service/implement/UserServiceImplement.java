@@ -29,9 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,13 +96,28 @@ public class UserServiceImplement implements UserService {
         }
 
         List<CarSalesEntity> allCars = carSalesRepository.getAllRecommend(min_price, max_price, min_distance, max_distance, min_model_year, max_model_year, carModelIds, survey_color);
+        List<CarSalesEntity> subCars = carSalesRepository.findAll();
         Collections.shuffle(allCars);
-        // 9개까지 선택
-        List<CarSalesEntity> selectedCars = allCars.stream()
-                .limit(9)  // 최대 9개 항목만 선택
-                .collect(Collectors.toList());
+        Collections.shuffle(subCars);
 
-        // RecommendEntity에 저장
+        Set<Long> selectedCarIds = new HashSet<>();
+        List<CarSalesEntity> selectedCars = new ArrayList<>();
+
+        for (CarSalesEntity car : allCars) {
+            if (selectedCars.size() >= 9) break;
+            if (!selectedCarIds.contains(car.getCarSalesId())) {
+                selectedCars.add(car);
+                selectedCarIds.add(car.getCarSalesId());
+            }
+        }
+        for (CarSalesEntity car : subCars) {
+            if (selectedCars.size() >= 9) break;
+            if (!selectedCarIds.contains(car.getCarSalesId())) {
+                selectedCars.add(car);
+                selectedCarIds.add(car.getCarSalesId());
+            }
+        }
+
         RecommendEntity recommendEntity = RecommendEntity.builder()
                 .recommendCar1Id(getCarSalesId(selectedCars, 0))
                 .recommendCar2Id(getCarSalesId(selectedCars, 1))
@@ -117,7 +130,8 @@ public class UserServiceImplement implements UserService {
                 .recommendCar9Id(getCarSalesId(selectedCars, 8))
                 .user(userEntity)
                 .build();
-        // 추천 저장소에 저장
+
+// 추천 저장소에 저장
         recommendRepository.save(recommendEntity);
     }
 
@@ -196,10 +210,10 @@ public class UserServiceImplement implements UserService {
         userRepository.save(user);
     }
 
-    private long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {
+    private Long getCarSalesId(List<CarSalesEntity> selectedCars, int index) {
         if (index < selectedCars.size()) {
             return selectedCars.get(index).getCarSalesId();
         }
-        return -1;
+        return null; 
     }
 }

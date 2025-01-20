@@ -13,8 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FilterCarRequestDto {
     List<String> carTypes;
-    int start_displacement;
-    int end_displacement;
+    int start_year;
+    int end_year;
     int start_distance;
     int end_distance;
     int start_price;

@@ -91,14 +91,14 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
             "JOIN c.carModel cm " +
             "WHERE cs.progress = '판매중' " +
             "AND (:carTypes IS NULL OR cm.carType IN :carTypes) " +
-            "AND (cm.displacement >= :startDisplacement) " +
-            "AND (cm.displacement <= :endDisplacement) " +
+            "AND (SUBSTRING(cm.modelYear, 1, 4) >= :startYear) " +  // 연도 추출
+            "AND (SUBSTRING(cm.modelYear, 1, 4) <= :endYear) " +
             "AND (c.distance >= :startDistance) " +
             "AND (c.distance <= :endDistance) " +
             "AND (cs.price >= :startPrice) " +
             "AND (cs.price <= :endPrice) " +
             "AND (:colors IS NULL OR c.color IN :colors)")
-    List<CarSalesEntity> filterCars(List<String> carTypes, int startDisplacement, int endDisplacement, int startDistance, int endDistance, int startPrice, int endPrice, List<String> colors);
+    List<CarSalesEntity> filterCars(List<String> carTypes, int startYear, int endYear, int startDistance, int endDistance, int startPrice, int endPrice, List<String> colors);
 
     //판매중인 상품만 추천
     @Query("SELECT cs FROM CarSalesEntity cs " +
