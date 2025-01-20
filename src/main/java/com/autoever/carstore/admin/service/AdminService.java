@@ -165,7 +165,7 @@ public class AdminService {
                 .map(agencyEntity -> AgencyDto.builder()
                         .id(agencyEntity.getAgencyId())
                         .name(agencyEntity.getAgencyName())
-                    .build())
+                        .build())
                 .toList();
 
     }

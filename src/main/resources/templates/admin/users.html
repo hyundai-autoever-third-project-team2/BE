@@ -61,7 +61,6 @@
         .modal-content {
             border: none;
             border-radius: 15px;
-            overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
@@ -114,12 +113,6 @@
 
         #modal-user-profile:hover {
             transform: scale(1.05);
-        }
-
-        .badge {
-            padding: 0.5em 1em;
-            font-size: 0.85em;
-            border-radius: 6px;
         }
 
         /* 활성화 상태에 따른 배지 스타일 */
@@ -233,12 +226,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="userDetailModalLabel">회원 상세 정보</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
                 <!-- 프로필 섹션 -->
                 <div class="text-center p-4 bg-light">
-                    <img id="modal-user-profile" src="/placeholder.jpg" alt="프로필 사진"
+                    <img id="modal-user-profile" alt="프로필 사진"
                          class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
                     <h4 id="modal-user-nickname" class="mb-0"></h4>
                     <p id="modal-user-email" class="text-muted mb-0"></p>
@@ -261,12 +254,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="deactivate-user-btn" onclick="deactivateUser()">
-                    계정 정지
-                </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    닫기
-                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-danger" id="deactivate-user-btn" onclick="deactivateUser()">계정 정지</button>
             </div>
         </div>
     </div>

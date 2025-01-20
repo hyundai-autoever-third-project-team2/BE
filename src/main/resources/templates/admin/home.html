@@ -51,16 +51,16 @@
 
 
                 // 모달 표시
-                const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
-                modal.show();
+                // const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
+                // modal.show();
             } catch (error) {
 
             }
         };
 
-        function closeModal() {
+        window.closeUserDetailModal = function () {
             document.getElementById('user-detail-modal').style.display = 'none';
-        }
+        };
 
         //Admin Dashboard 클릭 시 홈으로 이동
         function goToHome() {
@@ -142,7 +142,9 @@
                     if (!response.ok) throw new Error('심사 완료 처리에 실패했습니다.');
                     alert('심사가 성공적으로 완료되었습니다.');
                     const modal = bootstrap.Modal.getInstance(document.getElementById('judgeModal'));
-                    modal.hide();
+                    if (modal) {
+                        modal.hide();
+                    }
                 })
                 .catch(error => {
                     console.error(error);
@@ -162,7 +164,9 @@
                     if (!response.ok) throw new Error('심사 반려 처리에 실패했습니다.');
                     alert('심사가 반려되었습니다.');
                     const modal = bootstrap.Modal.getInstance(document.getElementById('judgeModal'));
-                    modal.hide();
+                    if (modal) {
+                        modal.hide();
+                    }
                 })
                 .catch(error => {
                     console.error(error);
@@ -243,13 +247,12 @@
                     isVisible: true // isVisible을 true로 설정
                 }),
             })
-                .then(response => response.json())
+                .then(data => data.json())
                 .then(data => {
-                    if(data.success){
+                    if(data.ok){
                         alert('등록이 완료되었습니다.');
                         const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
                         registrationModal.hide();
-                        location.reload();
                     } else {
                         alert('등록에 실패했습니다.');
                     }
@@ -260,7 +263,7 @@
                 });
         };
 
-        window.deactivateUser= function(button) {
+        window.deactivateUser= function() {
             const confirmDeactivate = confirm("계정을 정지하시겠습니까?");
             if (confirmDeactivate) {
                 alert("계정을 정지 처리했습니다."); // 확인 시 동작
@@ -270,6 +273,7 @@
                 alert("정지 처리가 취소되었습니다."); // 취소 시 동작
             }
         }
+
 
     </script>
 </head>
@@ -288,6 +292,7 @@
         <a onclick="loadPage('/admin/users')">회원 조회</a>
         <a onclick="loadPage('/admin/judge')">매물 심사</a>
         <a onclick="loadPage('/admin/registration')">매물 등록</a>
+        <a href="/index.html">상담</a>
     </nav>
 </div>
 
