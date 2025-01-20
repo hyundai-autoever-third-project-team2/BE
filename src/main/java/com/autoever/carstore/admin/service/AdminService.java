@@ -89,7 +89,7 @@ public class AdminService {
 제안 매입가: %,d 만원
 
 지금 바로 앱에서 확인해보세요 👉
-""", car.getCar().getCarModel(), car.getCar().getCarNumber(), price);
+""", car.getCar().getCarModel().getModelName(), car.getCar().getCarNumber(), price);
 
         NotificationRequestDto notification = NotificationRequestDto.builder()
                 .user(car.getUser())
@@ -120,7 +120,7 @@ public class AdminService {
 고객님의 차량 %s (%s)을 점검해본 결과 매입이 어려운 것으로 판단되었습니다.
 
 지금 바로 앱에서 확인해보세요 👉
-""", car.getCar().getCarModel(), car.getCar().getCarNumber());
+""", car.getCar().getCarModel().getModelName(), car.getCar().getCarNumber());
 
         NotificationRequestDto notification = NotificationRequestDto.builder()
                 .user(car.getUser())
