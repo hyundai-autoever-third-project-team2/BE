@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -156,7 +157,7 @@
                 <th scope="col">프로필 사진</th>
                 <th scope="col">회원 번호</th>
                 <th scope="col">회원 이름</th>
-                <th scope="col">조회</th>
+                <th scope="col">조회 / 문의하기</th>
             </tr>
             </thead>
             <tbody>
@@ -178,6 +179,12 @@
                             data-bs-target="#userDetailModal"
                             onclick="showUserDetails(this)">
                         조회 하기
+                    </button>
+                    <button
+                            class="btn btn-secondary btn-sm text-white"
+                            th:data-user-id="${user.userId}"
+                            onclick="handleChatClick(this)">
+                        상담 하기
                     </button>
                 </td>
             </tr>

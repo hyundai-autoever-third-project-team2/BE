@@ -182,7 +182,7 @@
         // 등록 모달
         window.openRegistrationModal = function (button) {
             // 데이터 속성에서 필요한 정보를 추출하여 모달에 표시
-            const carSalesId = button.getAttribute('data-car-sales-id');
+            const carPurchaseId = button.getAttribute('data-car-sales-id');
             const carId = button.getAttribute('data-car-id');
             const distance = button.getAttribute('data-distance');
             const navigation = button.getAttribute('data-navigation');
@@ -199,7 +199,7 @@
             // userCarImages와 modelComments는 제거됨
 
             // 모달에 데이터 설정
-            document.getElementById('modal-model-salesId').textContent = carSalesId || "N/A";
+            document.getElementById('modal-model-salesId').textContent = carPurchaseId || "N/A";
             document.getElementById('modal-car-id').textContent = carId || "N/A";
             document.getElementById('modal-distance').textContent = distance || "N/A";
             document.getElementById('modal-navigation').textContent = navigation === 'true' ? '있음' : '없음';
@@ -221,9 +221,17 @@
             document.getElementById('modal-agency-id').value = "";
         };
 
+        window.handleChatClick = function(button) {
+            // 버튼에서 userId 값을 가져옵니다
+            const userId = button.getAttribute('data-user-id');
+
+            // index.html로 이동하면서 userId를 쿼리 파라미터로 전달합니다
+            window.location.href = `/index.html?userId=${userId}`;
+        };
+
         window.submitRegistration = function () {
             // 등록 제출 로직 구현
-            const carSalesId = document.getElementById('modal-model-salesId').textContent;
+            const carPurchaseId = document.getElementById('modal-model-salesId').textContent;
             const agencyId = document.getElementById('modal-agency-id').value;
             const price = document.getElementById('modal-price').value;
 
@@ -241,15 +249,14 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    carSalesId: carSalesId,
+                    carPurchaseId: carPurchaseId,
                     price: price,
                     agencyId: agencyId,
-                    isVisible: true // isVisible을 true로 설정
                 }),
             })
                 .then(data => data.json())
                 .then(data => {
-                    if(data.ok){
+                    if (data && data.ok) {
                         alert('등록이 완료되었습니다.');
                         const registrationModal = bootstrap.Modal.getInstance(document.getElementById('registrationModal'));
                         registrationModal.hide();
@@ -292,7 +299,6 @@
         <a onclick="loadPage('/admin/users')">회원 조회</a>
         <a onclick="loadPage('/admin/judge')">매물 심사</a>
         <a onclick="loadPage('/admin/registration')">매물 등록</a>
-        <a href="/index.html">상담</a>
     </nav>
 </div>
 

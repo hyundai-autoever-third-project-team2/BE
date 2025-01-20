@@ -1,14 +1,10 @@
-var usernamePage = document.querySelector('#username-page');
-var chatPage = document.querySelector('#chat-page');
-var usernameForm = document.querySelector('#usernameForm');
 var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
-var roomIdInput = document.querySelector('#roomId');
 
 var stompClient = null;
-var username = null;
+var username = '관리자';
 var roomId = null;
 
 var colors = [
@@ -16,33 +12,21 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-function connect(event) {
-    // 기본 이벤트 방지
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    roomId = urlParams.get('userId');
 
-    // 사용자 이름과 방 ID 가져오기
-    username = document.querySelector('#name').value.trim();
-    roomId = roomIdInput.value.trim();
-
-    // 입력값 검증
-    if (!username || !roomId) {
-        alert('사용자 이름과 방 ID를 모두 입력해주세요.');
-        return;
+    if (roomId) {
+        var socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, onConnected, onError);
+    } else {
+        connectingElement.textContent = 'userId가 제공되지 않았습니다.';
+        connectingElement.style.color = 'red';
     }
-
-    // 사용자 페이지 숨기고 채팅 페이지 표시
-    usernamePage.classList.add('hidden');
-    chatPage.classList.remove('hidden');
-
-    // 웹소켓 연결
-    var socket = new SockJS('/ws');
-    stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, onConnected, onError);
-}
+});
 
 function onConnected() {
-    // 채팅방 구독
     stompClient.subscribe(`/sub/chat/room/${roomId}`, onMessageReceived);
 
     // 입장 메시지 전송
@@ -101,11 +85,6 @@ function onMessageReceived(payload) {
             messageElement.classList.add('received');
         }
 
-        var senderElement = document.createElement('div');
-        senderElement.classList.add('message-sender');
-        senderElement.textContent = message.sender;
-        // messageElement.appendChild(senderElement);
-
         var textElement = document.createElement('div');
         textElement.classList.add('message-content');
         textElement.textContent = message.content;
@@ -149,6 +128,5 @@ function loadChatHistory() {
         });
 }
 
-// 이벤트 리스너 등록
-usernameForm.addEventListener('submit', connect, true);
+// 메시지 전송 이벤트 리스너
 messageForm.addEventListener('submit', sendMessage, true);

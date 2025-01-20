@@ -13,5 +13,5 @@ public class RegistrationRequestDto {
     private long carPurchaseId;
     private int price;
     private long agencyId;
-    private boolean isVisible;
+    private boolean isVisible = true;
 }
