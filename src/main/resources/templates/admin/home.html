@@ -3,6 +3,11 @@
 <head>
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         async function loadPage(endpoint) {
@@ -19,20 +24,39 @@
             }
         }
 
-        async function showUserDetails(userId) {
+
+        window.showUserDetails = async function (button) {
+            // 버튼에서 사용자 ID 추출
+            const userId = button.getAttribute('data-user-id');
+            const nickname = button.getAttribute('data-user-nickname');
+            const email = button.getAttribute('data-user-email');
+            const profile = button.getAttribute('data-user-profile');
+            const active = button.getAttribute('data-user-active');
+
+            document.getElementById('modal-user-id').textContent = userId || "N/A";
+            document.getElementById('modal-user-nickname').textContent = nickname || "N/A";
+            document.getElementById('modal-user-email').textContent = email || "N/A";
+            document.getElementById('modal-user-profile').src = profile || "/placeholder.jpg";
+            document.getElementById('modal-user-active').textContent = active || "N/A";
+
             try {
+                // API 호출
                 const response = await fetch(`/admin/users/${userId}`);
                 if (!response.ok) {
-                    throw new Error('Failed to load user details');
+                    throw new Error('Failed to load user data');
                 }
-                const html = await response.text();
-                document.getElementById('modal-content').innerHTML = html;
-                document.getElementById('user-detail-modal').style.display = 'block';
+
+                // JSON 데이터 파싱
+                const user = await response.json();
+
+
+                // 모달 표시
+                const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
+                modal.show();
             } catch (error) {
-                console.error(error);
-                alert('Failed to load user details.');
+
             }
-        }
+        };
 
         function closeModal() {
             document.getElementById('user-detail-modal').style.display = 'none';
@@ -67,11 +91,9 @@
 
             try {
                 const response = await fetch(`/admin/judge/images/${purchaseId}`);
-                if (!response.ok) {
-                    throw new Error('Failed to load user car images');
-                }
-
+                if (!response.ok) throw new Error('Failed to load user car images');
                 const images = await response.json();
+
                 if (images.length === 0) {
                     const noImageMessage = document.createElement('p');
                     noImageMessage.textContent = "사용자가 업로드한 이미지가 없습니다.";
@@ -84,8 +106,8 @@
                         imgElement.alt = "User Car Image";
                         imgElement.className = "img-thumbnail";
                         imgElement.style.objectFit = "cover";
-                        imgElement.style.width = "116px";
-                        imgElement.style.height = "116px";
+                        imgElement.style.width = "119px";
+                        imgElement.style.height = "119px";
                         imgElement.style.margin = "2px";
                         userCarImagesContainer.appendChild(imgElement);
                     });
@@ -93,7 +115,7 @@
             } catch (error) {
                 console.error(error);
                 const errorMessage = document.createElement('p');
-                errorMessage.textContent = "이미지를 불러오는 중 오류가 발생했습니다.";
+                errorMessage.textContent = "사용자가 업로드한 이미지가 없습니다.";
                 errorMessage.className = "text-danger";
                 userCarImagesContainer.appendChild(errorMessage);
             }
@@ -101,53 +123,6 @@
             document.getElementById('modal-price').value = '';
         };
 
-
-        // window.openJudgeModal = function (button) {
-        //     const userId = button.getAttribute('data-user-id');
-        //     const userName = button.getAttribute('data-user-name');
-        //     const modelName = button.getAttribute('data-model-name');
-        //     const purchaseId = button.getAttribute('data-model-purchaseId');
-        //     const carImage = button.getAttribute('data-model-carImage');
-        //     const brand = button.getAttribute('data-model-brand');
-        //     const comments = button.getAttribute('data-model-comments');
-        //
-        //
-        //     const userCarImages = button.getAttribute('data-model-userCarImages')
-        //         ? JSON.parse(button.getAttribute('data-model-userCarImages'))
-        //         : []; // 데이터가 없을 경우 빈 배열 처리
-        //     const userCarImagesContainer = document.getElementById('modal-userCarImages');
-        //     userCarImagesContainer.innerHTML = "";
-        //
-        //     // 모달 데이터 채우기
-        //     document.getElementById('modal-user-id').textContent = userId || "N/A";
-        //     document.getElementById('modal-user-name').textContent = userName || "N/A";
-        //     document.getElementById('modal-model-name').textContent = modelName || "N/A";
-        //     document.getElementById('modal-model-brand').textContent = brand || "N/A";
-        //     document.getElementById('modal-model-purchaseId').textContent = purchaseId || "N/A";
-        //     document.getElementById('modal-model-comments').textContent = comments || "N/A";
-        //     document.getElementById('modal-model-carImage').src = carImage || "/placeholder.jpg";
-        //     // document.getElementById('modal-price').value = price || "";
-        //
-        //     if (userCarImages.length === 0) {
-        //         const noImageMessage = document.createElement('p');
-        //         noImageMessage.textContent = "사용자가 업로드한 이미지가 없습니다.";
-        //         noImageMessage.className = "text-muted";
-        //         userCarImagesContainer.appendChild(noImageMessage);
-        //     } else {
-        //         userCarImages.forEach(imageUrl => {
-        //             const imgElement = document.createElement('img');
-        //             imgElement.src = imageUrl;
-        //             imgElement.alt = "User Car Image";
-        //             imgElement.className = "img-thumbnail";
-        //             imgElement.style.maxWidth = "100px";
-        //             imgElement.style.marginRight = "10px";
-        //             userCarImagesContainer.appendChild(imgElement);
-        //         });
-        //     }
-        //
-        //     // 가격 입력 필드 초기화
-        //     document.getElementById('modal-price').value = '';
-        // };
 
         window.submitJudge = function () {
             const purchaseId = document.getElementById('modal-model-purchaseId').textContent;
@@ -209,6 +184,7 @@
             const navigation = button.getAttribute('data-navigation');
             const hud = button.getAttribute('data-hud');
             const ventilatedSeat = button.getAttribute('data-ventilated-seat');
+            const heatedSeat = button.getAttribute('data-heated-seat');
             const cruiseControl = button.getAttribute('data-cruise-control');
             const sunroof = button.getAttribute('data-sunroof');
             const parkingDistanceWarning = button.getAttribute('data-parking-distance-warning');
@@ -219,12 +195,13 @@
             // userCarImages와 modelComments는 제거됨
 
             // 모달에 데이터 설정
-            document.getElementById('modal-model-purchaseId').textContent = carSalesId || "N/A";
+            document.getElementById('modal-model-salesId').textContent = carSalesId || "N/A";
             document.getElementById('modal-car-id').textContent = carId || "N/A";
             document.getElementById('modal-distance').textContent = distance || "N/A";
             document.getElementById('modal-navigation').textContent = navigation === 'true' ? '있음' : '없음';
             document.getElementById('modal-hud').textContent = hud === 'true' ? '있음' : '없음';
             document.getElementById('modal-ventilated-seat').textContent = ventilatedSeat === 'true' ? '있음' : '없음';
+            document.getElementById('modal-heated-seat').textContent = heatedSeat === 'true' ? '있음' : '없음';
             document.getElementById('modal-cruise-control').textContent = cruiseControl === 'true' ? '있음' : '없음';
             document.getElementById('modal-sunroof').textContent = sunroof === 'true' ? '있음' : '없음';
             document.getElementById('modal-parking-distance-warning').textContent = parkingDistanceWarning === 'true' ? '있음' : '없음';
@@ -242,18 +219,7 @@
 
         window.submitRegistration = function () {
             // 등록 제출 로직 구현
-            const carSalesId = document.getElementById('modal-model-purchaseId').textContent;
-            // const carId = document.getElementById('modal-car-id').textContent;
-            // const distance = document.getElementById('modal-distance').textContent;
-            // const navigation = document.getElementById('modal-navigation').textContent === '있음';
-            // const hud = document.getElementById('modal-hud').textContent === '있음';
-            // const ventilatedSeat = document.getElementById('modal-ventilated-seat').textContent === '있음';
-            // const cruiseControl = document.getElementById('modal-cruise-control').textContent === '있음';
-            // const sunroof = document.getElementById('modal-sunroof').textContent === '있음';
-            // const parkingDistanceWarning = document.getElementById('modal-parking-distance-warning').textContent === '있음';
-            // const lineOutWarning = document.getElementById('modal-line-out-warning').textContent === '있음';
-            // const carBrand = document.getElementById('modal-car-brand').textContent;
-            // const carModel = document.getElementById('modal-car-model').textContent;
+            const carSalesId = document.getElementById('modal-model-salesId').textContent;
             const agencyId = document.getElementById('modal-agency-id').value;
             const price = document.getElementById('modal-price').value;
 
@@ -271,7 +237,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    purchaseId: carSalesId,
+                    carSalesId: carSalesId,
                     price: price,
                     agencyId: agencyId,
                     isVisible: true // isVisible을 true로 설정
@@ -294,6 +260,16 @@
                 });
         };
 
+        window.deactivateUser= function(button) {
+            const confirmDeactivate = confirm("계정을 정지하시겠습니까?");
+            if (confirmDeactivate) {
+                alert("계정을 정지 처리했습니다."); // 확인 시 동작
+                const modalUserActive = document.getElementById('modal-user-active');
+                modalUserActive.textContent = "false"; // 화면에서 계정 활성화 값을 false로 변경
+            } else {
+                alert("정지 처리가 취소되었습니다."); // 취소 시 동작
+            }
+        }
 
     </script>
 </head>
@@ -312,15 +288,73 @@
         <a onclick="loadPage('/admin/users')">회원 조회</a>
         <a onclick="loadPage('/admin/judge')">매물 심사</a>
         <a onclick="loadPage('/admin/registration')">매물 등록</a>
-
     </nav>
 </div>
 
 <!-- Dynamic Content Area -->
 <div id="content-area">
-    <h2>Welcome to the Admin Dashboard</h2>
-    <p>Select a menu option to view its content.</p>
+    <div class="flex-grow-1 p-4">
+        <!-- 대시보드 -->
+        <section id="dashboard">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card p-3">
+                        <p class="text-sm text-muted">전체 회원수</p>
+                        <h2 class="font-bold">2,543</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3">
+                        <p class="text-sm text-muted">승인 대기 매물</p>
+                        <h2 class="font-bold">28</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3">
+                        <p class="text-sm text-muted">등록된 매물</p>
+                        <h2 class="font-bold">1,205</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="card p-4">
+                <h4 class="mb-3">월별 매물 현황</h4>
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </section>
+    </div>
 </div>
+<script>
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    const monthlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+            datasets: [
+                {
+                    label: '판매',
+                    data: [65, 78, 90, 81, 95, 86],
+                    borderColor: '#8884d8',
+                    borderWidth: 2
+                },
+                {
+                    label: '등록',
+                    data: [120, 145, 160, 150, 170, 155],
+                    borderColor: '#82ca9d',
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
+    });
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

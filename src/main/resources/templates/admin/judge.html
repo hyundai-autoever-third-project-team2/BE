@@ -2,48 +2,218 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Judge Cars</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        table {
-            table-layout: fixed;
-            width: 100%;
+        /* 기본 스타일 */
+        body {
+            background-color: #f8f9fa;
         }
 
-        th, td {
-            word-wrap: break-word;
+
+
+        /* 테이블 스타일링 */
+        .table {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        th.no-wrap, td.no-wrap {
-            white-space: nowrap;
+        .table thead {
+            background: linear-gradient(45deg, #198754, #20c997);
+            color: white;
         }
 
-        /* 페이지네이션 링크 색상 녹색으로 변경 */
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+
+        .table td {
+            vertical-align: middle;
+            font-size: 0.95rem;
+        }
+
+        /* 버튼 스타일링 */
+        .category-btn {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-weight: 500;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* 모달 스타일링 */
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            background: linear-gradient(45deg, #198754, #20c997);
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-body p {
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+
+        .modal-body strong {
+            color: #198754;
+            font-weight: 600;
+        }
+
+        .modal-body img {
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* 입력 필드 스타일링 */
+        .input-group {
+            margin-top: 1rem;
+        }
+
+        .input-group input {
+            border-radius: 8px 0 0 8px;
+            padding: 0.75rem;
+        }
+
+        .input-group-text {
+            background-color: #198754;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* 페이지네이션 스타일링 */
+        .pagination {
+            margin-top: 2rem;
+        }
+
         .pagination .page-link {
-            color: #198754; /* Bootstrap의 'success' 색상 (녹색) */
+            height: 42px;
+            width: 42px;
+            border-radius: 5px;
+            margin: 0 3px;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+            display: flex; /* 플렉스 박스 설정 */
+            justify-content: center; /* 수평 중앙 정렬 */
+            align-items: center; /* 수직 중앙 정렬 */
         }
 
-        /* 페이지네이션 링크 호버 시 색상 변경 */
-        .pagination .page-link:hover {
-            color: #155724; /* 더 어두운 녹색 */
-            background-color: #d1e7dd; /* 연한 녹색 배경 */
+        /* 이미지 컨테이너 스타일링 */
+        .car-image-container {
+            height: 120px;
+            width: 180px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* 활성 페이지 링크 스타일 변경 */
-        .pagination .page-item.active .page-link {
-            background-color: #198754; /* 녹색 배경 */
-            border-color: #198754; /* 녹색 테두리 */
-            color: white; /* 흰색 텍스트 */
+        .car-image-container img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
         }
 
-        /* 비활성화된 페이지 링크 스타일 변경 */
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d; /* 회색 텍스트 */
-            pointer-events: none;
-            cursor: auto;
-            background-color: #e9ecef; /* 연한 회색 배경 */
-            border-color: #dee2e6; /* 연한 회색 테두리 */
+        .car-image-container img:hover {
+            transform: scale(1.05);
         }
+
+        /* 심사하기 버튼 스타일링 */
+        .btn-judge {
+            background-color: #6c757d;
+            color: white;
+            border-radius: 6px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-judge:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        .info-container {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item label {
+            min-width: 100px;
+            color: #198754;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .info-value {
+            flex: 1;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        /* 추가 설명 컨테이너 스타일 */
+        .description-container {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            height: 200px;  /* 더 큰 높이 설정 */
+        }
+
+        .description-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            height: calc(100% - 2rem);  /* 제목 공간 제외한 높이 */
+            overflow-y: auto;  /* 내용이 넘칠 경우 스크롤 */
+            word-wrap: break-word;  /* 긴 텍스트 줄바꿈 */
+        }
+
     </style>
 </head>
 <body class="bg-light">
@@ -51,15 +221,15 @@
 <div class="container mt-5">
     <!-- 카테고리 버튼 -->
     <div class="d-flex justify-content-start mb-4">
-        <button class="btn btn-outline-secondary me-2"
+        <button class="btn btn-outline-secondary me-3 category-btn"
                 data-progress="before"
                 th:classappend="${currentProgress == 'before'} ? 'active btn-secondary' : ''"
                 onclick="loadPage('/admin/judge/before')">심사 전</button>
-        <button class="btn btn-outline-danger me-2"
+        <button class="btn btn-outline-danger me-3 category-btn"
                 data-progress="deny"
                 th:classappend="${currentProgress == 'deny'} ? 'active btn-danger' : ''"
                 onclick="loadPage('/admin/judge/deny')">심사 거절</button>
-        <button class="btn btn-outline-success"
+        <button class="btn btn-outline-success category-btn"
                 data-progress="complete"
                 th:classappend="${currentProgress == 'complete'} ? 'active btn-success' : ''"
                 onclick="loadPage('/admin/judge/complete')">심사 완료</button>
@@ -67,8 +237,8 @@
 
     <!-- 심사 상태 테이블 -->
     <div class="table-responsive">
-        <table class="table table-striped table-bordered text-center align-middle">
-            <thead class="table-success">
+        <table class="table table-hover table-striped table-bordered text-center align-middle">
+            <thead>
             <tr>
                 <th class="no-wrap" style="width: 5%;">No</th>
                 <th class="no-wrap" style="width: 10%;">회원 번호</th>
@@ -88,15 +258,15 @@
                 <td th:text="${car.brand}"></td>
                 <td th:text="${car.modelName}"></td>
                 <td th:text="${car.purchaseDate}"></td>
-                <td style="height: 120px; width: 180px;">
-                    <img th:src="@{${car.carImage}}" alt="Car Image" class="img-fluid h-100 w-100"
-                         style="object-fit: cover;" />
+                <td>
+                    <div class="car-image-container">
+                        <img th:src="@{${car.carImage}}" alt="Car Image" class="img-fluid"/>
+                    </div>
                 </td>
                 <td>
-                    <!-- 심사하기 버튼: car.progress가 "심사중"일 때만 표시 -->
                     <button
                             th:if="${car.progress == '심사중'}"
-                            class="btn btn-secondary"
+                            class="btn btn-judge"
                             th:data-user-id="${car.userId}"
                             th:data-user-name="${car.userName}"
                             th:data-model-name="${car.modelName}"
@@ -107,7 +277,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#judgeModal"
                             onclick="openJudgeModal(this)">
-                        심사 하기
+                        심사
                     </button>
                 </td>
             </tr>
@@ -115,35 +285,27 @@
         </table>
     </div>
 
-    <!-- 매물 심사 페이지네이션 -->
+    <!-- 페이지네이션 -->
     <nav aria-label="매물 심사 페이지네이션">
         <ul class="pagination justify-content-center">
-            <!-- 이전 페이지 링크 -->
             <li class="page-item" th:classappend="${judgeCars.first} ? 'disabled'">
                 <a class="page-link"
                    th:href="@{/admin/judge/{progress}(progress=${currentProgress}, page=${judgeCars.number - 1}, size=${judgeCars.size})}"
                    aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
-                    <span class="visually-hidden">Previous</span>
                 </a>
             </li>
-
-            <!-- 페이지 번호 링크 -->
             <li class="page-item" th:each="i : ${#numbers.sequence(0, judgeCars.totalPages - 1)}"
                 th:classappend="${i == judgeCars.number} ? 'active'">
                 <a class="page-link"
                    th:href="@{/admin/judge/{progress}(progress=${currentProgress}, page=${i}, size=${judgeCars.size})}"
-                   th:text="${i + 1}"
-                   aria-label="'Go to page ' + (${i} + 1)"></a>
+                   th:text="${i + 1}"></a>
             </li>
-
-            <!-- 다음 페이지 링크 -->
             <li class="page-item" th:classappend="${judgeCars.last} ? 'disabled'">
                 <a class="page-link"
                    th:href="@{/admin/judge/{progress}(progress=${currentProgress}, page=${judgeCars.number + 1}, size=${judgeCars.size})}"
                    aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
-                    <span class="visually-hidden">Next</span>
                 </a>
             </li>
         </ul>
@@ -152,30 +314,63 @@
 
 <!-- 심사 모달 -->
 <div class="modal fade" id="judgeModal" tabindex="-1" aria-labelledby="judgeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="judgeModalLabel">심사하기</h5>
+                <h5 class="modal-title" id="judgeModalLabel">차량 심사</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p><strong>구매 번호:</strong> <span id="modal-model-purchaseId"></span></p>
-                <p><strong>회원 번호:</strong> <span id="modal-user-id"></span></p>
-                <p><strong>회원 이름:</strong> <span id="modal-user-name"></span></p>
-                <p><strong>모델명:</strong> <span id="modal-model-name"></span></p>
-                <p><strong>브랜드:</strong> <span id="modal-model-brand"></span></p>
-                <p><strong>추가 설명:</strong> <span id="modal-model-comments"></span></p>
-                <p><strong>대표 이미지:</strong></p>
-                <img id="modal-model-carImage" alt="Car Image" class="img-fluid mb-3">
-                <p><strong>사용자 업로드 이미지:</strong></p>
-                <div id="modal-userCarImages" class="row g-2"></div>
-                <p><strong>가격 설정:</strong></p>
-                <input type="number" id="modal-price" class="form-control" placeholder="가격을 입력하세요">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-container mb-4">
+                            <div class="info-item">
+                                <label>구매 번호</label>
+                                <div class="info-value" id="modal-model-purchaseId"></div>
+                            </div>
+                            <div class="info-item">
+                                <label>회원 번호</label>
+                                <div class="info-value" id="modal-user-id"></div>
+                            </div>
+                            <div class="info-item">
+                                <label>회원 이름</label>
+                                <div class="info-value" id="modal-user-name"></div>
+                            </div>
+                            <div class="info-item">
+                                <label>모델명</label>
+                                <div class="info-value" id="modal-model-name"></div>
+                            </div>
+                            <div class="info-item">
+                                <label>브랜드</label>
+                                <div class="info-value" id="modal-model-brand"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success mb-3">대표 이미지</h6>
+                        <img id="modal-model-carImage" alt="Car Image" class="img-fluid rounded mb-4">
+                    </div>
+                    <div class="description-container mb-4">
+                        <h6 class="text-success mb-3">추가 설명</h6>
+                        <div class="description-content" id="modal-model-comments"></div>
+                    </div>
+                    <div>
+                        <h6 class="text-success mb-3">사용자 업로드 이미지</h6>
+                        <div id="modal-userCarImages" class="row g-2"></div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h6 class="text-success mb-3">가격 설정</h6>
+                    <div class="input-group">
+                        <input type="number" id="modal-price" class="form-control" placeholder="가격을 입력하세요">
+                        <span class="input-group-text">원</span>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                <button type="button" class="btn btn-success" onclick="submitJudge()">심사 제출</button>
-                <button type="button" class="btn btn-danger" onclick="rejectJudge()">심사 반려</button>
+                <button type="button" class="btn btn-success px-4" onclick="submitJudge()">심사 승인</button>
+                <button type="button" class="btn btn-danger px-4" onclick="rejectJudge()">심사 반려</button>
             </div>
         </div>
     </div>
