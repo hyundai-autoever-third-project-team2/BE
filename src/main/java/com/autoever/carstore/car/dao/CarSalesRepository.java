@@ -141,7 +141,7 @@ public interface CarSalesRepository extends JpaRepository<CarSalesEntity, Long> 
     List<CarSalesEntity> findByBrandOrCarName(String brand, String modelName);
 
     @Query("SELECT c FROM CarSalesEntity c WHERE c.progress = :progress")
-    Page<CarSalesEntity> findByIsVisibleAndProgress(@Param("progress") String progress, Pageable pageable);
+    Page<CarSalesEntity> findByProgress(@Param("progress") String progress, Pageable pageable);
 
 
     @Query("SELECT cs FROM CarSalesEntity cs " +

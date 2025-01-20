@@ -159,7 +159,7 @@ public class AdminService {
                             .carModel(carPurchaseEntity.getCar().getCarModel().getModelName())
                             .build());
         }else{
-            return carSalesRepository.findByIsVisibleAndProgress("판매중", pageable)
+            return carSalesRepository.findByProgress("판매중", pageable)
                     .map(carSalesEntity ->  RegistrationResponseDto.builder()
                             .carPurchaseId(carSalesEntity.getCarSalesId())
                             .carId(carSalesEntity.getCar().getCarId())
