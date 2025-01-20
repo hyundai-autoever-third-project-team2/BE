@@ -182,7 +182,7 @@
         // 등록 모달
         window.openRegistrationModal = function (button) {
             // 데이터 속성에서 필요한 정보를 추출하여 모달에 표시
-            const carSalesId = button.getAttribute('data-car-sales-id');
+            const carPurchaseId = button.getAttribute('data-car-sales-id');
             const carId = button.getAttribute('data-car-id');
             const distance = button.getAttribute('data-distance');
             const navigation = button.getAttribute('data-navigation');
@@ -199,7 +199,7 @@
             // userCarImages와 modelComments는 제거됨
 
             // 모달에 데이터 설정
-            document.getElementById('modal-model-salesId').textContent = carSalesId || "N/A";
+            document.getElementById('modal-model-salesId').textContent = carPurchaseId || "N/A";
             document.getElementById('modal-car-id').textContent = carId || "N/A";
             document.getElementById('modal-distance').textContent = distance || "N/A";
             document.getElementById('modal-navigation').textContent = navigation === 'true' ? '있음' : '없음';
@@ -223,7 +223,7 @@
 
         window.submitRegistration = function () {
             // 등록 제출 로직 구현
-            const carSalesId = document.getElementById('modal-model-salesId').textContent;
+            const carPurchaseId = document.getElementById('modal-model-salesId').textContent;
             const agencyId = document.getElementById('modal-agency-id').value;
             const price = document.getElementById('modal-price').value;
 
@@ -241,7 +241,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    carSalesId: carSalesId,
+                    carPurchaseId: carPurchaseId,
                     price: price,
                     agencyId: agencyId,
                     isVisible: true // isVisible을 true로 설정
