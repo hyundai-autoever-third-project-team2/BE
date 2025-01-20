@@ -78,7 +78,8 @@ public class NotificationServiceImpl implements NotificationService {
                         NotificationResponseDto.builder()
                                 .notificationId(notification.getNotificationId())
                                 .notificationType(notification.getNotificationType() == 0 ? "result" :
-                                        (notification.getNotificationType() == 1 ? "wishlist" : "discount"))
+                                        (notification.getNotificationType() == 1 ? "wishlist" :
+                                        (notification.getNotificationType() == 2 ? "discount" : "recommend")))
                                 .title(notification.getTitle())
                                 .content(notification.getContent())
                                 .isRead(notification.isRead())

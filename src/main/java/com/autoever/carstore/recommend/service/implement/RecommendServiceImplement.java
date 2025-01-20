@@ -14,12 +14,14 @@ import com.autoever.carstore.user.dao.UserRepository;
 import com.autoever.carstore.user.entity.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class RecommendServiceImplement implements RecommendService {
@@ -32,7 +34,7 @@ public class RecommendServiceImplement implements RecommendService {
 
     @Override
 //    @Scheduled(cron = "0 0 0 * * MON")
-    @Scheduled(cron = "0 35 16 * * MON")
+    @Scheduled(cron = "0 11 18 * * MON")
     @Transactional
     public void updateRecommendations() {
         List<Long> userIds = recommendRepository.findAllUserIds();
@@ -69,8 +71,10 @@ public class RecommendServiceImplement implements RecommendService {
                     .build();
 
             try{
-                fcmService.sendMessageTo(user.getFcmToken(), title, body);
-                notificationService.addNotification(notification);
+                if(user.getFcmToken() != null) {
+                    fcmService.sendMessageTo(user.getFcmToken(), title, body);
+                    notificationService.addNotification(notification);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
