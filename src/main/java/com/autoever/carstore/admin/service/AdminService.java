@@ -210,6 +210,7 @@ public class AdminService {
 
         if(entity != null){
             carSalesRepository.save(carSalesEntity);
+            carPurchaseRepository.delete(entity);
 
             List<UserEntity> users = carSalesLikeRepository.findUsersByCarModelId(entity.getCar().getCarModel());
 
