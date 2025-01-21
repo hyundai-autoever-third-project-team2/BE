@@ -34,7 +34,7 @@ public class RecommendServiceImplement implements RecommendService {
 
     @Override
   //  @Scheduled(cron = "0 0 0 * * MON")
-    @Scheduled(cron = "0 40 23 * * MON")
+//    @Scheduled(cron = "0 57 9 * * TUE")
 //    @Scheduled(cron = "0 5 23 * * MON" , zone = "Asia/Seoul")
     @Transactional
     public void updateRecommendations() {
@@ -57,7 +57,7 @@ public class RecommendServiceImplement implements RecommendService {
                 recommendEntity = updateRecommendEntity(recommendEntity, recommendedCars);
 
                 log.info(recommendEntity.getUser().getNickname());
-                if(recommendEntity.getUser() == null) continue;
+                if(recommendEntity.getUser().getFcmToken() == null) continue;
 
                 recommendRepository.save(recommendEntity);
             }

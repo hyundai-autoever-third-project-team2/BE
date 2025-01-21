@@ -857,8 +857,8 @@ public class CarServiceImplement implements CarService {
 
     //차량 discount 업데이트 메소드
     @Override
-    //@Scheduled(cron = "0 0 0 * * MON")
-    @Scheduled(cron = "0 40 23 * * MON", zone = "Asia/Seoul")
+//    @Scheduled(cron = "0 57 9 * * TUE")
+//    @Scheduled(cron = "0 51 23 * * MON", zone = "Asia/Seoul")
     @Transactional
     public void updateDiscountPrice() {
         List<CarSalesEntity> carSalesEntities = carSalesRepository.findSalesCar();
@@ -901,8 +901,10 @@ public class CarServiceImplement implements CarService {
                             .build();
 
                     try{
-                        fcmService.sendMessageTo(salesLike.getUser().getFcmToken(), title, body);
-                        notificationService.addNotification(notification);
+                        if (salesLike.getUser().getFcmToken() != null) {
+                            fcmService.sendMessageTo(salesLike.getUser().getFcmToken(), title, body);
+                            notificationService.addNotification(notification);
+                        }
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
