@@ -141,7 +141,7 @@ public class AdminService {
     public Page<RegistrationResponseDto> getRegistrationCarsByProgress(boolean isVisible, Pageable pageable) {
 
         if(isVisible == false) {
-            return carPurchaseRepository.findByProgress("판매중", pageable)
+            return carPurchaseRepository.findByProgressAndIsDeleteFalse("판매중", pageable)
                     .map(carPurchaseEntity -> RegistrationResponseDto.builder()
                             .carPurchaseId(carPurchaseEntity.getCarPurchaseId())
                             .carId(carPurchaseEntity.getCar().getCarId())
@@ -195,6 +195,19 @@ public class AdminService {
         CarPurchaseEntity entity = carPurchaseRepository.findById(requestDto.getCarPurchaseId()).orElse(null);
         AgencyEntity agencyEntity = agencyRepository.findById(requestDto.getAgencyId()).orElseThrow(() -> new IllegalArgumentException("Invalid agency ID"));
 
+        entity = CarPurchaseEntity.builder()
+                .carPurchaseId(requestDto.getCarPurchaseId())
+                .car(entity.getCar())
+                .user(entity.getUser())
+                .comments(entity.getComments())
+                .progress(entity.getProgress())
+                .price(entity.getPrice())
+                .purchaseDate(entity.getPurchaseDate())
+                .isDeleted(true)
+                .images(entity.getImages())
+                .build();
+
+
         CarSalesEntity carSalesEntity = CarSalesEntity.builder()
                 .car(entity.getCar())
                 .user(null)
@@ -208,7 +221,7 @@ public class AdminService {
                 .count(0)
                 .build();
         carSalesRepository.save(carSalesEntity);
-        carPurchaseRepository.delete(entity);
+        carPurchaseRepository.save(entity);
 
         if(entity != null){
 

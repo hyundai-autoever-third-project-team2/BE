@@ -23,7 +23,10 @@ public interface CarPurchaseRepository  extends JpaRepository<CarPurchaseEntity,
     @Query("SELECT c FROM CarPurchaseEntity c WHERE c.carPurchaseId = :carPurchaseId")
     CarPurchaseEntity findByCarPurchaseId(@Param("carPurchaseId") long carPurchaseId);
 
-    Page<CarPurchaseEntity> findByProgress(String progress, Pageable pageable);
+    @Query("SELECT c FROM CarPurchaseEntity c WHERE c.progress = :progress AND c.isDeleted = false")
+    Page<CarPurchaseEntity> findByProgressAndIsDeleteFalse(@Param("progress") String progress, Pageable pageable);
 
+    @Query("SELECT c FROM CarPurchaseEntity c WHERE c.progress = :progress")
+    Page<CarPurchaseEntity> findByProgress(String progress, Pageable pageable);
 }
 
