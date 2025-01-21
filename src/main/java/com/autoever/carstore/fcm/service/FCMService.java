@@ -1,11 +1,14 @@
 package com.autoever.carstore.fcm.service;
 
+import com.autoever.carstore.fcm.FirebaseConfig;
 import com.autoever.carstore.fcm.dto.FcmMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FCMService {
+    private final FirebaseConfig firebaseConfig;
+
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/carstore-d56d2/messages:send";
     private final ObjectMapper objectMapper;
 
@@ -54,18 +59,13 @@ public class FCMService {
 
     // Firebase Admin SDK의 비공개 키를 참조하여 Bearer 토큰을 발급 받는다.
     private String getAccessToken() throws Exception {
-        final String firebaseConfigPath = "firebase/carstore-d56d2-firebase-adminsdk-a1pun-dd6d6b9219.json";
-
         try {
-            final GoogleCredentials googleCredentials = GoogleCredentials
-                    .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
-                    .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
-
-            googleCredentials.refreshIfExpired();
-            log.info("access token: {}",googleCredentials.getAccessToken());
-            return googleCredentials.getAccessToken().getTokenValue();
+            GoogleCredentials credentials = firebaseConfig.getGoogleCredentials();
+            credentials.refreshIfExpired();
+            return credentials.getAccessToken().getTokenValue();
         } catch (IOException e) {
-            throw new Exception("no token");
+            log.error("Firebase 토큰 발급 실패", e);
+            throw new Exception("Firebase 토큰 발급 실패");
         }
     }
 }
