@@ -54,7 +54,7 @@ public class FCMService {
 
     // Firebase Admin SDK의 비공개 키를 참조하여 Bearer 토큰을 발급 받는다.
     private String getAccessToken() throws Exception {
-        final String firebaseConfigPath = "firebase/carstore-d56d2-firebase-adminsdk-a1pun-c1bfa0593c.json";
+        final String firebaseConfigPath = "firebase/carstore-d56d2-firebase-adminsdk-a1pun-dd6d6b9219.json";
 
         try {
             final GoogleCredentials googleCredentials = GoogleCredentials
