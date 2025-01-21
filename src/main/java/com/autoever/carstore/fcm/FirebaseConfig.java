@@ -16,7 +16,7 @@ public class FirebaseConfig {
     @PostConstruct
     public void initializeFirebase() {
         try {
-            ClassPathResource resource = new ClassPathResource("firebase/carstore-d56d2-firebase-adminsdk-a1pun-c1bfa0593c.json");
+            ClassPathResource resource = new ClassPathResource("firebase/carstore-d56d2-firebase-adminsdk-a1pun-ea2077f70a.json");
             InputStream serviceAccount = resource.getInputStream();
 
             FirebaseOptions options = FirebaseOptions.builder()

@@ -1,8 +1,23 @@
 package com.autoever.carstore.fcm.service;
 
 import com.autoever.carstore.fcm.dto.FcmMessage;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.common.collect.Lists;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -10,8 +25,16 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 
 @Slf4j
 @Service
@@ -19,6 +42,8 @@ import java.util.List;
 public class FCMService {
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/carstore-d56d2/messages:send";
     private final ObjectMapper objectMapper;
+
+    private GoogleCredentials googleCredentials;
 
     public void sendMessageTo(String targetToken, String title, String body) throws Exception {
         String message = makeMessage(targetToken, title, body);
@@ -53,19 +78,62 @@ public class FCMService {
     }
 
     // Firebase Admin SDK의 비공개 키를 참조하여 Bearer 토큰을 발급 받는다.
-    private String getAccessToken() throws Exception {
-        final String firebaseConfigPath = "firebase/carstore-d56d2-firebase-adminsdk-a1pun-c1bfa0593c.json";
+//    private String getAccessToken() throws Exception {
+//        final String firebaseConfigPath = "firebase/carstore-d56d2-firebase-adminsdk-a1pun-726834efe5.json";
+//
+//        try {
+//            final GoogleCredentials googleCredentials = GoogleCredentials
+//                    .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
+//                    .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
+//
+//            googleCredentials.refreshIfExpired();
+//            log.info("access token: {}",googleCredentials.getAccessToken());
+//            return googleCredentials.getAccessToken().getTokenValue();
+//        } catch (IOException e) {
+//            throw new Exception("no token");
+//        }
+//    }
 
+    @PostConstruct
+    private void initialize() {
         try {
-            final GoogleCredentials googleCredentials = GoogleCredentials
-                    .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
-                    .createScoped(List.of("https://www.googleapis.com/auth/cloud-platform"));
+            ClassPathResource resource = new ClassPathResource("firebase/carstore-d56d2-firebase-adminsdk-a1pun-ea2077f70a.json");
+            googleCredentials = GoogleCredentials
+                    .fromStream(resource.getInputStream())
+                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/firebase.messaging"));
 
-            googleCredentials.refreshIfExpired();
-            log.info("access token: {}",googleCredentials.getAccessToken());
-            return googleCredentials.getAccessToken().getTokenValue();
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(googleCredentials)
+                    .build();
+
+            if (FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp.initializeApp(options);
+            }
         } catch (IOException e) {
-            throw new Exception("no token");
+            log.error("Firebase initialization failed", e);
         }
     }
+
+    private String getAccessToken() throws Exception {
+        try {
+            String firebaseConfigPath = "firebase/carstore-d56d2-firebase-adminsdk-a1pun-ea2077f70a.json";
+            GoogleCredentials googleCredentials = GoogleCredentials
+                    .fromStream(new ClassPathResource(firebaseConfigPath).getInputStream())
+                    .createScoped(Arrays.asList(
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/firebase.messaging"
+                    ));
+
+            // 토큰 디버깅
+            AccessToken token = googleCredentials.refreshAccessToken();
+            String tokenValue = token.getTokenValue();
+            log.info("Token successfully generated");
+
+            return tokenValue;
+        } catch (IOException e) {
+            log.error("Failed to get access token: {}", e.getMessage(), e);
+            throw new Exception("Failed to get access token: " + e.getMessage());
+        }
+    }
+
 }

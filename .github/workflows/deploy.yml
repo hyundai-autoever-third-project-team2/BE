@@ -28,8 +28,18 @@ jobs:
         env:
           APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
 
+      - name: firebase-key.json 파일 만들기
+        run: |
+          mkdir -p src/main/resources/firebase
+          echo "$FIREBASE_KEY_JSON" > src/main/resources/firebase/carstore-d56d2-firebase-adminsdk-a1pun-ea2077f70a.json
+        env:
+          FIREBASE_KEY_JSON: ${{ secrets.FIREBASE_KEY_JSON }}
+
       - name: 권한 부여
         run: chmod +x ./gradlew  # 실행 권한 부여
+
+      - name: GOOGLE_APPLICATION_CREDENTIALS 환경 변수 설정
+        run: export GOOGLE_APPLICATION_CREDENTIALS=src/main/resources/firebase/carstore-d56d2-firebase-adminsdk-a1pun-ea2077f70a.json
 
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build -x test
